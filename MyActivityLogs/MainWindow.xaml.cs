@@ -21,6 +21,15 @@ namespace MyActivityLogs
     public partial class MainWindow : Window
     {
         private static string ActivityLoggerPath = GetDirectory() + @"\TMRosemite\ActivityLogger";
+        private enum ActivityStatus
+        {
+            Daily,
+            Weekly,
+            Monthly,
+            Total
+        }
+
+        // Daily, Weekly, Monthly, Total
         private List<Activity> activities = new List<Activity>();
 
         public MainWindow()
@@ -30,7 +39,7 @@ namespace MyActivityLogs
             Load();
         }
 
-        void Load()
+        void Load(ActivityStatus status = ActivityStatus.Daily)
         {
             var output = ReadJson();
 
@@ -51,6 +60,32 @@ namespace MyActivityLogs
                 }
             }
 
+            if (output.Count == 0)
+            {
+                ErrorMessage("IDK no logs for today yet");
+                return;
+            }
+
+            switch (status)
+            {
+                case ActivityStatus.Daily:
+                    LoadDaily(output);
+                    break;
+
+                case ActivityStatus.Weekly:
+                    break;
+
+                case ActivityStatus.Monthly:
+                    break;
+
+                case ActivityStatus.Total:
+                    break;
+
+            }
+        }
+
+        private void LoadDaily(Dictionary<string, List<Activity>> output)
+        {
             foreach (Activity item in output[DateFormat()])
             {
                 if (int.Parse(item.TimeSpent.Remove(item.TimeSpent.Length - 7)) < 10)
@@ -58,16 +93,17 @@ namespace MyActivityLogs
                     continue;
                 }
 
-                activities.Add(new Activity() { 
+                activities.Add(new Activity()
+                {
                     ActivityName = item.ActivityName,
                     TimeSpent = item.TimeSpent,
                     TimeSpentint = int.Parse(item.TimeSpent.Remove(item.TimeSpent.Length - 7))
                 });
             }
 
-            SortList();
-            CalculateSum();
-            SetProgressBarColor();
+            activities = SortList(activities);
+            CalculateSumOfList(activities);
+            activities = SetProgressBarColor(activities);
 
             ActivitiesItemsControl.ItemsSource = activities;
         }
@@ -95,15 +131,15 @@ namespace MyActivityLogs
 
             return JsonConvert.DeserializeObject<Dictionary<string, List<Activity>>>(jsonFromFile);
         }
-        private void SortList()
+        private List<Activity> SortList(List<Activity> list)
         {
-            activities = activities.OrderBy(o => o.TimeSpentint).ToList();
+            return list.OrderBy(o => o.TimeSpentint).ToList();
         }
-        private void CalculateSum()
+        private void CalculateSumOfList(List<Activity> list)
         {
             int sum = 0;
             int biggestnumber = 0;
-            foreach (Activity item in activities)
+            foreach (Activity item in list)
             {
                 sum += item.TimeSpentint;
 
@@ -115,27 +151,26 @@ namespace MyActivityLogs
 
             if (biggestnumber > sum / 2)
             {
-                foreach (Activity item in activities)
+                foreach (Activity item in list)
                 {
                     item.ProgressBarMaxValue = biggestnumber + biggestnumber / 10;
                 }
                 return;
             }
 
-            foreach (Activity item in activities)
+            foreach (Activity item in list)
             {
                 item.ProgressBarMaxValue = sum / 2;
             }
         }
-        private void SetProgressBarColor()
+        private List<Activity> SetProgressBarColor(List<Activity> list)
         {
-            bool onlyFirst = (activities.Count % 2 == 0) ? true : false;
-            float baseindex = activities.Count * 10;
+            float baseindex = list.Count * 10;
             float indexItem = baseindex;
             float subtractValue = baseindex / 5f;
 
-            activities.Reverse();
-            foreach (Activity item in activities)
+            list.Reverse();
+            foreach (Activity item in list)
             {
                 if (indexItem > subtractValue * 4 & subtractValue * 5 >= indexItem)
                 {
@@ -145,7 +180,7 @@ namespace MyActivityLogs
                 {
                     item.Color = "LimeGreen";
                 }
-                else if (indexItem > subtractValue * 2 & subtractValue *  3 >= indexItem)
+                else if (indexItem > subtractValue * 2 & subtractValue * 3 >= indexItem)
                 {
                     item.Color = "SeaGreen";
                 }
@@ -159,6 +194,7 @@ namespace MyActivityLogs
                 }
                 indexItem -= subtractValue;
             }
+            return list;
         }
         private static string GetDirectory()
         {

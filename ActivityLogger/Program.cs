@@ -103,6 +103,15 @@ namespace ActivityLogger
 
             System.Console.WriteLine(fileName);
 
+            // If new day just started
+            if (!activityDictionary.ContainsKey(DateFormat()))
+            {
+                activityDictionary.Clear();
+                activities.Clear();
+
+                SaveJson(new Activity(ActivityName: fileName, TimeSpent: "1 Minute"));
+            }
+
             // Checks if fileName already exists in the activities list
             // If so we edit. Else we add a new entry
             for (int i = 0; i < activities.Count; i++)
