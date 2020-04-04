@@ -21,15 +21,11 @@ namespace MyActivityLogs
     public partial class MainWindow : Window
     {
         private static string ActivityLoggerPath = GetDirectory() + @"\TMRosemite\ActivityLogger";
-        private Dictionary<string, List<Activity>> activityDictionary;
         private List<Activity> activities = new List<Activity>();
-
-        public float sum { get; set; }
 
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = this;
 
             Load();
         }
@@ -55,20 +51,23 @@ namespace MyActivityLogs
                 }
             }
 
-            activityDictionary = output;
-
-            foreach (Activity item in activityDictionary[DateFormat()])
+            foreach (Activity item in output[DateFormat()])
             {
+                if (int.Parse(item.TimeSpent.Remove(item.TimeSpent.Length - 7)) < 10)
+                {
+                    continue;
+                }
+
                 activities.Add(new Activity() { 
                     ActivityName = item.ActivityName,
                     TimeSpent = item.TimeSpent,
-                    TimeSpentint = int.Parse(item.TimeSpent.Remove(item.TimeSpent.Length - 7)),
-                    Color = "LightGreen"
+                    TimeSpentint = int.Parse(item.TimeSpent.Remove(item.TimeSpent.Length - 7))
                 });
             }
 
             SortList();
-            Calculatesum();
+            CalculateSum();
+            SetProgressBarColor();
 
             ActivitiesItemsControl.ItemsSource = activities;
         }
@@ -77,7 +76,7 @@ namespace MyActivityLogs
         {
             // Show Popup
         }
-        dynamic ReadJson()
+        private dynamic ReadJson()
         {
             if (!File.Exists(ActivityLoggerPath + @"\SavedActivities.json"))
             {
@@ -99,18 +98,67 @@ namespace MyActivityLogs
         private void SortList()
         {
             activities = activities.OrderBy(o => o.TimeSpentint).ToList();
-            activities.Reverse();
         }
-        private void Calculatesum()
+        private void CalculateSum()
         {
-            sum = 0; 
+            int sum = 0;
+            int biggestnumber = 0;
             foreach (Activity item in activities)
             {
                 sum += item.TimeSpentint;
-            }
-            sum *= sum;
 
-            Console.WriteLine(sum);
+                if (item.TimeSpentint > biggestnumber)
+                {
+                    biggestnumber = item.TimeSpentint;
+                }
+            }
+
+            if (biggestnumber > sum / 2)
+            {
+                foreach (Activity item in activities)
+                {
+                    item.ProgressBarMaxValue = biggestnumber + biggestnumber / 10;
+                }
+                return;
+            }
+
+            foreach (Activity item in activities)
+            {
+                item.ProgressBarMaxValue = sum / 2;
+            }
+        }
+        private void SetProgressBarColor()
+        {
+            bool onlyFirst = (activities.Count % 2 == 0) ? true : false;
+            float baseindex = activities.Count * 10;
+            float indexItem = baseindex;
+            float subtractValue = baseindex / 5f;
+
+            activities.Reverse();
+            foreach (Activity item in activities)
+            {
+                if (indexItem > subtractValue * 4 & subtractValue * 5 >= indexItem)
+                {
+                    item.Color = "Green";
+                }
+                else if (indexItem > subtractValue * 3 & subtractValue * 4 >= indexItem)
+                {
+                    item.Color = "LimeGreen";
+                }
+                else if (indexItem > subtractValue * 2 & subtractValue *  3 >= indexItem)
+                {
+                    item.Color = "SeaGreen";
+                }
+                else if (indexItem > subtractValue * 1 & subtractValue * 2 >= indexItem)
+                {
+                    item.Color = "DarkSeaGreen";
+                }
+                else
+                {
+                    item.Color = "LightGreen";
+                }
+                indexItem -= subtractValue;
+            }
         }
         private static string GetDirectory()
         {
@@ -134,5 +182,6 @@ namespace MyActivityLogs
         public string TimeSpent { get; set; }
         public int TimeSpentint { get; set; }
         public string Color { get; set; }
+        public float ProgressBarMaxValue { get; set; }
     }
 }
