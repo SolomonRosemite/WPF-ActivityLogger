@@ -11,18 +11,20 @@
         MinHeight="480"
         MinWidth="720"
         WindowStyle="SingleBorderWindow"
-        Background="AliceBlue">
+        Background="White">
     <Grid Margin="10">
         <ItemsControl Name="ActivitiesItemsControl">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Grid Margin="0,0,0,5">
+                    <Grid Margin="0,0,0,10">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="75" />
                             <ColumnDefinition Width="100" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="{Binding Title}" />
-                        <ProgressBar Grid.Column="1" Minimum="0" Maximum="100" Value="{Binding Completion}" />
+                        <TextBlock Text="{Binding ActivityName}"/>
+                        <TextBlock Text="{Binding TimeSpent}" Grid.Column="1"/>
+                        <ProgressBar x:Name="progressBar" Foreground="{Binding Color}" Grid.Column="2" Minimum="0" Maximum="100" Value="{Binding TimeSpentint}" />
                     </Grid>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
