@@ -8,12 +8,24 @@
         Title="My Activities" 
         Height="720" 
         Width="1280" 
-        MinHeight="720"
-        MinWidth="1280"
-        WindowStyle="SingleBorderWindow" 
-        Background="White">
-    <Grid>
-        <!--<Rectangle HorizontalAlignment="Left" Height="347" Stroke="Black" VerticalAlignment="Center" Width="880" Margin="239,0,0,0"/>-->
-
+        MinHeight="480"
+        MinWidth="720"
+        WindowStyle="SingleBorderWindow"
+        Background="AliceBlue">
+    <Grid Margin="10">
+        <ItemsControl Name="ActivitiesItemsControl">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Grid Margin="0,0,0,5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="100" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{Binding Title}" />
+                        <ProgressBar Grid.Column="1" Minimum="0" Maximum="100" Value="{Binding Completion}" />
+                    </Grid>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
     </Grid>
 </Window>
