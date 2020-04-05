@@ -39,7 +39,7 @@ namespace MyActivityLogs
             Load();
         }
 
-        void Load(ActivityStatus status = ActivityStatus.Weekly)
+        void Load(ActivityStatus status = ActivityStatus.Daily)
         {
             var output = ReadJson();
 

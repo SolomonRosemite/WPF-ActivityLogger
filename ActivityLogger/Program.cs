@@ -64,10 +64,13 @@ namespace ActivityLogger
 
             activityDictionary = JsonConvert.DeserializeObject<Dictionary<string, List<Activity>>>(jsonFromFile);
 
-            activityDictionary.TryGetValue(DateFormat(), out activities);
+            List<Activity> tempactivities = new List<Activity>();
+            activityDictionary.TryGetValue("05.04.2020", out tempactivities);
 
-            if (activities == null)
-                activities = new List<Activity>();
+            if (tempactivities.Count == 0)
+                return;
+
+            activities.AddRange(tempactivities);
         }
 
         private static void Load()
@@ -106,10 +109,10 @@ namespace ActivityLogger
             // If new day just started
             if (!activityDictionary.ContainsKey(DateFormat()))
             {
-                activityDictionary.Clear();
                 activities.Clear();
 
                 SaveJson(new Activity(ActivityName: fileName, TimeSpent: "1 Minute"));
+                return;
             }
 
             // Checks if fileName already exists in the activities list
@@ -145,7 +148,6 @@ namespace ActivityLogger
             string json = JsonConvert.SerializeObject(activityDictionary, Formatting.Indented);
             File.WriteAllText(ActivityLoggerPath + @"\SavedActivities.json", json);
         }
-
         static string GetActiveProcessFileName()
         {
             IntPtr hwnd = GetForegroundWindow();
