@@ -39,7 +39,7 @@ namespace MyActivityLogs
             Load();
         }
 
-        void Load(ActivityStatus status = ActivityStatus.Daily)
+        void Load(ActivityStatus status = ActivityStatus.Weekly)
         {
             var output = ReadJson();
 
@@ -95,15 +95,12 @@ namespace MyActivityLogs
                 return;
             }
 
-            AddToListPerDay(DateTime.Now, output);
+            AddToListPerDay(DateTime.Now, output, false);
 
             LoadFinish();
-
-            ActivitiesItemsControl.ItemsSource = activities;
         }
         private void LoadWeekly(Dictionary<string, List<Activity>> output)
         {
-
             switch (DateTime.Now.DayOfWeek)
             {
                 case DayOfWeek.Monday:
@@ -130,6 +127,8 @@ namespace MyActivityLogs
                     AddToListForWeekly(-6, output);
                     break;
             }
+
+            LoadFinish();
         }
         private void LoadMonthly(Dictionary<string, List<Activity>> output)
         {
@@ -170,7 +169,7 @@ namespace MyActivityLogs
             // Today would be monday which there are no daysBehind because the week just started
             if (daysBehind == 0)
             {
-                AddToListPerDay(date, dict);
+                AddToListPerDay(date, dict, false);
                 return;
             }
 
@@ -181,36 +180,67 @@ namespace MyActivityLogs
                 {
                     continue;
                 }
+
+                AddToListPerDay(date.AddDays(daysBehind), dict, true);
+            }
+        }
+        private void AddToListPerDay(DateTime date, Dictionary<string, List<Activity>> output, bool checkIfEntryAlreadyExists)
+        {
+            if (checkIfEntryAlreadyExists == false)
+            {
+                foreach (Activity item in output[DateFormat(date)])
+                {
+                    if (int.Parse(item.TimeSpent.Remove(item.TimeSpent.Length - 7)) < 10)
+                    {
+                        continue;
+                    }
+
+
+                    activities.Add(new Activity()
+                    {
+                        ActivityName = item.ActivityName,
+                        TimeSpent = item.TimeSpent,
+                        TimeSpentint = int.Parse(item.TimeSpent.Remove(item.TimeSpent.Length - 7))
+                    });
+                }
+                return;
             }
 
-            //for (int i = 0; i < daysBehind; i++)
-            //{
-            //    foreach (Activity item in dict[DateFormat])
-            //    {
-            //        if (activities[])
-            //        {
+            List<Activity> myActivities = output[DateFormat(date)];
+            bool skipped = false;
 
-            //        }
-            //    }
-            //}
-            //daysBehind = Math.Abs(daysBehind);
-
-            LoadFinish();
-        }
-        private void AddToListPerDay(DateTime date, Dictionary<string, List<Activity>> output)
-        {
-            foreach (Activity item in output[DateFormat(date)])
+            for (int i = 0; i < myActivities.Count; i++)
             {
-                if (int.Parse(item.TimeSpent.Remove(item.TimeSpent.Length - 7)) < 10)
+                int temp;
+                if ((temp = int.Parse(myActivities[i].TimeSpent.Remove(myActivities[i].TimeSpent.Length - 7))) < 10)
                 {
+                    continue;
+                }
+
+                // If that ActivityName already exists we dont add and just add the minutes
+                for (int j = 0; j < activities.Count; j++)
+                {
+                    if (activities[j].ActivityName == myActivities[i].ActivityName)
+                    {
+
+                        activities[j].TimeSpent = (activities[j].TimeSpentint + temp).ToString() + " Minutes";
+                        activities[j].TimeSpentint += temp;
+                        skipped = true;
+                        break;
+                    }
+                }
+
+                if (skipped == true)
+                {
+                    skipped = false;
                     continue;
                 }
 
                 activities.Add(new Activity()
                 {
-                    ActivityName = item.ActivityName,
-                    TimeSpent = item.TimeSpent,
-                    TimeSpentint = int.Parse(item.TimeSpent.Remove(item.TimeSpent.Length - 7))
+                    ActivityName = myActivities[i].ActivityName,
+                    TimeSpent = myActivities[i].TimeSpent,
+                    TimeSpentint = int.Parse(myActivities[i].TimeSpent.Remove(myActivities[i].TimeSpent.Length - 7))
                 });
             }
         }
@@ -284,6 +314,8 @@ namespace MyActivityLogs
             activities = SortList(activities);
             CalculateSumOfList(activities);
             activities = SetProgressBarColor(activities);
+
+            ActivitiesItemsControl.ItemsSource = activities;
         }
         private static string GetDirectory()
         {
