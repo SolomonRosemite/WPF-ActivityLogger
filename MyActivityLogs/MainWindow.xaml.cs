@@ -1,4 +1,5 @@
-﻿using System.Windows.Media.Imaging;
+﻿using System.Runtime.InteropServices;
+using System.Windows.Media.Imaging;
 using System.Collections.Generic;
 using System.Windows.Navigation;
 using System.Windows.Documents;
@@ -29,7 +30,6 @@ namespace MyActivityLogs
             Total
         }
 
-        // Daily, Weekly, Monthly, Total
         private List<Activity> activities = new List<Activity>();
 
         public MainWindow()
@@ -73,12 +73,15 @@ namespace MyActivityLogs
                     break;
 
                 case ActivityStatus.Weekly:
+                    LoadWeekly(output);
                     break;
 
                 case ActivityStatus.Monthly:
+                    LoadMonthly(output);
                     break;
 
                 case ActivityStatus.Total:
+                    LoadTotal(output);
                     break;
 
             }
@@ -86,26 +89,55 @@ namespace MyActivityLogs
 
         private void LoadDaily(Dictionary<string, List<Activity>> output)
         {
-            foreach (Activity item in output[DateFormat()])
+            if (!output.ContainsKey(DateFormat()))
             {
-                if (int.Parse(item.TimeSpent.Remove(item.TimeSpent.Length - 7)) < 10)
-                {
-                    continue;
-                }
-
-                activities.Add(new Activity()
-                {
-                    ActivityName = item.ActivityName,
-                    TimeSpent = item.TimeSpent,
-                    TimeSpentint = int.Parse(item.TimeSpent.Remove(item.TimeSpent.Length - 7))
-                });
+                ErrorMessage("IDK no logs for today yet");
+                return;
             }
 
-            activities = SortList(activities);
-            CalculateSumOfList(activities);
-            activities = SetProgressBarColor(activities);
+            AddToListPerDay(DateTime.Now, output);
+
+            LoadFinish();
 
             ActivitiesItemsControl.ItemsSource = activities;
+        }
+        private void LoadWeekly(Dictionary<string, List<Activity>> output)
+        {
+
+            switch (DateTime.Now.DayOfWeek)
+            {
+                case DayOfWeek.Monday:
+                    // Only Today
+                    AddToListForWeekly(0, output);
+                    break;
+                case DayOfWeek.Tuesday:
+                    // Today and yesterday and so on...
+                    AddToListForWeekly(-1, output);
+                    break;
+                case DayOfWeek.Wednesday:
+                    AddToListForWeekly(-2, output);
+                    break;
+                case DayOfWeek.Thursday:
+                    AddToListForWeekly(-3, output);
+                    break;
+                case DayOfWeek.Friday:
+                    AddToListForWeekly(-4, output);
+                    break;
+                case DayOfWeek.Saturday:
+                    AddToListForWeekly(-5, output);
+                    break;
+                case DayOfWeek.Sunday:
+                    AddToListForWeekly(-6, output);
+                    break;
+            }
+        }
+        private void LoadMonthly(Dictionary<string, List<Activity>> output)
+        {
+            LoadFinish();
+        }
+        private void LoadTotal(Dictionary<string, List<Activity>> output)
+        {
+            LoadFinish();
         }
 
         private void ErrorMessage(string message)
@@ -130,6 +162,57 @@ namespace MyActivityLogs
             }
 
             return JsonConvert.DeserializeObject<Dictionary<string, List<Activity>>>(jsonFromFile);
+        }
+        private void AddToListForWeekly(int daysBehind, Dictionary<string, List<Activity>> dict)
+        {
+            DateTime date = DateTime.Now;
+
+            // Today would be monday which there are no daysBehind because the week just started
+            if (daysBehind == 0)
+            {
+                AddToListPerDay(date, dict);
+                return;
+            }
+
+            while (daysBehind++ != 0)
+            {
+                // If on that date nothing was logged we skip that date
+                if (!dict.ContainsKey(DateFormat(date.AddDays(daysBehind))))
+                {
+                    continue;
+                }
+            }
+
+            //for (int i = 0; i < daysBehind; i++)
+            //{
+            //    foreach (Activity item in dict[DateFormat])
+            //    {
+            //        if (activities[])
+            //        {
+
+            //        }
+            //    }
+            //}
+            //daysBehind = Math.Abs(daysBehind);
+
+            LoadFinish();
+        }
+        private void AddToListPerDay(DateTime date, Dictionary<string, List<Activity>> output)
+        {
+            foreach (Activity item in output[DateFormat(date)])
+            {
+                if (int.Parse(item.TimeSpent.Remove(item.TimeSpent.Length - 7)) < 10)
+                {
+                    continue;
+                }
+
+                activities.Add(new Activity()
+                {
+                    ActivityName = item.ActivityName,
+                    TimeSpent = item.TimeSpent,
+                    TimeSpentint = int.Parse(item.TimeSpent.Remove(item.TimeSpent.Length - 7))
+                });
+            }
         }
         private List<Activity> SortList(List<Activity> list)
         {
@@ -196,6 +279,12 @@ namespace MyActivityLogs
             }
             return list;
         }
+        private void LoadFinish()
+        {
+            activities = SortList(activities);
+            CalculateSumOfList(activities);
+            activities = SetProgressBarColor(activities);
+        }
         private static string GetDirectory()
         {
             string path = Directory.GetParent(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)).FullName;
@@ -205,8 +294,12 @@ namespace MyActivityLogs
             }
             return "";
         }
-        private static string DateFormat()
+        private static string DateFormat([Optional] DateTime date)
         {
+            if (date.ToString() != "01.01.0001 00:00:00")
+            {
+                return date.ToString("dd.MM.yyyy");
+            }
             return DateTime.Now.ToString("dd.MM.yyyy");
         }
     }
