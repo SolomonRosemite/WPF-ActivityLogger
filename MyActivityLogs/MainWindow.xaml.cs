@@ -13,7 +13,6 @@ namespace MyActivityLogs
     public partial class MainWindow : Window
     {
         private readonly string ActivityLoggerPath = GetDirectory() + @"\TMRosemite\ActivityLogger";
-
         public static Dictionary<string, List<Activity>> activitiesDict = new Dictionary<string, List<Activity>>();
 
         public MainWindow()
@@ -22,7 +21,7 @@ namespace MyActivityLogs
 
             Load();
         }
-
+        
         void Load()
         {
             var output = ReadJson();
@@ -229,6 +228,7 @@ namespace MyActivityLogs
             }
             return list;
         }
+       
         public static string DateFormat([Optional] DateTime date)
         {
             if (date.ToString() != "01.01.0001 00:00:00")
@@ -237,7 +237,6 @@ namespace MyActivityLogs
             }
             return DateTime.Now.ToString("dd.MM.yyyy");
         }
-        
         private static string GetDirectory()
         {
             string path = Directory.GetParent(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)).FullName;
@@ -248,28 +247,11 @@ namespace MyActivityLogs
             return "";
         }
 
-        private void DailyButton(object sender, RoutedEventArgs e)
-        {
-            MyFrame.Content = new DailyPage();
-
-        }
-
-        private void WeeklyButton(object sender, RoutedEventArgs e)
-        {
-            MyFrame.Content = new WeeklyPage();
-        }
-
-        private void MonthlyButton(object sender, RoutedEventArgs e)
-        {
-            MyFrame.Content = new MonthlyPage();
-        }
-
-        private void TotalButton(object sender, RoutedEventArgs e)
-        {
-            MyFrame.Content = new TotalPage();
-        }
+        private void DailyButton(object sender, RoutedEventArgs e) => MyFrame.Content = new DailyPage();
+        private void WeeklyButton(object sender, RoutedEventArgs e) => MyFrame.Content = new WeeklyPage();
+        private void MonthlyButton(object sender, RoutedEventArgs e) => MyFrame.Content = new MonthlyPage();
+        private void TotalButton(object sender, RoutedEventArgs e) => MyFrame.Content = new TotalPage();
     }
-
 
     public class Activity
     {
