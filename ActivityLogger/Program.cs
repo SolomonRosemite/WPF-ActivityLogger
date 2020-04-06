@@ -65,7 +65,7 @@ namespace ActivityLogger
             activityDictionary = JsonConvert.DeserializeObject<Dictionary<string, List<Activity>>>(jsonFromFile);
 
             List<Activity> tempactivities = new List<Activity>();
-            activityDictionary.TryGetValue("05.04.2020", out tempactivities);
+            activityDictionary.TryGetValue(DateFormat(), out tempactivities);
 
             if (tempactivities.Count == 0)
                 return;
