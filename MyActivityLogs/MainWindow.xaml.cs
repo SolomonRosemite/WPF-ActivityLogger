@@ -28,7 +28,7 @@ namespace MyActivityLogs
             Load();
         }
 
-        void Load(ActivityStatus status = ActivityStatus.Weekly)
+        void Load(ActivityStatus status = ActivityStatus.Monthly)
         {
             var output = ReadJson();
 
@@ -121,6 +121,9 @@ namespace MyActivityLogs
         }
         private void LoadMonthly(Dictionary<string, List<Activity>> dict)
         {
+            // might be wrong
+            AddToListForWeekly(-DateTime.Now.Day + 1, dict);
+
             LoadFinish();
         }
         private void LoadTotal(Dictionary<string, List<Activity>> dict)
@@ -154,13 +157,14 @@ namespace MyActivityLogs
                 }
             }
 
-            return JsonConvert.DeserializeObject<Dictionary<string, List<Activity>>>(jsonFromFile);
+            try { return JsonConvert.DeserializeObject<Dictionary<string, List<Activity>>>(jsonFromFile); }
+            catch { return 1; }
         }
         private void AddToListForWeekly(int daysBehind, Dictionary<string, List<Activity>> dict)
         {
             DateTime date = DateTime.Now;
 
-            // Today would be monday which there are no daysBehind because the week just started
+            // If Today would be monday there would be no daysBehind because the week just started
             if (daysBehind == 0)
             {
                 AddToListPerDay(date, dict, false);
@@ -178,7 +182,7 @@ namespace MyActivityLogs
                 AddToListPerDay(date.AddDays(daysBehind), dict, true, true);
             }
         }
-        private void AddToListPerDay(DateTime date, Dictionary<string, List<Activity>> dict, bool checkIfEntryAlreadyExists, bool addAllEntries = false)
+        private void AddToListPerDay(DateTime date, Dictionary<string, List<Activity>> dict, bool checkIfEntryAlreadyExists, bool ignore10MinRule = false)
         {
             if (checkIfEntryAlreadyExists == false)
             {
@@ -188,7 +192,6 @@ namespace MyActivityLogs
                     {
                         continue;
                     }
-
 
                     activities.Add(new Activity()
                     {
@@ -206,7 +209,7 @@ namespace MyActivityLogs
             for (int i = 0; i < myActivities.Count; i++)
             {
                 int temp;
-                if ((temp = int.Parse(myActivities[i].TimeSpent.Remove(myActivities[i].TimeSpent.Length - 7))) < 10 && addAllEntries == false)
+                if ((temp = int.Parse(myActivities[i].TimeSpent.Remove(myActivities[i].TimeSpent.Length - 7))) < 10 && ignore10MinRule == false)
                 {
                     continue;
                 }
