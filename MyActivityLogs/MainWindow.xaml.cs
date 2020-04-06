@@ -39,7 +39,7 @@ namespace MyActivityLogs
             Load();
         }
 
-        void Load(ActivityStatus status = ActivityStatus.Daily)
+        void Load(ActivityStatus status = ActivityStatus.Weekly)
         {
             var output = ReadJson();
 
@@ -87,55 +87,60 @@ namespace MyActivityLogs
             }
         }
 
-        private void LoadDaily(Dictionary<string, List<Activity>> output)
+        private void LoadDaily(Dictionary<string, List<Activity>> dict)
         {
-            if (!output.ContainsKey(DateFormat()))
+            if (!dict.ContainsKey(DateFormat()))
             {
                 ErrorMessage("IDK no logs for today yet");
                 return;
             }
 
-            AddToListPerDay(DateTime.Now, output, false);
+            AddToListPerDay(DateTime.Now, dict, false);
 
             LoadFinish();
         }
-        private void LoadWeekly(Dictionary<string, List<Activity>> output)
+        private void LoadWeekly(Dictionary<string, List<Activity>> dict)
         {
             switch (DateTime.Now.DayOfWeek)
             {
                 case DayOfWeek.Monday:
                     // Only Today
-                    AddToListForWeekly(0, output);
+                    AddToListForWeekly(0, dict);
                     break;
                 case DayOfWeek.Tuesday:
                     // Today and yesterday and so on...
-                    AddToListForWeekly(-1, output);
+                    AddToListForWeekly(-1, dict);
                     break;
                 case DayOfWeek.Wednesday:
-                    AddToListForWeekly(-2, output);
+                    AddToListForWeekly(-2, dict);
                     break;
                 case DayOfWeek.Thursday:
-                    AddToListForWeekly(-3, output);
+                    AddToListForWeekly(-3, dict);
                     break;
                 case DayOfWeek.Friday:
-                    AddToListForWeekly(-4, output);
+                    AddToListForWeekly(-4, dict);
                     break;
                 case DayOfWeek.Saturday:
-                    AddToListForWeekly(-5, output);
+                    AddToListForWeekly(-5, dict);
                     break;
                 case DayOfWeek.Sunday:
-                    AddToListForWeekly(-6, output);
+                    AddToListForWeekly(-6, dict);
                     break;
             }
 
             LoadFinish();
         }
-        private void LoadMonthly(Dictionary<string, List<Activity>> output)
+        private void LoadMonthly(Dictionary<string, List<Activity>> dict)
         {
             LoadFinish();
         }
-        private void LoadTotal(Dictionary<string, List<Activity>> output)
+        private void LoadTotal(Dictionary<string, List<Activity>> dict)
         {
+            foreach (KeyValuePair<string, List<Activity>> entry in dict)
+            {
+                AddToListPerDay(DateTime.Parse(entry.Key), dict, true, true);
+            }
+
             LoadFinish();
         }
 
@@ -184,11 +189,11 @@ namespace MyActivityLogs
                 AddToListPerDay(date.AddDays(daysBehind), dict, true);
             }
         }
-        private void AddToListPerDay(DateTime date, Dictionary<string, List<Activity>> output, bool checkIfEntryAlreadyExists)
+        private void AddToListPerDay(DateTime date, Dictionary<string, List<Activity>> dict, bool checkIfEntryAlreadyExists, bool addAllEntries = false)
         {
             if (checkIfEntryAlreadyExists == false)
             {
-                foreach (Activity item in output[DateFormat(date)])
+                foreach (Activity item in dict[DateFormat(date)])
                 {
                     if (int.Parse(item.TimeSpent.Remove(item.TimeSpent.Length - 7)) < 10)
                     {
@@ -206,13 +211,13 @@ namespace MyActivityLogs
                 return;
             }
 
-            List<Activity> myActivities = output[DateFormat(date)];
+            List<Activity> myActivities = dict[DateFormat(date)];
             bool skipped = false;
 
             for (int i = 0; i < myActivities.Count; i++)
             {
                 int temp;
-                if ((temp = int.Parse(myActivities[i].TimeSpent.Remove(myActivities[i].TimeSpent.Length - 7))) < 10)
+                if ((temp = int.Parse(myActivities[i].TimeSpent.Remove(myActivities[i].TimeSpent.Length - 7))) < 10 && addAllEntries == false)
                 {
                     continue;
                 }
