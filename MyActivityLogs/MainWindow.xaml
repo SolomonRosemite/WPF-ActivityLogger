@@ -13,7 +13,10 @@
         WindowStyle="SingleBorderWindow"
         Background="White">
     <Grid Margin="10">
-        <ItemsControl Name="ActivitiesItemsControl">
+        <Frame x:Name="MyFrame" Margin="200,0,0,0" NavigationUIVisibility="Hidden"/>
+
+
+        <!--<ItemsControl Name="ActivitiesItemsControl" Margin="200,0,0,0">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <Grid Margin="0,0,0,10">
@@ -28,6 +31,16 @@
                     </Grid>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
-        </ItemsControl>
+        </ItemsControl>-->
+
+        <StackPanel Margin="10,10,0,0">
+            <Button Content="Daily" HorizontalAlignment="Left" Margin="0,0,0,0" Width="185" Height="40" VerticalAlignment="Top" Click="DailyButton"/>
+            <Button Content="Weekly" HorizontalAlignment="Left" Margin="0,0,0,0" Width="185" Height="40" VerticalAlignment="Top" Click="WeeklyButton"/>
+            <Button Content="Monthly" HorizontalAlignment="Left" Margin="0,0,0,0" Width="185" Height="40" VerticalAlignment="Top" Click="MonthlyButton" />
+            <Button Content="Total" HorizontalAlignment="Left" Margin="0,0,0,0" Width="185" Height="40" VerticalAlignment="Top" Click="TotalButton"/>
+
+        </StackPanel>
+            <Button Content="Settings" HorizontalAlignment="Left" Margin="10,0,0,10" Width="185" Height="40" VerticalAlignment="Bottom"/>
+        
     </Grid>
 </Window>

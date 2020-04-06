@@ -6,6 +6,8 @@ using System.Linq;
 using System.IO;
 using System;
 
+using MyActivityLogs.Pages;
+
 namespace MyActivityLogs
 {
     public partial class MainWindow : Window
@@ -20,6 +22,7 @@ namespace MyActivityLogs
         }
 
         private List<Activity> activities = new List<Activity>();
+        public static Dictionary<string, List<Activity>> activitiesDict = new Dictionary<string, List<Activity>>();
 
         public MainWindow()
         {
@@ -312,7 +315,7 @@ namespace MyActivityLogs
             CalculateSumOfList(activities);
             activities = SetProgressBarColor(activities);
 
-            ActivitiesItemsControl.ItemsSource = activities;
+            //ActivitiesItemsControl.ItemsSource = activities;
         }
         private static string GetDirectory()
         {
@@ -330,6 +333,26 @@ namespace MyActivityLogs
                 return date.ToString("dd.MM.yyyy");
             }
             return DateTime.Now.ToString("dd.MM.yyyy");
+        }
+
+        private void DailyButton(object sender, RoutedEventArgs e)
+        {
+            //MyFrame.Content = new Daily();
+        }
+
+        private void WeeklyButton(object sender, RoutedEventArgs e)
+        {
+            //MyFrame.Content = new Weekly();
+        }
+
+        private void MonthlyButton(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void TotalButton(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 
