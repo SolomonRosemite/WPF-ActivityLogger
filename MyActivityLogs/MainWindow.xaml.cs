@@ -12,16 +12,8 @@ namespace MyActivityLogs
 {
     public partial class MainWindow : Window
     {
-        private static string ActivityLoggerPath = GetDirectory() + @"\TMRosemite\ActivityLogger";
-        private enum ActivityStatus
-        {
-            Daily,
-            Weekly,
-            Monthly,
-            Total
-        }
+        private readonly string ActivityLoggerPath = GetDirectory() + @"\TMRosemite\ActivityLogger";
 
-        private List<Activity> activities = new List<Activity>();
         public static Dictionary<string, List<Activity>> activitiesDict = new Dictionary<string, List<Activity>>();
 
         public MainWindow()
@@ -31,7 +23,7 @@ namespace MyActivityLogs
             Load();
         }
 
-        void Load(ActivityStatus status = ActivityStatus.Monthly)
+        void Load()
         {
             var output = ReadJson();
 
@@ -58,85 +50,7 @@ namespace MyActivityLogs
                 return;
             }
 
-            switch (status)
-            {
-                case ActivityStatus.Daily:
-                    LoadDaily(output);
-                    break;
-
-                case ActivityStatus.Weekly:
-                    LoadWeekly(output);
-                    break;
-
-                case ActivityStatus.Monthly:
-                    LoadMonthly(output);
-                    break;
-
-                case ActivityStatus.Total:
-                    LoadTotal(output);
-                    break;
-
-            }
-        }
-
-        private void LoadDaily(Dictionary<string, List<Activity>> dict)
-        {
-            if (!dict.ContainsKey(DateFormat()))
-            {
-                ErrorMessage("IDK no logs for today yet");
-                return;
-            }
-
-            AddToListPerDay(DateTime.Now, dict, false);
-
-            LoadFinish();
-        }
-        private void LoadWeekly(Dictionary<string, List<Activity>> dict)
-        {
-            switch (DateTime.Now.DayOfWeek)
-            {
-                case DayOfWeek.Monday:
-                    // Only Today
-                    AddToListForWeekly(0, dict);
-                    break;
-                case DayOfWeek.Tuesday:
-                    // Today and yesterday and so on...
-                    AddToListForWeekly(-1, dict);
-                    break;
-                case DayOfWeek.Wednesday:
-                    AddToListForWeekly(-2, dict);
-                    break;
-                case DayOfWeek.Thursday:
-                    AddToListForWeekly(-3, dict);
-                    break;
-                case DayOfWeek.Friday:
-                    AddToListForWeekly(-4, dict);
-                    break;
-                case DayOfWeek.Saturday:
-                    AddToListForWeekly(-5, dict);
-                    break;
-                case DayOfWeek.Sunday:
-                    AddToListForWeekly(-6, dict);
-                    break;
-            }
-
-            LoadFinish();
-        }
-        private void LoadMonthly(Dictionary<string, List<Activity>> dict)
-        {
-            // might be wrong
-            AddToListForWeekly(-DateTime.Now.Day + 1, dict);
-
-            LoadFinish();
-        }
-        private void LoadTotal(Dictionary<string, List<Activity>> dict)
-        {
-            foreach (KeyValuePair<string, List<Activity>> entry in dict)
-            {
-                AddToListPerDay(DateTime.Parse(entry.Key), dict, true, true);
-            }
-
-            LoadFinish();
+            activitiesDict = output;
         }
 
         private void ErrorMessage(string message)
@@ -163,29 +77,33 @@ namespace MyActivityLogs
             try { return JsonConvert.DeserializeObject<Dictionary<string, List<Activity>>>(jsonFromFile); }
             catch { return 1; }
         }
-        private void AddToListForWeekly(int daysBehind, Dictionary<string, List<Activity>> dict)
+        
+        public static List<Activity> AddToListForWeekly(int daysBehind, Dictionary<string, List<Activity>> dict, List<Activity> list)
         {
             DateTime date = DateTime.Now;
 
             // If Today would be monday there would be no daysBehind because the week just started
             if (daysBehind == 0)
             {
-                AddToListPerDay(date, dict, false);
-                return;
+                return AddToListPerDay(date, dict, list, false);
             }
 
-            while (daysBehind++ != 0)
+            while (daysBehind != 0)
             {
                 // If on that date nothing was logged we skip that date
                 if (!dict.ContainsKey(DateFormat(date.AddDays(daysBehind))))
                 {
+                    daysBehind++;
                     continue;
                 }
 
-                AddToListPerDay(date.AddDays(daysBehind), dict, true, true);
+                list = AddToListPerDay(date.AddDays(daysBehind), dict, list, true, true);
+                daysBehind++;
             }
+
+            return AddToListPerDay(date.AddDays(daysBehind), dict, list, true, true);
         }
-        private void AddToListPerDay(DateTime date, Dictionary<string, List<Activity>> dict, bool checkIfEntryAlreadyExists, bool ignore10MinRule = false)
+        public static List<Activity> AddToListPerDay(DateTime date, Dictionary<string, List<Activity>> dict, List<Activity> list, bool checkIfEntryAlreadyExists, bool ignore10MinRule = false)
         {
             if (checkIfEntryAlreadyExists == false)
             {
@@ -196,14 +114,14 @@ namespace MyActivityLogs
                         continue;
                     }
 
-                    activities.Add(new Activity()
+                    list.Add(new Activity()
                     {
                         ActivityName = item.ActivityName,
                         TimeSpent = item.TimeSpent,
                         TimeSpentint = int.Parse(item.TimeSpent.Remove(item.TimeSpent.Length - 7))
                     });
                 }
-                return;
+                return list;
             }
 
             List<Activity> myActivities = dict[DateFormat(date)];
@@ -218,13 +136,13 @@ namespace MyActivityLogs
                 }
 
                 // If that ActivityName already exists we dont add and just add the minutes
-                for (int j = 0; j < activities.Count; j++)
+                for (int j = 0; j < list.Count; j++)
                 {
-                    if (activities[j].ActivityName == myActivities[i].ActivityName)
+                    if (list[j].ActivityName == myActivities[i].ActivityName)
                     {
 
-                        activities[j].TimeSpent = (activities[j].TimeSpentint + temp).ToString() + " Minutes";
-                        activities[j].TimeSpentint += temp;
+                        list[j].TimeSpent = (list[j].TimeSpentint + temp).ToString() + " Minutes";
+                        list[j].TimeSpentint += temp;
                         skipped = true;
                         break;
                     }
@@ -236,19 +154,20 @@ namespace MyActivityLogs
                     continue;
                 }
 
-                activities.Add(new Activity()
+                list.Add(new Activity()
                 {
                     ActivityName = myActivities[i].ActivityName,
                     TimeSpent = myActivities[i].TimeSpent,
                     TimeSpentint = int.Parse(myActivities[i].TimeSpent.Remove(myActivities[i].TimeSpent.Length - 7))
                 });
             }
+            return list;
         }
-        private List<Activity> SortList(List<Activity> list)
+        public static List<Activity> SortList(List<Activity> list)
         {
             return list.OrderBy(o => o.TimeSpentint).ToList();
         }
-        private void CalculateSumOfList(List<Activity> list)
+        public static List<Activity> CalculateSumOfList(List<Activity> list)
         {
             int sum = 0;
             int biggestnumber = 0;
@@ -268,15 +187,16 @@ namespace MyActivityLogs
                 {
                     item.ProgressBarMaxValue = biggestnumber + biggestnumber / 10;
                 }
-                return;
+                return list;
             }
 
             foreach (Activity item in list)
             {
                 item.ProgressBarMaxValue = sum / 2;
             }
+            return list;
         }
-        private List<Activity> SetProgressBarColor(List<Activity> list)
+        public static List<Activity> SetProgressBarColor(List<Activity> list)
         {
             float baseindex = list.Count * 10;
             float indexItem = baseindex;
@@ -309,14 +229,15 @@ namespace MyActivityLogs
             }
             return list;
         }
-        private void LoadFinish()
+        public static string DateFormat([Optional] DateTime date)
         {
-            activities = SortList(activities);
-            CalculateSumOfList(activities);
-            activities = SetProgressBarColor(activities);
-
-            //ActivitiesItemsControl.ItemsSource = activities;
+            if (date.ToString() != "01.01.0001 00:00:00")
+            {
+                return date.ToString("dd.MM.yyyy");
+            }
+            return DateTime.Now.ToString("dd.MM.yyyy");
         }
+        
         private static string GetDirectory()
         {
             string path = Directory.GetParent(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)).FullName;
@@ -326,33 +247,26 @@ namespace MyActivityLogs
             }
             return "";
         }
-        private static string DateFormat([Optional] DateTime date)
-        {
-            if (date.ToString() != "01.01.0001 00:00:00")
-            {
-                return date.ToString("dd.MM.yyyy");
-            }
-            return DateTime.Now.ToString("dd.MM.yyyy");
-        }
 
         private void DailyButton(object sender, RoutedEventArgs e)
         {
-            //MyFrame.Content = new Daily();
+            MyFrame.Content = new DailyPage();
+
         }
 
         private void WeeklyButton(object sender, RoutedEventArgs e)
         {
-            //MyFrame.Content = new Weekly();
+            MyFrame.Content = new WeeklyPage();
         }
 
         private void MonthlyButton(object sender, RoutedEventArgs e)
         {
-
+            MyFrame.Content = new MonthlyPage();
         }
 
         private void TotalButton(object sender, RoutedEventArgs e)
         {
-
+            MyFrame.Content = new TotalPage();
         }
     }
 

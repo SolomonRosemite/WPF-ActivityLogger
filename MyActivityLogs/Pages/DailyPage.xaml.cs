@@ -19,6 +19,8 @@ namespace MyActivityLogs.Pages
     /// </summary>
     public partial class DailyPage : Page
     {
+        private List<Activity> activities = new List<Activity>();
+
         public DailyPage()
         {
             InitializeComponent();
@@ -30,13 +32,23 @@ namespace MyActivityLogs.Pages
         {
             if (!dict.ContainsKey(MainWindow.DateFormat()))
             {
-                ErrorMessage("IDK no logs for today yet");
+                //ErrorMessage("IDK no logs for today yet");
                 return;
             }
 
-            MainWindow.AddToListPerDay(DateTime.Now, dict, false);
+            activities = MainWindow.AddToListPerDay(DateTime.Now, dict, activities, false);
 
             LoadFinish();
+        }
+
+        private void LoadFinish()
+        {
+            activities = MainWindow.SortList(activities);
+            activities = MainWindow.CalculateSumOfList(activities);
+            activities = MainWindow.SetProgressBarColor(activities);
+
+
+            ActivitiesItemsControl.ItemsSource = activities;
         }
     }
 }

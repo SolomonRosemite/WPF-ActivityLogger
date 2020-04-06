@@ -13,14 +13,32 @@ using System.Windows.Shapes;
 
 namespace MyActivityLogs.Pages
 {
-    /// <summary>
-    /// Interaction logic for MonthlyPage.xaml
-    /// </summary>
     public partial class MonthlyPage : Page
     {
+        private List<Activity> activities = new List<Activity>();
+
         public MonthlyPage()
         {
             InitializeComponent();
+
+            LoadMonthly(MainWindow.activitiesDict);
+        }
+
+        private void LoadMonthly(Dictionary<string, List<Activity>> dict)
+        {
+            // might be wrong
+            activities = MainWindow.AddToListForWeekly(-DateTime.Now.Day + 1, dict, activities);
+
+            LoadFinish();
+        }
+
+        private void LoadFinish()
+        {
+            activities = MainWindow.SortList(activities);
+            activities = MainWindow.CalculateSumOfList(activities);
+            activities = MainWindow.SetProgressBarColor(activities);
+
+            ActivitiesItemsControl.ItemsSource = activities;
         }
     }
 }

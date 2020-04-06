@@ -13,7 +13,7 @@
         WindowStyle="SingleBorderWindow"
         Background="White">
     <Grid Margin="10">
-        <Frame x:Name="MyFrame" Margin="200,0,0,0" NavigationUIVisibility="Hidden"/>
+        <Frame x:Name="MyFrame" Margin="210,10,0,0" NavigationUIVisibility="Hidden"/>
 
 
         <!--<ItemsControl Name="ActivitiesItemsControl" Margin="200,0,0,0">

@@ -9,6 +9,21 @@
       Title="MonthlyPage">
 
     <Grid>
-        
+        <ItemsControl Name="ActivitiesItemsControl" Margin="0,0,0,0">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Grid Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="75" />
+                            <ColumnDefinition Width="100" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{Binding ActivityName}"/>
+                        <TextBlock Text="{Binding TimeSpent}" Grid.Column="1"/>
+                        <ProgressBar Foreground="{Binding Color}" Grid.Column="2" Minimum="0" Maximum="{Binding ProgressBarMaxValue}" Value="{Binding TimeSpentint}" />
+                    </Grid>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
     </Grid>
 </Page>
