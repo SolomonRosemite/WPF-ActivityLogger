@@ -20,5 +20,7 @@ namespace MyActivityLogs.Pages
             }
             Process.Start("notepad.exe", MainWindow.ActivityLoggerPath + @"\SavedActivities.json");
         }
+
+        private void Refresh(object sender, RoutedEventArgs e) => MainWindow.Load();
     }
 }

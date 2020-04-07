@@ -10,6 +10,7 @@
 
     <Grid Margin="10,5,0,0">
         <Label Content="Settings" FontSize="28"/>
-        <Button Margin="10,0,0,20" HorizontalAlignment="Left" VerticalAlignment="Bottom" Content="View Activities [ Json ]" Width="131" Height="31" Click="Button_Click"/>
+        <Button Margin="10,0,0,60" HorizontalAlignment="Left" VerticalAlignment="Bottom" Content="Refresh" Width="130" Height="30" Click="Refresh"/>
+        <Button Margin="10,0,0,20" HorizontalAlignment="Left" VerticalAlignment="Bottom" Content="View Activities [ Json ]" Width="130" Height="30" Click="Button_Click"/>
     </Grid>
 </Page>

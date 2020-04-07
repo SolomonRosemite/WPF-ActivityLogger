@@ -15,19 +15,13 @@ namespace MyActivityLogs
         public static Dictionary<string, List<Activity>> activitiesDict = new Dictionary<string, List<Activity>>();
         public static readonly string ActivityLoggerPath = GetDirectory() + @"\TMRosemite\ActivityLogger";
 
-        private dynamic[] pages = new dynamic[5];
+        private static dynamic[] pages = new dynamic[5];
 
         public MainWindow()
         {
             InitializeComponent();
 
             Load();
-
-            pages[0] = new DailyPage();
-            pages[1] = new WeeklyPage();
-            pages[2] = new MonthlyPage();
-            pages[3] = new TotalPage();
-            pages[4] = new SettingsPage();
 
             MyFrame.Content = pages[0];
         }
@@ -60,6 +54,12 @@ namespace MyActivityLogs
             }
 
             activitiesDict = output;
+
+            pages[0] = new DailyPage();
+            pages[1] = new WeeklyPage();
+            pages[2] = new MonthlyPage();
+            pages[3] = new TotalPage();
+            pages[4] = new SettingsPage();
         }
 
         private static void ErrorMessage(string message)
