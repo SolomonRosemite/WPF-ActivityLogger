@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using System.Windows.Media.Animation;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using System.Windows;
@@ -16,6 +17,8 @@ namespace MyActivityLogs
         public static readonly string ActivityLoggerPath = GetDirectory() + @"\TMRosemite\ActivityLogger";
 
         private static dynamic[] pages = new dynamic[5];
+        private DoubleAnimation animation = new DoubleAnimation(1, 0, new Duration(TimeSpan.FromMilliseconds(700)));
+
         private enum CurrentPage
         {
             Daily,
@@ -34,6 +37,8 @@ namespace MyActivityLogs
 
             SetPage(CurrentPage.Daily);
             MyFrame.Content = pages[0];
+
+            AnimationRectangle.BeginAnimation(OpacityProperty, new DoubleAnimation(1, 0, new Duration(TimeSpan.FromMilliseconds(1400))));
         }
 
         public static void Load()
@@ -139,6 +144,10 @@ namespace MyActivityLogs
                     SettingsSelected.Visibility = Visibility.Visible;
                     break;
             }
+        }
+        private void PlayAnimation()
+        {
+            AnimationRectangle.BeginAnimation(OpacityProperty, animation);
         }
 
         public static List<Activity> AddToListForWeekly(int daysBehind, Dictionary<string, List<Activity>> dict, List<Activity> list)
@@ -313,26 +322,31 @@ namespace MyActivityLogs
 
         private void DailyButton(object sender, RoutedEventArgs e)
         {
+            PlayAnimation();
             SetPage(CurrentPage.Daily);
             MyFrame.Content = pages[0];
         }
         private void WeeklyButton(object sender, RoutedEventArgs e)
         {
+            PlayAnimation();
             SetPage(CurrentPage.Weekly);
             MyFrame.Content = pages[1];
         }
         private void MonthlyButton(object sender, RoutedEventArgs e)
         {
+            PlayAnimation();
             SetPage(CurrentPage.Monthly);
             MyFrame.Content = pages[2];
         }
         private void TotalButton(object sender, RoutedEventArgs e)
         {
+            PlayAnimation();
             SetPage(CurrentPage.Total);
             MyFrame.Content = pages[3];
         }
         private void SettingsButton(object sender, RoutedEventArgs e)
         {
+            PlayAnimation();
             SetPage(CurrentPage.Settings);
             MyFrame.Content = pages[4];
         }

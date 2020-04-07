@@ -17,7 +17,6 @@ namespace MyActivityLogs.Pages
 
         private void LoadMonthly(Dictionary<string, List<Activity>> dict)
         {
-            // might be wrong
             activities = MainWindow.AddToListForWeekly(-DateTime.Now.Day + 1, dict, activities);
 
             LoadFinish();
