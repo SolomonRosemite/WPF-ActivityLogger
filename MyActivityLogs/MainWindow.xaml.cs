@@ -35,21 +35,22 @@ namespace MyActivityLogs
             {
                 if (output == 0)
                 {
-                    // Json could not be found
-                    ErrorMessage("Json could not be found");
+                    ShowPopUp("Json could not be found.\nTry Starting the ActivityLogger first.\nTip: Keep in mind the Program" +
+                    "\nwill only show programs\n" +
+                    "with more than 5 min of use.", GetDirectory() + @"\TMRosemite\ActivityLogger");
                     return;
                 }
                 else if (output == 1)
                 {
-                    // Json is corrupted
-                    ErrorMessage("Json is corrupted");
+                    ShowPopUp("The Json seems to be corrupted.\nYou can Remove the current Json the Solve this issue", GetDirectory() + @"\TMRosemite\ActivityLogger");
                     return;
                 }
             }
 
             if (output.Count == 0)
             {
-                ErrorMessage("IDK no logs for today yet");
+                ShowPopUp("no logs found.\n\nTip: Keep in mind the Program\nwill only show programs\n" +
+                    "with more than 5 min of use.");
                 return;
             }
 
@@ -62,10 +63,12 @@ namespace MyActivityLogs
             pages[4] = new SettingsPage();
         }
 
-        private static void ErrorMessage(string message)
+        private static void ShowPopUp(string message, string path = "")
         {
-            // Show Popup
+            Popup popup = new Popup(message, path);
+            popup.Show();
         }
+
         private static dynamic ReadJson()
         {
             if (!File.Exists(ActivityLoggerPath + @"\SavedActivities.json"))

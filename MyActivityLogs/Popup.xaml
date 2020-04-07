@@ -1,0 +1,14 @@
+﻿<Window x:Class="MyActivityLogs.Popup"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MyActivityLogs"
+        mc:Ignorable="d"
+        Title="Note" Height="320" Width="420">
+    <Grid>
+        <Label Name="MessageLabel" Content="Label" Margin="10,50,10,0" VerticalAlignment="Top" HorizontalContentAlignment="Center" Height="110" HorizontalAlignment="Center"/>
+        <Button Name="FixButton" Click="Fix" Content="Fix" Margin="180,200,180,0" Height="20" VerticalAlignment="Top"/>
+        <Button Click="CloseWindow" Content="Close" Margin="180,230,180,0" Height="20" VerticalAlignment="Top"/>
+    </Grid>
+</Window>

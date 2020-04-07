@@ -25,7 +25,9 @@ namespace ActivityLogger
             "Discord Updater",
             "Task Switching",
             "WirelessSetup",
+            "Task Manager",
             "explorer",
+            "Settings",
             "regedit",
             "Taskmgr",
             "Drag"
