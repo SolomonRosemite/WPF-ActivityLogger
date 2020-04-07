@@ -12,14 +12,16 @@ namespace MyActivityLogs
 {
     public partial class MainWindow : Window
     {
-        private readonly string ActivityLoggerPath = GetDirectory() + @"\TMRosemite\ActivityLogger";
         public static Dictionary<string, List<Activity>> activitiesDict = new Dictionary<string, List<Activity>>();
+        private readonly string ActivityLoggerPath = GetDirectory() + @"\TMRosemite\ActivityLogger";
 
         public MainWindow()
         {
             InitializeComponent();
 
             Load();
+
+            MyFrame.Content = new DailyPage();
         }
         
         void Load()
@@ -102,13 +104,13 @@ namespace MyActivityLogs
 
             return AddToListPerDay(date.AddDays(daysBehind), dict, list, true, true);
         }
-        public static List<Activity> AddToListPerDay(DateTime date, Dictionary<string, List<Activity>> dict, List<Activity> list, bool checkIfEntryAlreadyExists, bool ignore10MinRule = false)
+        public static List<Activity> AddToListPerDay(DateTime date, Dictionary<string, List<Activity>> dict, List<Activity> list, bool checkIfEntryAlreadyExists, bool ignore5MinRule = false)
         {
             if (checkIfEntryAlreadyExists == false)
             {
                 foreach (Activity item in dict[DateFormat(date)])
                 {
-                    if (int.Parse(item.TimeSpent.Remove(item.TimeSpent.Length - 7)) < 10)
+                    if (int.Parse(item.TimeSpent.Remove(item.TimeSpent.Length - 7)) < 5)
                     {
                         continue;
                     }
@@ -129,7 +131,7 @@ namespace MyActivityLogs
             for (int i = 0; i < myActivities.Count; i++)
             {
                 int temp;
-                if ((temp = int.Parse(myActivities[i].TimeSpent.Remove(myActivities[i].TimeSpent.Length - 7))) < 10 && ignore10MinRule == false)
+                if ((temp = int.Parse(myActivities[i].TimeSpent.Remove(myActivities[i].TimeSpent.Length - 7))) < 5 && ignore5MinRule == false)
                 {
                     continue;
                 }

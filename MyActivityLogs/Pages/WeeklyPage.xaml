@@ -8,8 +8,9 @@
       d:DesignHeight="450" d:DesignWidth="800"
       Title="WeeklyPage">
 
-    <Grid>
-        <ItemsControl Name="ActivitiesItemsControl" Margin="0,0,0,0">
+    <Grid Margin="10,5,0,0">
+        <Label Content="This Week" FontSize="28"/>
+        <ItemsControl Name="ActivitiesItemsControl" Margin="7,55,0,0">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <Grid Margin="0,0,0,10">

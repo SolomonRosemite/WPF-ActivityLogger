@@ -6,41 +6,35 @@
         xmlns:local="clr-namespace:MyActivityLogs"
         mc:Ignorable="d"
         Title="My Activities" 
-        Height="720" 
-        Width="1280" 
-        MinHeight="480"
-        MinWidth="720"
-        WindowStyle="SingleBorderWindow"
-        Background="White">
-    <Grid Margin="10">
-        <Frame x:Name="MyFrame" Margin="210,10,0,0" NavigationUIVisibility="Hidden"/>
-
-
-        <!--<ItemsControl Name="ActivitiesItemsControl" Margin="200,0,0,0">
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <Grid Margin="0,0,0,10">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="75" />
-                            <ColumnDefinition Width="100" />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="{Binding ActivityName}"/>
-                        <TextBlock Text="{Binding TimeSpent}" Grid.Column="1"/>
-                        <ProgressBar Foreground="{Binding Color}" Grid.Column="2" Minimum="0" Maximum="{Binding ProgressBarMaxValue}" Value="{Binding TimeSpentint}" />
-                    </Grid>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>-->
-
-        <StackPanel Margin="10,10,0,0">
-            <Button Content="Daily" HorizontalAlignment="Left" Margin="0,0,0,0" Width="185" Height="40" VerticalAlignment="Top" Click="DailyButton"/>
-            <Button Content="Weekly" HorizontalAlignment="Left" Margin="0,0,0,0" Width="185" Height="40" VerticalAlignment="Top" Click="WeeklyButton"/>
-            <Button Content="Monthly" HorizontalAlignment="Left" Margin="0,0,0,0" Width="185" Height="40" VerticalAlignment="Top" Click="MonthlyButton" />
-            <Button Content="Total" HorizontalAlignment="Left" Margin="0,0,0,0" Width="185" Height="40" VerticalAlignment="Top" Click="TotalButton"/>
-
-        </StackPanel>
-            <Button Content="Settings" HorizontalAlignment="Left" Margin="10,0,0,10" Width="185" Height="40" VerticalAlignment="Bottom"/>
         
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:fw="clr-namespace:SourceChord.FluentWPF;assembly=FluentWPF" 
+        fw:AcrylicWindow.Enabled="True" 
+        fw:AcrylicWindow.AcrylicWindowStyle="NoIcon"
+        FontSize="17" 
+        Height="600" 
+        Width="1080" 
+        MinHeight="450"
+        MinWidth="700"
+        WindowStyle="None" 
+        AllowsTransparency="True" 
+        ResizeMode="CanResize" 
+        WindowStartupLocation="CenterScreen" Background="{x:Null}">
+
+    <Grid>
+        <Grid Background="White" Margin="220,0,0,0"/>
+
+        <StackPanel Margin="0,0,0,0" Grid.ColumnSpan="2">
+            <Button Content="Daily" FontSize="14" HorizontalAlignment="Left" Margin="0,0,0,0" Width="220" Height="40" VerticalAlignment="Top" Click="DailyButton"/>
+            <Button Content="Weekly" FontSize="14" HorizontalAlignment="Left" Margin="0,0,0,0" Width="220" Height="40" VerticalAlignment="Top" Click="WeeklyButton"/>
+            <Button Content="Monthly" FontSize="14" HorizontalAlignment="Left" Margin="0,0,0,0" Width="220" Height="40" VerticalAlignment="Top" Click="MonthlyButton" />
+            <Button Content="Total" FontSize="14" HorizontalAlignment="Left" Margin="0,0,0,0" Width="220" Height="40" VerticalAlignment="Top" Click="TotalButton"/>
+        </StackPanel>
+
+        <Grid Margin="0,0,0,0" fw:AcrylicWindow.Enabled="True">
+            <Frame x:Name="MyFrame" Margin="220,0,20,0" NavigationUIVisibility="Hidden" />
+        </Grid>
+
+        <Button Content="Settings" HorizontalAlignment="Left" Margin="0,0,0,0" Width="220" Height="40" VerticalAlignment="Bottom"/>
     </Grid>
 </Window>
