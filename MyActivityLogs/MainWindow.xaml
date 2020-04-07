@@ -35,6 +35,6 @@
             <Frame x:Name="MyFrame" Margin="220,0,20,0" NavigationUIVisibility="Hidden" />
         </Grid>
 
-        <Button Content="Settings" HorizontalAlignment="Left" Margin="0,0,0,0" Width="220" Height="40" VerticalAlignment="Bottom"/>
+        <Button Content="Settings" HorizontalAlignment="Left" Margin="0,0,0,0" Width="220" Height="40" Click="SettingsButton" VerticalAlignment="Bottom"/>
     </Grid>
 </Window>

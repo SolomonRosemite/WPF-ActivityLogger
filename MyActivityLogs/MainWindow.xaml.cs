@@ -13,7 +13,7 @@ namespace MyActivityLogs
     public partial class MainWindow : Window
     {
         public static Dictionary<string, List<Activity>> activitiesDict = new Dictionary<string, List<Activity>>();
-        private readonly string ActivityLoggerPath = GetDirectory() + @"\TMRosemite\ActivityLogger";
+        public static readonly string ActivityLoggerPath = GetDirectory() + @"\TMRosemite\ActivityLogger";
 
         public MainWindow()
         {
@@ -253,6 +253,7 @@ namespace MyActivityLogs
         private void WeeklyButton(object sender, RoutedEventArgs e) => MyFrame.Content = new WeeklyPage();
         private void MonthlyButton(object sender, RoutedEventArgs e) => MyFrame.Content = new MonthlyPage();
         private void TotalButton(object sender, RoutedEventArgs e) => MyFrame.Content = new TotalPage();
+        private void SettingsButton(object sender, RoutedEventArgs e) => MyFrame.Content = new SettingsPage();
     }
 
     public class Activity
