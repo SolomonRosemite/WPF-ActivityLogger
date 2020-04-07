@@ -15,16 +15,24 @@ namespace MyActivityLogs
         public static Dictionary<string, List<Activity>> activitiesDict = new Dictionary<string, List<Activity>>();
         public static readonly string ActivityLoggerPath = GetDirectory() + @"\TMRosemite\ActivityLogger";
 
+        private dynamic[] pages = new dynamic[5];
+
         public MainWindow()
         {
             InitializeComponent();
 
             Load();
 
-            MyFrame.Content = new DailyPage();
+            pages[0] = new DailyPage();
+            pages[1] = new WeeklyPage();
+            pages[2] = new MonthlyPage();
+            pages[3] = new TotalPage();
+            pages[4] = new SettingsPage();
+
+            MyFrame.Content = pages[0];
         }
         
-        void Load()
+        public static void Load()
         {
             var output = ReadJson();
 
@@ -54,11 +62,11 @@ namespace MyActivityLogs
             activitiesDict = output;
         }
 
-        private void ErrorMessage(string message)
+        private static void ErrorMessage(string message)
         {
             // Show Popup
         }
-        private dynamic ReadJson()
+        private static dynamic ReadJson()
         {
             if (!File.Exists(ActivityLoggerPath + @"\SavedActivities.json"))
             {
@@ -249,11 +257,11 @@ namespace MyActivityLogs
             return "";
         }
 
-        private void DailyButton(object sender, RoutedEventArgs e) => MyFrame.Content = new DailyPage();
-        private void WeeklyButton(object sender, RoutedEventArgs e) => MyFrame.Content = new WeeklyPage();
-        private void MonthlyButton(object sender, RoutedEventArgs e) => MyFrame.Content = new MonthlyPage();
-        private void TotalButton(object sender, RoutedEventArgs e) => MyFrame.Content = new TotalPage();
-        private void SettingsButton(object sender, RoutedEventArgs e) => MyFrame.Content = new SettingsPage();
+        private void DailyButton(object sender, RoutedEventArgs e) => MyFrame.Content = pages[0];
+        private void WeeklyButton(object sender, RoutedEventArgs e) => MyFrame.Content = pages[1];
+        private void MonthlyButton(object sender, RoutedEventArgs e) => MyFrame.Content = pages[2];
+        private void TotalButton(object sender, RoutedEventArgs e) => MyFrame.Content = pages[3];
+        private void SettingsButton(object sender, RoutedEventArgs e) => MyFrame.Content = pages[4];
     }
 
     public class Activity

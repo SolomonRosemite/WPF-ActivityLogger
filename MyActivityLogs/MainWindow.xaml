@@ -21,20 +21,42 @@
         ResizeMode="CanResize" 
         WindowStartupLocation="CenterScreen" Background="{x:Null}">
 
+    <Window.Resources>
+        <Style TargetType="{x:Type Button}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#66FFFFFF"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
     <Grid>
+
         <Grid Background="White" Margin="220,0,0,0"/>
 
         <StackPanel Margin="0,0,0,0" Grid.ColumnSpan="2">
-            <Button Content="Daily" FontSize="14" HorizontalAlignment="Left" Margin="0,0,0,0" Width="220" Height="40" VerticalAlignment="Top" Click="DailyButton"/>
-            <Button Content="Weekly" FontSize="14" HorizontalAlignment="Left" Margin="0,0,0,0" Width="220" Height="40" VerticalAlignment="Top" Click="WeeklyButton"/>
-            <Button Content="Monthly" FontSize="14" HorizontalAlignment="Left" Margin="0,0,0,0" Width="220" Height="40" VerticalAlignment="Top" Click="MonthlyButton" />
-            <Button Content="Total" FontSize="14" HorizontalAlignment="Left" Margin="0,0,0,0" Width="220" Height="40" VerticalAlignment="Top" Click="TotalButton"/>
+            <Button Content="   Daily" HorizontalContentAlignment="Left" FontSize="15" HorizontalAlignment="Left" Margin="0,0,0,0" Width="220" Height="45" VerticalAlignment="Top" Click="DailyButton"/>
+            <Button Content="   Weekly" HorizontalContentAlignment="Left" FontSize="15" HorizontalAlignment="Left" Margin="0,0,0,0" Width="220" Height="45" VerticalAlignment="Top" Click="WeeklyButton"/>
+            <Button Content="   Monthly" HorizontalContentAlignment="Left" FontSize="15" HorizontalAlignment="Left" Margin="0,0,0,0" Width="220" Height="45" VerticalAlignment="Top" Click="MonthlyButton" />
+            <Button Content="   Total" HorizontalContentAlignment="Left" FontSize="15" HorizontalAlignment="Left" Margin="0,0,0,0" Width="220" Height="45" VerticalAlignment="Top" Click="TotalButton"/>
         </StackPanel>
 
         <Grid Margin="0,0,0,0" fw:AcrylicWindow.Enabled="True">
             <Frame x:Name="MyFrame" Margin="220,0,20,0" NavigationUIVisibility="Hidden" />
         </Grid>
 
-        <Button Content="Settings" HorizontalAlignment="Left" Margin="0,0,0,0" Width="220" Height="40" Click="SettingsButton" VerticalAlignment="Bottom"/>
+
+        <Button Content="   Settings" FontSize="15" HorizontalAlignment="Left" Margin="0,0,0,0" Width="220" Height="45" Click="SettingsButton" VerticalAlignment="Bottom"/>
     </Grid>
 </Window>
