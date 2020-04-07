@@ -16,6 +16,15 @@ namespace MyActivityLogs
         public static readonly string ActivityLoggerPath = GetDirectory() + @"\TMRosemite\ActivityLogger";
 
         private static dynamic[] pages = new dynamic[5];
+        private enum CurrentPage
+        {
+            Daily,
+            Weekly,
+            Monthly,
+            Total,
+
+            Settings
+        }
 
         public MainWindow()
         {
@@ -23,9 +32,10 @@ namespace MyActivityLogs
 
             Load();
 
+            SetPage(CurrentPage.Daily);
             MyFrame.Content = pages[0];
         }
-        
+
         public static void Load()
         {
             var output = ReadJson();
@@ -89,7 +99,48 @@ namespace MyActivityLogs
             try { return JsonConvert.DeserializeObject<Dictionary<string, List<Activity>>>(jsonFromFile); }
             catch { return 1; }
         }
-        
+        private void SetPage(CurrentPage currentPage)
+        {
+            switch (currentPage)
+            {
+                case CurrentPage.Daily:
+                    DailySelected.Visibility = Visibility.Visible;
+                    WeeklySelected.Visibility = Visibility.Hidden;
+                    MonthlySelected.Visibility = Visibility.Hidden;
+                    TotalSelected.Visibility = Visibility.Hidden;
+                    SettingsSelected.Visibility = Visibility.Hidden;
+                    break;
+                case CurrentPage.Weekly:
+                    DailySelected.Visibility = Visibility.Hidden;
+                    WeeklySelected.Visibility = Visibility.Visible;
+                    MonthlySelected.Visibility = Visibility.Hidden;
+                    TotalSelected.Visibility = Visibility.Hidden;
+                    SettingsSelected.Visibility = Visibility.Hidden;
+                    break;
+                case CurrentPage.Monthly:
+                    DailySelected.Visibility = Visibility.Hidden;
+                    WeeklySelected.Visibility = Visibility.Hidden;
+                    MonthlySelected.Visibility = Visibility.Visible;
+                    TotalSelected.Visibility = Visibility.Hidden;
+                    SettingsSelected.Visibility = Visibility.Hidden;
+                    break;
+                case CurrentPage.Total:
+                    DailySelected.Visibility = Visibility.Hidden;
+                    WeeklySelected.Visibility = Visibility.Hidden;
+                    MonthlySelected.Visibility = Visibility.Hidden;
+                    TotalSelected.Visibility = Visibility.Visible;
+                    SettingsSelected.Visibility = Visibility.Hidden;
+                    break;
+                case CurrentPage.Settings:
+                    DailySelected.Visibility = Visibility.Hidden;
+                    WeeklySelected.Visibility = Visibility.Hidden;
+                    MonthlySelected.Visibility = Visibility.Hidden;
+                    TotalSelected.Visibility = Visibility.Hidden;
+                    SettingsSelected.Visibility = Visibility.Visible;
+                    break;
+            }
+        }
+
         public static List<Activity> AddToListForWeekly(int daysBehind, Dictionary<string, List<Activity>> dict, List<Activity> list)
         {
             DateTime date = DateTime.Now;
@@ -109,13 +160,13 @@ namespace MyActivityLogs
                     continue;
                 }
 
-                list = AddToListPerDay(date.AddDays(daysBehind), dict, list, true, true);
+                list = AddToListPerDay(date.AddDays(daysBehind), dict, list, true);
                 daysBehind++;
             }
 
-            return AddToListPerDay(date.AddDays(daysBehind), dict, list, true, true);
+            return AddToListPerDay(date.AddDays(daysBehind), dict, list, true);
         }
-        public static List<Activity> AddToListPerDay(DateTime date, Dictionary<string, List<Activity>> dict, List<Activity> list, bool checkIfEntryAlreadyExists, bool ignore5MinRule = false)
+        public static List<Activity> AddToListPerDay(DateTime date, Dictionary<string, List<Activity>> dict, List<Activity> list, bool checkIfEntryAlreadyExists)
         {
             if (checkIfEntryAlreadyExists == false)
             {
@@ -142,7 +193,7 @@ namespace MyActivityLogs
             for (int i = 0; i < myActivities.Count; i++)
             {
                 int temp;
-                if ((temp = int.Parse(myActivities[i].TimeSpent.Remove(myActivities[i].TimeSpent.Length - 7))) < 5 && ignore5MinRule == false)
+                if ((temp = int.Parse(myActivities[i].TimeSpent.Remove(myActivities[i].TimeSpent.Length - 7))) < 4)
                 {
                     continue;
                 }
@@ -260,11 +311,31 @@ namespace MyActivityLogs
             return "";
         }
 
-        private void DailyButton(object sender, RoutedEventArgs e) => MyFrame.Content = pages[0];
-        private void WeeklyButton(object sender, RoutedEventArgs e) => MyFrame.Content = pages[1];
-        private void MonthlyButton(object sender, RoutedEventArgs e) => MyFrame.Content = pages[2];
-        private void TotalButton(object sender, RoutedEventArgs e) => MyFrame.Content = pages[3];
-        private void SettingsButton(object sender, RoutedEventArgs e) => MyFrame.Content = pages[4];
+        private void DailyButton(object sender, RoutedEventArgs e)
+        {
+            SetPage(CurrentPage.Daily);
+            MyFrame.Content = pages[0];
+        }
+        private void WeeklyButton(object sender, RoutedEventArgs e)
+        {
+            SetPage(CurrentPage.Weekly);
+            MyFrame.Content = pages[1];
+        }
+        private void MonthlyButton(object sender, RoutedEventArgs e)
+        {
+            SetPage(CurrentPage.Monthly);
+            MyFrame.Content = pages[2];
+        }
+        private void TotalButton(object sender, RoutedEventArgs e)
+        {
+            SetPage(CurrentPage.Total);
+            MyFrame.Content = pages[3];
+        }
+        private void SettingsButton(object sender, RoutedEventArgs e)
+        {
+            SetPage(CurrentPage.Settings);
+            MyFrame.Content = pages[4];
+        }
     }
 
     public class Activity
