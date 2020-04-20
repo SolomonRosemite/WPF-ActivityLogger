@@ -1,8 +1,10 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Windows.Controls.Primitives;
+using System.Runtime.InteropServices;
 using System.Windows.Media.Animation;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using System.Windows;
+using System.Timers;
 using System.Linq;
 using System.IO;
 using System;
@@ -13,6 +15,8 @@ namespace MyActivityLogs
 {
     public partial class MainWindow : Window
     {
+        public static MainWindow mainWindow;
+
         public static Dictionary<string, List<Activity>> activitiesDict = new Dictionary<string, List<Activity>>();
         public static readonly string ActivityLoggerPath = GetDirectory() + @"\TMRosemite\ActivityLogger";
 
@@ -31,14 +35,20 @@ namespace MyActivityLogs
 
         public MainWindow()
         {
+            mainWindow = this;
+
             InitializeComponent();
 
             Load();
+
+            pages[4] = new SettingsPage();
 
             SetPage(CurrentPage.Daily);
             MyFrame.Content = pages[0];
 
             AnimationRectangle.BeginAnimation(OpacityProperty, new DoubleAnimation(1, 0, new Duration(TimeSpan.FromMilliseconds(1400))));
+
+            RefreshTimer();
         }
 
         public static void Load()
@@ -75,13 +85,24 @@ namespace MyActivityLogs
             pages[1] = new WeeklyPage();
             pages[2] = new MonthlyPage();
             pages[3] = new TotalPage();
-            pages[4] = new SettingsPage();
         }
 
-        private static void ShowPopUp(string message, string path = "")
+        public void RefreshTimer()
         {
-            Popup popup = new Popup(message, path);
-            popup.Show();
+            Timer timer = new Timer(1000 * 300); // 5 Min
+            timer.AutoReset = true; 
+            timer.Elapsed += timer_elapsed;
+            timer.Start();
+        }
+
+        private void timer_elapsed(object y, EventArgs x)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                pages[4].RefreshButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+                SetPage(CurrentPage.Daily);
+                MyFrame.Content = pages[0];
+            });
         }
 
         private static dynamic ReadJson()
@@ -104,6 +125,12 @@ namespace MyActivityLogs
             try { return JsonConvert.DeserializeObject<Dictionary<string, List<Activity>>>(jsonFromFile); }
             catch { return 1; }
         }
+        private static void ShowPopUp(string message, string path = "")
+        {
+            Popup popup = new Popup(message, path);
+            popup.Show();
+        }
+
         private void SetPage(CurrentPage currentPage)
         {
             switch (currentPage)
@@ -320,7 +347,7 @@ namespace MyActivityLogs
             return "";
         }
 
-        private void DailyButton(object sender, RoutedEventArgs e)
+        public void DailyButton([Optional] object sender, [Optional] RoutedEventArgs e)
         {
             PlayAnimation();
             SetPage(CurrentPage.Daily);

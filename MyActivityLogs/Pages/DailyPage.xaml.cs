@@ -4,9 +4,6 @@ using System;
 
 namespace MyActivityLogs.Pages
 {
-    /// <summary>
-    /// Interaction logic for DailyPage.xaml
-    /// </summary>
     public partial class DailyPage : Page
     {
         private List<Activity> activities = new List<Activity>();
@@ -22,7 +19,6 @@ namespace MyActivityLogs.Pages
         {
             if (!dict.ContainsKey(MainWindow.DateFormat()))
             {
-                //ErrorMessage("IDK no logs for today yet");
                 return;
             }
 

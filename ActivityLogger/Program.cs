@@ -21,16 +21,16 @@ namespace ActivityLogger
         private static string ActivityLoggerPath = GetDirectory() + @"\TMRosemite\ActivityLogger";
         private static string[] ignoreList = new string[]
         {
-            "ApplicationFrameHost",
-            "Discord Updater",
-            "Task Switching",
-            "WirelessSetup",
-            "Task Manager",
+            "applicationframehost",
+            "discord updater",
+            "task switching",
+            "wirelesssetup",
+            "task manager",
             "explorer",
-            "Settings",
+            "settings",
             "regedit",
             "Taskmgr",
-            "Drag"
+            "drag"
         };
         private static List<Activity> activities = new List<Activity>();
         private static Dictionary<string, List<Activity>> activityDictionary = new Dictionary<string, List<Activity>>();
@@ -106,14 +106,13 @@ namespace ActivityLogger
             // If string is empty don't save
             if (fileName.Trim().Length == 0) { return; }
 
-            System.Console.WriteLine(fileName);
+            Console.WriteLine(fileName);
 
             // If new day just started
             if (!activityDictionary.ContainsKey(DateFormat()))
             {
-                activities.Clear();
-
-                SaveJson(new Activity(ActivityName: fileName, TimeSpent: "1 Minute"));
+                Process.Start(ActivityLoggerPath + @"\ActivityLogger.exe");
+                Environment.Exit(0);
                 return;
             }
 
@@ -123,7 +122,7 @@ namespace ActivityLogger
             {
                 if (activities[i].ActivityName == fileName)
                 {
-                    int TimeSpent = Int32.Parse(activities[i].TimeSpent.Remove(activities[i].TimeSpent.Length - 7));
+                    int TimeSpent = int.Parse(activities[i].TimeSpent.Remove(activities[i].TimeSpent.Length - 7));
 
                     SaveJson(new Activity(ActivityName: fileName, TimeSpent: (++TimeSpent).ToString() + " Minutes"), i);
                     return;
