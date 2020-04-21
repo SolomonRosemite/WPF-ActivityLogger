@@ -66,10 +66,10 @@ namespace ActivityLogger
 
             activityDictionary = JsonConvert.DeserializeObject<Dictionary<string, List<Activity>>>(jsonFromFile);
 
-            List<Activity> tempactivities = new List<Activity>();
+            List<Activity> tempactivities;
             activityDictionary.TryGetValue(DateFormat(), out tempactivities);
 
-            if (tempactivities.Count == 0)
+            if (tempactivities == null)
                 return;
 
             activities.AddRange(tempactivities);
@@ -109,7 +109,7 @@ namespace ActivityLogger
             Console.WriteLine(fileName);
 
             // If new day just started
-            if (!activityDictionary.ContainsKey(DateFormat()))
+            if (!activityDictionary.ContainsKey(DateFormat()) & activities.Count != 0)
             {
                 Process.Start(ActivityLoggerPath + @"\ActivityLogger.exe");
                 Environment.Exit(0);
