@@ -20,12 +20,13 @@ namespace MyActivityLogs
         public static Dictionary<string, List<Activity>> activitiesDict = new Dictionary<string, List<Activity>>();
         public static readonly string ActivityLoggerPath = GetDirectory() + @"\TMRosemite\ActivityLogger";
 
-        private static dynamic[] pages = new dynamic[5];
+        private static dynamic[] pages = new dynamic[6];
         private DoubleAnimation animation = new DoubleAnimation(1, 0, new Duration(TimeSpan.FromMilliseconds(700)));
 
         private enum CurrentPage
         {
             Daily,
+            Yesterday,
             Weekly,
             Monthly,
             Total,
@@ -85,6 +86,7 @@ namespace MyActivityLogs
             pages[1] = new WeeklyPage();
             pages[2] = new MonthlyPage();
             pages[3] = new TotalPage();
+            pages[5] = new Yesterday();
         }
 
         public void RefreshTimer()
@@ -140,6 +142,7 @@ namespace MyActivityLogs
                     WeeklySelected.Visibility = Visibility.Hidden;
                     MonthlySelected.Visibility = Visibility.Hidden;
                     TotalSelected.Visibility = Visibility.Hidden;
+                    YesterdaySelected.Visibility = Visibility.Hidden;
                     SettingsSelected.Visibility = Visibility.Hidden;
                     break;
                 case CurrentPage.Weekly:
@@ -147,6 +150,7 @@ namespace MyActivityLogs
                     WeeklySelected.Visibility = Visibility.Visible;
                     MonthlySelected.Visibility = Visibility.Hidden;
                     TotalSelected.Visibility = Visibility.Hidden;
+                    YesterdaySelected.Visibility = Visibility.Hidden;
                     SettingsSelected.Visibility = Visibility.Hidden;
                     break;
                 case CurrentPage.Monthly:
@@ -154,6 +158,7 @@ namespace MyActivityLogs
                     WeeklySelected.Visibility = Visibility.Hidden;
                     MonthlySelected.Visibility = Visibility.Visible;
                     TotalSelected.Visibility = Visibility.Hidden;
+                    YesterdaySelected.Visibility = Visibility.Hidden;
                     SettingsSelected.Visibility = Visibility.Hidden;
                     break;
                 case CurrentPage.Total:
@@ -161,6 +166,7 @@ namespace MyActivityLogs
                     WeeklySelected.Visibility = Visibility.Hidden;
                     MonthlySelected.Visibility = Visibility.Hidden;
                     TotalSelected.Visibility = Visibility.Visible;
+                    YesterdaySelected.Visibility = Visibility.Hidden;
                     SettingsSelected.Visibility = Visibility.Hidden;
                     break;
                 case CurrentPage.Settings:
@@ -168,7 +174,16 @@ namespace MyActivityLogs
                     WeeklySelected.Visibility = Visibility.Hidden;
                     MonthlySelected.Visibility = Visibility.Hidden;
                     TotalSelected.Visibility = Visibility.Hidden;
+                    YesterdaySelected.Visibility = Visibility.Hidden;
                     SettingsSelected.Visibility = Visibility.Visible;
+                    break;
+                case CurrentPage.Yesterday:
+                    DailySelected.Visibility = Visibility.Hidden;
+                    WeeklySelected.Visibility = Visibility.Hidden;
+                    MonthlySelected.Visibility = Visibility.Hidden;
+                    TotalSelected.Visibility = Visibility.Hidden;
+                    YesterdaySelected.Visibility = Visibility.Visible;
+                    SettingsSelected.Visibility = Visibility.Hidden;
                     break;
             }
         }
@@ -376,6 +391,12 @@ namespace MyActivityLogs
             PlayAnimation();
             SetPage(CurrentPage.Settings);
             MyFrame.Content = pages[4];
+        }
+        private void YesterdayButton(object sender, RoutedEventArgs e)
+        {
+            PlayAnimation();
+            SetPage(CurrentPage.Yesterday);
+            MyFrame.Content = pages[5];
         }
     }
 

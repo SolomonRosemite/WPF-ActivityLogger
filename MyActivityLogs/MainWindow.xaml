@@ -63,9 +63,11 @@
         <Rectangle Name="MonthlySelected" HorizontalAlignment="Left" Height="30" Margin="-5,100,0,0" Stroke="Transparent" VerticalAlignment="Top" Width="10" Fill="Black"/>
         <Rectangle Name="TotalSelected" HorizontalAlignment="Left" Height="30" Margin="-5,145,0,0" Stroke="Transparent" VerticalAlignment="Top" Width="10" Fill="Black"/>
         <Rectangle Name="SettingsSelected" HorizontalAlignment="Left" Height="30" Margin="-5,0,0,5" Stroke="Transparent" VerticalAlignment="Bottom" Width="10" Fill="Black"/>
+        <Rectangle Name="YesterdaySelected" HorizontalAlignment="Left" Height="30" Margin="-5,0,0,50" Stroke="Transparent" VerticalAlignment="Bottom" Width="10" Fill="Black"/>
 
         <Rectangle Name="AnimationRectangle" Margin="220,0,0,0" Fill="White" IsHitTestVisible="False"/>
 
         <Button Content="   Settings" FontSize="15" HorizontalAlignment="Left" Margin="0,0,0,0" Width="220" Height="45" Click="SettingsButton" VerticalAlignment="Bottom"/>
+        <Button Content="   Yesterday" FontSize="15" HorizontalAlignment="Left" Margin="0,0,0,45" Width="220" Height="45" Click="YesterdayButton" VerticalAlignment="Bottom"/>
     </Grid>
 </Window>

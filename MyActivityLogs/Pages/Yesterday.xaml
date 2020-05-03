@@ -1,0 +1,30 @@
+﻿<Page x:Class="MyActivityLogs.Pages.Yesterday"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:MyActivityLogs.Pages"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="Yesterday">
+
+    <Grid Margin="10,5,0,0">
+        <Label Content="Yesterday" FontSize="28"/>
+        <ItemsControl Name="ActivitiesItemsControl" Margin="7,55,0,0">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Grid Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="75" />
+                            <ColumnDefinition Width="100" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{Binding ActivityName}"/>
+                        <TextBlock Text="{Binding TimeSpent}" Grid.Column="1"/>
+                        <ProgressBar Foreground="{Binding Color}" Grid.Column="2" Minimum="0" Maximum="{Binding ProgressBarMaxValue}" Value="{Binding TimeSpentint}" />
+                    </Grid>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </Grid>
+</Page>

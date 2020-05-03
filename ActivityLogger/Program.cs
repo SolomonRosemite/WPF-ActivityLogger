@@ -44,10 +44,49 @@ namespace ActivityLogger
             // Checks if Directory is fine and reads json
             Load();
 
+            // Clear not needed items
+            Clear();
+
             // Waits 60 Seconds
             System.Threading.Thread.Sleep(1000 * waitSeconds);
 
             MyMain();
+        }
+
+        static void Clear()
+        {
+            if (activityDictionary == null)
+            {
+                return;
+            }
+            else if (activityDictionary.Count == 0)
+            {
+                return;
+            }
+
+            foreach (var item in activityDictionary.ToList())
+            {
+                for (int i = 0; i < item.Value.Count; i++)
+                {
+                    if (int.Parse(item.Value[i].TimeSpent.Remove(item.Value[i].TimeSpent.Length - 7)) < 5)
+                    {
+                        item.Value.RemoveRange(i, item.Value.Count - i);
+                        activityDictionary[item.Key] = item.Value;
+                        break;
+                    }
+                    System.Console.WriteLine(item.Value[i].TimeSpent);
+                }
+            }
+
+            foreach (var items in activityDictionary)
+            {
+                foreach (var item in items.Value)
+                {
+                    System.Console.WriteLine(item.TimeSpent);
+                }
+                System.Console.WriteLine("\n");
+            }
+
         }
 
         static void loadJson()
