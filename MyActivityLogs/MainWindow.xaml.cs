@@ -21,7 +21,7 @@ namespace MyActivityLogs
         public static readonly string ActivityLoggerPath = GetDirectory() + @"\TMRosemite\ActivityLogger";
 
         private static dynamic[] pages = new dynamic[6];
-        private DoubleAnimation animation = new DoubleAnimation(1, 0, new Duration(TimeSpan.FromMilliseconds(700)));
+        private static DoubleAnimation animation = new DoubleAnimation(1, 0, new Duration(TimeSpan.FromMilliseconds(700)));
 
         private enum CurrentPage
         {
@@ -238,7 +238,7 @@ namespace MyActivityLogs
                 return list;
             }
 
-            List<Activity> myActivities = dict[DateFormat(date)];
+            List<Activity> myActivities = (dict.ContainsKey(DateFormat(date))) ? dict[DateFormat(date)] : new List<Activity>();
             bool skipped = false;
 
             for (int i = 0; i < myActivities.Count; i++)
