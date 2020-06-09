@@ -9,22 +9,27 @@
       Title="WeeklyPage">
 
     <Grid Margin="10,5,0,0">
-        <Label Content="This Week" FontSize="28"/>
-        <ItemsControl Name="ActivitiesItemsControl" Margin="7,55,0,0">
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <Grid Margin="0,0,0,10">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="75" />
-                            <ColumnDefinition Width="100" />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="{Binding ActivityName}"/>
-                        <TextBlock Text="{Binding TimeSpent}" Grid.Column="1"/>
-                        <ProgressBar Foreground="{Binding Color}" Grid.Column="2" Minimum="0" Maximum="{Binding ProgressBarMaxValue}" Value="{Binding TimeSpentint}" />
-                    </Grid>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
+        <DockPanel>
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <ItemsControl Name="ActivitiesItemsControl" Margin="7,55,0,0">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="0,0,5,10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="75" />
+                                    <ColumnDefinition Width="100" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{Binding ActivityName}"/>
+                                <TextBlock Text="{Binding TimeSpent}" Grid.Column="1"/>
+                                <ProgressBar Foreground="{Binding Color}" Grid.Column="2" Minimum="0" Maximum="{Binding ProgressBarMaxValue}" Value="{Binding TimeSpentint}" />
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </DockPanel>
+        <Rectangle IsHitTestVisible="False" Fill="White" Height="50" Width="350" VerticalAlignment="Top" HorizontalAlignment="Left" />
+        <Label Content="This Week" HorizontalAlignment="Left" MaxWidth="350" FontSize="28"/>
     </Grid>
 </Page>

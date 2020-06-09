@@ -17,7 +17,7 @@
         Height="600" 
         Width="1080" 
         MinHeight="450"
-        MinWidth="700"
+        MinWidth="1000"
         WindowStyle="None" 
         AllowsTransparency="True" 
         ResizeMode="CanResize" 
@@ -55,7 +55,7 @@
         </StackPanel>
 
         <Grid Margin="0,0,0,0" fw:AcrylicWindow.Enabled="True">
-            <Frame x:Name="MyFrame" Margin="220,0,20,0" NavigationUIVisibility="Hidden" />
+            <Frame x:Name="MyFrame" Margin="220,0,5,0" NavigationUIVisibility="Hidden" />
         </Grid>
 
         <Rectangle Name="DailySelected" HorizontalAlignment="Left" Height="30" Margin="-5,10,0,0" Stroke="Transparent" VerticalAlignment="Top" Width="10" Fill="Black"/>
