@@ -58,12 +58,12 @@
             <Frame x:Name="MyFrame" Margin="220,0,5,0" NavigationUIVisibility="Hidden" />
         </Grid>
 
-        <Rectangle Name="DailySelected" HorizontalAlignment="Left" Height="30" Margin="-5,10,0,0" Stroke="Transparent" VerticalAlignment="Top" Width="10" Fill="Black"/>
-        <Rectangle Name="WeeklySelected" HorizontalAlignment="Left" Height="30" Margin="-5,55,0,0" Stroke="Transparent" VerticalAlignment="Top" Width="10" Fill="Black"/>
-        <Rectangle Name="MonthlySelected" HorizontalAlignment="Left" Height="30" Margin="-5,100,0,0" Stroke="Transparent" VerticalAlignment="Top" Width="10" Fill="Black"/>
-        <Rectangle Name="TotalSelected" HorizontalAlignment="Left" Height="30" Margin="-5,145,0,0" Stroke="Transparent" VerticalAlignment="Top" Width="10" Fill="Black"/>
-        <Rectangle Name="SettingsSelected" HorizontalAlignment="Left" Height="30" Margin="-5,0,0,5" Stroke="Transparent" VerticalAlignment="Bottom" Width="10" Fill="Black"/>
-        <Rectangle Name="YesterdaySelected" HorizontalAlignment="Left" Height="30" Margin="-5,0,0,50" Stroke="Transparent" VerticalAlignment="Bottom" Width="10" Fill="Black"/>
+        <Rectangle Name="DailySelected" HorizontalAlignment="Left" Height="30" Margin="-5,7.5,0,0" Stroke="Transparent" VerticalAlignment="Top" Width="10" Fill="Black"/>
+        <Rectangle Name="WeeklySelected" HorizontalAlignment="Left" Height="30" Margin="-5,52.5,0,0" Stroke="Transparent" VerticalAlignment="Top" Width="10" Fill="Black"/>
+        <Rectangle Name="MonthlySelected" HorizontalAlignment="Left" Height="30" Margin="-5,97.5,0,0" Stroke="Transparent" VerticalAlignment="Top" Width="10" Fill="Black"/>
+        <Rectangle Name="TotalSelected" HorizontalAlignment="Left" Height="30" Margin="-5,142.5,0,0" Stroke="Transparent" VerticalAlignment="Top" Width="10" Fill="Black"/>
+        <Rectangle Name="SettingsSelected" HorizontalAlignment="Left" Height="30" Margin="-5,0,0,7.5" Stroke="Transparent" VerticalAlignment="Bottom" Width="10" Fill="Black"/>
+        <Rectangle Name="YesterdaySelected" HorizontalAlignment="Left" Height="30" Margin="-5,0.5,0,52.5" Stroke="Transparent" VerticalAlignment="Bottom" Width="10" Fill="Black"/>
 
         <Rectangle Name="AnimationRectangle" Margin="220,0,0,0" Fill="White" IsHitTestVisible="False"/>
 

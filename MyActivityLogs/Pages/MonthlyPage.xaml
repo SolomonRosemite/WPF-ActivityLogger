@@ -14,7 +14,7 @@
                 <ItemsControl Name="ActivitiesItemsControl" Margin="7,55,0,0">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Grid Margin="0,0,5,10">
+                            <Grid Margin="0,0,15,10">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="75" />
