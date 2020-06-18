@@ -20,7 +20,7 @@ namespace MyActivityLogs
         public static Dictionary<string, List<Activity>> activitiesDict = new Dictionary<string, List<Activity>>();
         public static readonly string ActivityLoggerPath = GetDirectory() + @"\TMRosemite\ActivityLogger";
 
-        private static dynamic[] pages = new dynamic[6];
+        private static dynamic[] pages = new dynamic[7];
         private static DoubleAnimation animation = new DoubleAnimation(1, 0, new Duration(TimeSpan.FromMilliseconds(700)));
 
         private enum CurrentPage
@@ -30,6 +30,7 @@ namespace MyActivityLogs
             Weekly,
             Monthly,
             Total,
+            Custom,
 
             Settings
         }
@@ -87,12 +88,13 @@ namespace MyActivityLogs
             pages[2] = new MonthlyPage();
             pages[3] = new TotalPage();
             pages[5] = new Yesterday();
+            pages[6] = new CustomPage();
         }
 
         public void RefreshTimer()
         {
             Timer timer = new Timer(1000 * 300); // 5 Min
-            timer.AutoReset = true; 
+            timer.AutoReset = true;
             timer.Elapsed += timer_elapsed;
             timer.Start();
         }
@@ -144,6 +146,7 @@ namespace MyActivityLogs
                     TotalSelected.Visibility = Visibility.Hidden;
                     YesterdaySelected.Visibility = Visibility.Hidden;
                     SettingsSelected.Visibility = Visibility.Hidden;
+                    CustomSelected.Visibility = Visibility.Hidden;
                     break;
                 case CurrentPage.Weekly:
                     DailySelected.Visibility = Visibility.Hidden;
@@ -152,6 +155,7 @@ namespace MyActivityLogs
                     TotalSelected.Visibility = Visibility.Hidden;
                     YesterdaySelected.Visibility = Visibility.Hidden;
                     SettingsSelected.Visibility = Visibility.Hidden;
+                    CustomSelected.Visibility = Visibility.Hidden;
                     break;
                 case CurrentPage.Monthly:
                     DailySelected.Visibility = Visibility.Hidden;
@@ -160,6 +164,7 @@ namespace MyActivityLogs
                     TotalSelected.Visibility = Visibility.Hidden;
                     YesterdaySelected.Visibility = Visibility.Hidden;
                     SettingsSelected.Visibility = Visibility.Hidden;
+                    CustomSelected.Visibility = Visibility.Hidden;
                     break;
                 case CurrentPage.Total:
                     DailySelected.Visibility = Visibility.Hidden;
@@ -168,6 +173,7 @@ namespace MyActivityLogs
                     TotalSelected.Visibility = Visibility.Visible;
                     YesterdaySelected.Visibility = Visibility.Hidden;
                     SettingsSelected.Visibility = Visibility.Hidden;
+                    CustomSelected.Visibility = Visibility.Hidden;
                     break;
                 case CurrentPage.Settings:
                     DailySelected.Visibility = Visibility.Hidden;
@@ -176,6 +182,7 @@ namespace MyActivityLogs
                     TotalSelected.Visibility = Visibility.Hidden;
                     YesterdaySelected.Visibility = Visibility.Hidden;
                     SettingsSelected.Visibility = Visibility.Visible;
+                    CustomSelected.Visibility = Visibility.Hidden;
                     break;
                 case CurrentPage.Yesterday:
                     DailySelected.Visibility = Visibility.Hidden;
@@ -184,13 +191,20 @@ namespace MyActivityLogs
                     TotalSelected.Visibility = Visibility.Hidden;
                     YesterdaySelected.Visibility = Visibility.Visible;
                     SettingsSelected.Visibility = Visibility.Hidden;
+                    CustomSelected.Visibility = Visibility.Hidden;
+                    break;
+                case CurrentPage.Custom:
+                    DailySelected.Visibility = Visibility.Hidden;
+                    WeeklySelected.Visibility = Visibility.Hidden;
+                    MonthlySelected.Visibility = Visibility.Hidden;
+                    TotalSelected.Visibility = Visibility.Hidden;
+                    YesterdaySelected.Visibility = Visibility.Hidden;
+                    CustomSelected.Visibility = Visibility.Visible;
+                    SettingsSelected.Visibility = Visibility.Hidden;
                     break;
             }
         }
-        private void PlayAnimation()
-        {
-            AnimationRectangle.BeginAnimation(OpacityProperty, animation);
-        }
+        private void PlayAnimation() => AnimationRectangle.BeginAnimation(OpacityProperty, animation);
 
         public static List<Activity> AddToListForWeekly(int daysBehind, Dictionary<string, List<Activity>> dict, List<Activity> list)
         {
@@ -216,6 +230,23 @@ namespace MyActivityLogs
             }
 
             return AddToListPerDay(date.AddDays(daysBehind), dict, list, true);
+        }
+        public static List<Activity> AddToListForCustom(DateTime start, DateTime end, Dictionary<string, List<Activity>> dict, List<Activity> list)
+        {
+            while (start.Date != end.Date)
+            {
+                // If on that date nothing was logged we skip that date
+                if (!dict.ContainsKey(DateFormat(start)))
+                {
+                    start = start.AddDays(1);
+                    continue;
+                }
+
+                list = AddToListPerDay(start, dict, list, true);
+                start = start.AddDays(1);
+            }
+
+            return AddToListPerDay(end, dict, list, true);
         }
         public static List<Activity> AddToListPerDay(DateTime date, Dictionary<string, List<Activity>> dict, List<Activity> list, bool checkIfEntryAlreadyExists)
         {
@@ -343,7 +374,7 @@ namespace MyActivityLogs
             }
             return list;
         }
-       
+
         public static string DateFormat([Optional] DateTime date)
         {
             if (date.ToString() != "01.01.0001 00:00:00")
@@ -397,6 +428,12 @@ namespace MyActivityLogs
             PlayAnimation();
             SetPage(CurrentPage.Yesterday);
             MyFrame.Content = pages[5];
+        }
+        private void CustomButton(object sender, RoutedEventArgs e)
+        {
+            PlayAnimation();
+            SetPage(CurrentPage.Custom);
+            MyFrame.Content = pages[6];
         }
     }
 

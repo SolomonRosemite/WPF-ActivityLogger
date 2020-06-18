@@ -18,9 +18,7 @@ namespace MyActivityLogs.Pages
         private void LoadTotal(Dictionary<string, List<Activity>> dict)
         {
             foreach (KeyValuePair<string, List<Activity>> entry in dict)
-            {
                 MainWindow.AddToListPerDay(DateTime.Parse(entry.Key), dict, activities, true);
-            }
 
             LoadFinish();
         }

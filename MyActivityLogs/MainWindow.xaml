@@ -62,11 +62,13 @@
         <Rectangle Name="WeeklySelected" HorizontalAlignment="Left" Height="30" Margin="-5,52.5,0,0" Stroke="Transparent" VerticalAlignment="Top" Width="10" Fill="Black"/>
         <Rectangle Name="MonthlySelected" HorizontalAlignment="Left" Height="30" Margin="-5,97.5,0,0" Stroke="Transparent" VerticalAlignment="Top" Width="10" Fill="Black"/>
         <Rectangle Name="TotalSelected" HorizontalAlignment="Left" Height="30" Margin="-5,142.5,0,0" Stroke="Transparent" VerticalAlignment="Top" Width="10" Fill="Black"/>
-        <Rectangle Name="SettingsSelected" HorizontalAlignment="Left" Height="30" Margin="-5,0,0,7.5" Stroke="Transparent" VerticalAlignment="Bottom" Width="10" Fill="Black"/>
+        <Rectangle Name="CustomSelected" HorizontalAlignment="Left" Height="30" Margin="-5,0.5,0,97.5" Stroke="Transparent" VerticalAlignment="Bottom" Width="10" Fill="Black"/>
         <Rectangle Name="YesterdaySelected" HorizontalAlignment="Left" Height="30" Margin="-5,0.5,0,52.5" Stroke="Transparent" VerticalAlignment="Bottom" Width="10" Fill="Black"/>
+        <Rectangle Name="SettingsSelected" HorizontalAlignment="Left" Height="30" Margin="-5,0,0,7.5" Stroke="Transparent" VerticalAlignment="Bottom" Width="10" Fill="Black"/>
 
         <Rectangle Name="AnimationRectangle" Margin="220,0,0,0" Fill="White" IsHitTestVisible="False"/>
 
+        <Button Content="   Custom" FontSize="15" HorizontalAlignment="Left" Margin="0,0,0,90" Width="220" Height="45" Click="CustomButton" VerticalAlignment="Bottom"/>
         <Button Content="   Settings" FontSize="15" HorizontalAlignment="Left" Margin="0,0,0,0" Width="220" Height="45" Click="SettingsButton" VerticalAlignment="Bottom"/>
         <Button Content="   Yesterday" FontSize="15" HorizontalAlignment="Left" Margin="0,0,0,45" Width="220" Height="45" Click="YesterdayButton" VerticalAlignment="Bottom"/>
     </Grid>
