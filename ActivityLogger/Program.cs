@@ -10,7 +10,7 @@ namespace ActivityLogger
 {
     class Program
     {
-        // needed imports
+        // DllImports
         [DllImport("user32.dll")]
         public static extern IntPtr GetWindowThreadProcessId(IntPtr hWnd, out uint ProcessId);
 
@@ -78,15 +78,6 @@ namespace ActivityLogger
                 }
             }
 
-            foreach (var items in activityDictionary)
-            {
-                foreach (var item in items.Value)
-                {
-                    System.Console.WriteLine(item.TimeSpent);
-                }
-                System.Console.WriteLine("\n");
-            }
-
         }
 
         static void loadJson()
@@ -134,6 +125,7 @@ namespace ActivityLogger
 
             // Sleep one minute and repeat
             System.Threading.Thread.Sleep(1000 * waitSeconds);
+
             MyMain();
         }
 
@@ -197,6 +189,10 @@ namespace ActivityLogger
 
             if (p.MainWindowTitle.Contains(p.ProcessName))
             {
+                if (!p.MainWindowTitle.Contains('-'))
+                {
+                    return p.ProcessName;
+                }
                 return p.MainWindowTitle.Split("-")[p.MainWindowTitle.Split("-").Length - 1].TrimStart();
             }
 
