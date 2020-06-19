@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MyActivityLogs"
         mc:Ignorable="d"
-        Title="Note" Height="320" Width="420">
+        Title="Note" Height="400" Width="500" ResizeMode="NoResize">
     <Grid>
         <Label Name="MessageLabel" Content="Label" Margin="10,50,10,0" VerticalAlignment="Top" HorizontalContentAlignment="Center" Height="110" HorizontalAlignment="Center"/>
         <Button Name="FixButton" Click="Fix" Content="Fix" Margin="160,193,160,0" Height="30" Width="100" VerticalAlignment="Top"/>
