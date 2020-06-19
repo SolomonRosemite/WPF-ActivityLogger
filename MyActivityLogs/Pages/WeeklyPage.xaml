@@ -22,7 +22,7 @@
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Text="{Binding ActivityName}"/>
                                 <TextBlock Text="{Binding TimeSpent}" Grid.Column="1"/>
-                                <ProgressBar Foreground="{Binding Color}" Grid.Column="2" Minimum="0" Maximum="{Binding ProgressBarMaxValue}" Value="{Binding TimeSpentint}" />
+                                <ProgressBar Foreground="{Binding Color}" Height="10" Grid.Column="2" Minimum="0" Maximum="{Binding ProgressBarMaxValue}" Value="{Binding TimeSpentint}" />
                             </Grid>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>

@@ -2,11 +2,16 @@
 using System.Diagnostics;
 using System.Windows;
 using System.IO;
+using System;
+using MaterialDesignThemes.Wpf;
+using System.Threading.Tasks;
 
 namespace MyActivityLogs.Pages
 {
     public partial class SettingsPage : Page
     {
+        DateTime start;
+        DateTime end;
         public SettingsPage()
         {
             InitializeComponent();
@@ -25,10 +30,31 @@ namespace MyActivityLogs.Pages
         {
             MainWindow.Load();
 
-            Dispatcher.Invoke(() =>
+            MainWindow.mainWindow.DailyButton();
+        }
+
+        public void UpdateDates(object sender, RoutedEventArgs e)
+        {
+            if (start.Date <= end.Date)
             {
-                MainWindow.mainWindow.DailyButton();
-            });
+                MainWindow.mainWindow.UpdateCustomDates(start, end);
+                Popup popup = new Popup("Dates have been Updated.");
+                popup.Show();
+            } else
+            {
+                Popup popup = new Popup("The Starting date can't be after the Ending date.");
+                popup.Show();
+            }
+        }
+
+        private void MyDatePickerStart_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+        {
+            start = (DateTime)e.AddedItems[0];
+        }
+
+        private void MyDatePickerEnd_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+        {
+            end = (DateTime)e.AddedItems[0];
         }
     }
 }

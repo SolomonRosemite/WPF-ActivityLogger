@@ -10,7 +10,28 @@
 
     <Grid Margin="10,5,0,0">
         <Label Content="Settings" FontSize="28"/>
-        <Button Name="RefreshButton" Margin="10,0,0,60" HorizontalAlignment="Left" VerticalAlignment="Bottom" Content="Refresh" Width="130" Height="30" Click="Refresh"/>
-        <Button Margin="10,0,0,20" HorizontalAlignment="Left" VerticalAlignment="Bottom" Content="View Activities [ Json ]" Width="130" Height="30" Click="Button_Click"/>
+        <Button Name="RefreshButton" Margin="10,0,0,60" HorizontalAlignment="Left" VerticalAlignment="Bottom" Content="Refresh" Width="150" Height="30" FontSize="15" Click="Refresh" Background="White" Foreground="#DD000000" BorderBrush="White"/>
+        <Button Margin="10,0,0,20" HorizontalAlignment="Left" VerticalAlignment="Bottom" Content="View Activities [ Json ]" Width="150" Height="30" FontSize="11" Click="Button_Click" Background="White" Foreground="#DD000000" BorderBrush="White"/>
+        <Button Margin="0,0,10,20" HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="Save" Width="100" Height="30" Click="UpdateDates" Background="White" Foreground="#DD000000" BorderBrush="White"/>
+
+        <Label Content="Custom Settings" Margin="0,0,83,170" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontSize="22"/>
+        <Label Content="Beginning Date:" Margin="0,0,115,120" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontSize="18"/>
+        <Label Content="Ending Date:     " Margin="0,0,115,70"  HorizontalAlignment="Right" VerticalAlignment="Bottom" FontSize="18"/>
+
+        <DatePicker x:Name="MyDatePickerStart" SelectedDateChanged="MyDatePickerStart_SelectedDateChanged" Margin="0,0,10,120" Width="100" Height="30" HorizontalAlignment="Right" VerticalAlignment="Bottom" Background="#FF79FFC2">
+            <DatePicker.Resources>
+                <Style TargetType="DatePickerTextBox">
+                    <Setter Property="IsReadOnly" Value="True"/>
+                </Style>
+            </DatePicker.Resources>
+        </DatePicker>
+
+        <DatePicker x:Name="MyDatePickerEnd" SelectedDateChanged="MyDatePickerEnd_SelectedDateChanged" Margin="0,0,10,70" Width="100" Height="30" HorizontalAlignment="Right" VerticalAlignment="Bottom" Background="#FFFF7979">
+            <DatePicker.Resources>
+                <Style TargetType="DatePickerTextBox">
+                    <Setter Property="IsReadOnly" Value="True"/>
+                </Style>
+            </DatePicker.Resources>
+        </DatePicker>
     </Grid>
 </Page>

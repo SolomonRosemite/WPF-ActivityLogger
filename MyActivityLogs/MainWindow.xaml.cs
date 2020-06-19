@@ -10,6 +10,7 @@ using System.IO;
 using System;
 
 using MyActivityLogs.Pages;
+using MaterialDesignThemes.Wpf;
 
 namespace MyActivityLogs
 {
@@ -20,7 +21,7 @@ namespace MyActivityLogs
         public static Dictionary<string, List<Activity>> activitiesDict = new Dictionary<string, List<Activity>>();
         public static readonly string ActivityLoggerPath = GetDirectory() + @"\TMRosemite\ActivityLogger";
 
-        private static dynamic[] pages = new dynamic[7];
+        public static dynamic[] pages = new dynamic[7];
         private static DoubleAnimation animation = new DoubleAnimation(1, 0, new Duration(TimeSpan.FromMilliseconds(700)));
 
         private enum CurrentPage
@@ -98,7 +99,6 @@ namespace MyActivityLogs
             timer.Elapsed += timer_elapsed;
             timer.Start();
         }
-
         private void timer_elapsed(object y, EventArgs x)
         {
             Dispatcher.Invoke(() =>
@@ -129,7 +129,7 @@ namespace MyActivityLogs
             try { return JsonConvert.DeserializeObject<Dictionary<string, List<Activity>>>(jsonFromFile); }
             catch { return 1; }
         }
-        private static void ShowPopUp(string message, string path = "")
+        public static void ShowPopUp(string message, string path = "")
         {
             Popup popup = new Popup(message, path);
             popup.Show();
@@ -435,6 +435,8 @@ namespace MyActivityLogs
             SetPage(CurrentPage.Custom);
             MyFrame.Content = pages[6];
         }
+
+        public void UpdateCustomDates(DateTime start, DateTime end) => pages[6].UpdateDates(start, end);
     }
 
     public class Activity
