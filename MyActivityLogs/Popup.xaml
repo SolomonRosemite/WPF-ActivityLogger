@@ -8,7 +8,7 @@
         Title="Note" Height="320" Width="420">
     <Grid>
         <Label Name="MessageLabel" Content="Label" Margin="10,50,10,0" VerticalAlignment="Top" HorizontalContentAlignment="Center" Height="110" HorizontalAlignment="Center"/>
-        <Button Name="FixButton" Click="Fix" Content="Fix" Margin="180,200,180,0" Height="20" VerticalAlignment="Top"/>
-        <Button Click="CloseWindow" Content="Close" Margin="180,230,180,0" Height="20" VerticalAlignment="Top"/>
+        <Button Name="FixButton" Click="Fix" Content="Fix" Margin="160,193,160,0" Height="30" Width="100" VerticalAlignment="Top"/>
+        <Button Click="CloseWindow" Content="Close" Margin="160,228,160,0" Height="30" Width="100" VerticalAlignment="Top"/>
     </Grid>
 </Window>
