@@ -44,8 +44,6 @@ namespace MyActivityLogs
 
             Load();
 
-            pages[4] = new SettingsPage();
-
             SetPage(CurrentPage.Daily);
             MyFrame.Content = pages[0];
 
@@ -57,6 +55,7 @@ namespace MyActivityLogs
         public static void Load()
         {
             var output = ReadJson();
+            DateTime[] dates = GetSavedDates();
 
             // Checking if json could be read
             if (output is int)
@@ -88,8 +87,9 @@ namespace MyActivityLogs
             pages[1] = new WeeklyPage();
             pages[2] = new MonthlyPage();
             pages[3] = new TotalPage();
+            pages[4] = dates == null ? new SettingsPage() : new SettingsPage(dates[0], dates[1]);
             pages[5] = new Yesterday();
-            pages[6] = new CustomPage();
+            pages[6] = dates == null ? new CustomPage() : new CustomPage(dates[0], dates[1]);
         }
 
         public void RefreshTimer()
@@ -129,12 +129,35 @@ namespace MyActivityLogs
             try { return JsonConvert.DeserializeObject<Dictionary<string, List<Activity>>>(jsonFromFile); }
             catch { return 1; }
         }
-        public static void ShowPopUp(string message, string path = "")
+        private static DateTime[] GetSavedDates()
+        {
+            if (!File.Exists(ActivityLoggerPath + @"\MyActivityLogs\Dates.json"))
+            {
+                return null;
+            }
+
+            string jsonFromFile;
+            using (var reader = new StreamReader(ActivityLoggerPath + @"\MyActivityLogs\Dates.json"))
+            {
+                jsonFromFile = reader.ReadToEnd();
+                if (!jsonFromFile.Contains("["))
+                {
+                    return null;
+                }
+            }
+
+            try
+            {
+                var dates = JsonConvert.DeserializeObject<List<string>>(jsonFromFile);
+                return new DateTime[] { DateTime.Parse(dates[0]), DateTime.Parse(dates[1]) };
+            }
+            catch { return null; }
+        }
+        private static void ShowPopUp(string message, string path = "")
         {
             Popup popup = new Popup(message, path);
             popup.Show();
         }
-
         private void SetPage(CurrentPage currentPage)
         {
             switch (currentPage)

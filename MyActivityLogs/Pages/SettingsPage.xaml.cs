@@ -3,8 +3,7 @@ using System.Diagnostics;
 using System.Windows;
 using System.IO;
 using System;
-using MaterialDesignThemes.Wpf;
-using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace MyActivityLogs.Pages
 {
@@ -15,6 +14,16 @@ namespace MyActivityLogs.Pages
         public SettingsPage()
         {
             InitializeComponent();
+        }
+        public SettingsPage(DateTime start, DateTime end)
+        {
+            InitializeComponent();
+
+            this.start = start;
+            this.end = end;
+
+            MyDatePickerStart.SelectedDate = start;
+            MyDatePickerEnd.SelectedDate = end;
         }
         private void Button_Click(object sender, RoutedEventArgs e)
         {
@@ -38,9 +47,15 @@ namespace MyActivityLogs.Pages
             if (start.Date <= end.Date)
             {
                 MainWindow.mainWindow.UpdateCustomDates(start, end);
+
+                // Save
+                string json = JsonConvert.SerializeObject(new string[] { start.ToString(), end.ToString() }, Formatting.Indented);
+                File.WriteAllText(MainWindow.ActivityLoggerPath + @"\MyActivityLogs\Dates.json", json);
+
                 Popup popup = new Popup("Dates have been Updated.");
                 popup.Show();
-            } else
+            }
+            else
             {
                 Popup popup = new Popup("The Starting date can't be after the Ending date.");
                 popup.Show();

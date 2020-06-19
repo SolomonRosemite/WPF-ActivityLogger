@@ -1,16 +1,7 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows;
+﻿using System.Runtime.InteropServices;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.Collections.Generic;
+using System;
 
 namespace MyActivityLogs.Pages
 {
@@ -18,12 +9,22 @@ namespace MyActivityLogs.Pages
     {
         private List<Activity> activities = new List<Activity>();
 
-        private DateTime start; 
+        private DateTime start;
         private DateTime end;
 
         public CustomPage()
         {
             InitializeComponent();
+
+            LoadCustom(MainWindow.activitiesDict);
+        }
+        public CustomPage(DateTime start, DateTime end)
+        {
+            InitializeComponent();
+
+            this.start = start;
+            this.end = end;
+
             LoadCustom(MainWindow.activitiesDict);
         }
 
