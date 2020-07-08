@@ -39,18 +39,28 @@ namespace ActivityLogger
 
         static void Main(string[] args)
         {
-            Console.WriteLine("Activity Logger Started\n");
+            try
+            {
+                Console.WriteLine("Activity Logger Started\n");
 
-            // Checks if Directory is fine and reads json
-            Load();
+                // Checks if Directory is fine and reads json
+                Load();
 
-            // Clear not needed items
-            Clear();
+                // Clear not needed items
+                Clear();
 
-            // Waits 60 Seconds
-            System.Threading.Thread.Sleep(1000 * waitSeconds);
+                // Waits 60 Seconds
+                System.Threading.Thread.Sleep(1000 * 15);
 
-            MyMain();
+                MyMain();
+            }
+            catch (Exception e)
+            {
+                string day = DateTime.Now.Day.ToString();
+                string month = DateTime.Now.Month.ToString();
+                string year = DateTime.Now.Year.ToString();
+                File.WriteAllText($"Error {day}/{month}/{year}.txt", e.Message);
+            }
         }
 
         static void Clear()
@@ -178,7 +188,13 @@ namespace ActivityLogger
 
             // Save
             string json = JsonConvert.SerializeObject(activityDictionary, Formatting.Indented);
-            File.WriteAllText(ActivityLoggerPath + @"\SavedActivities.json", json);
+
+            try { File.WriteAllText(ActivityLoggerPath + @"\SavedActivities.json", json); } 
+            catch (Exception e) 
+            {
+                string error = $"The File was probably in use... \n StackTrace Exception:\n{e}";
+                File.WriteAllText(ActivityLoggerPath + @"\Error.txt", error); 
+            }
         }
         static string GetActiveProcessFileName()
         {
@@ -226,10 +242,7 @@ namespace ActivityLogger
             }
             return "";
         }
-        private static string DateFormat()
-        {
-            return DateTime.Now.ToString("dd.MM.yyyy");
-        }
+        private static string DateFormat() => DateTime.Now.ToString("dd.MM.yyyy");
     }
 
     class Activity
