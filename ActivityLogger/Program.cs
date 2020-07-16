@@ -19,7 +19,7 @@ namespace ActivityLogger
 
         // Activity Logger Data
         private static readonly string activityLoggerPath = GetDirectory() + @"\TMRosemite\ActivityLogger";
-        private static readonly string[] ignoreList = new string[]
+        private static readonly string[] ignoreList =
         {
             "applicationframehost",
             "discord updater",
@@ -32,15 +32,15 @@ namespace ActivityLogger
             "Taskmgr",
             "drag"
         };
-        private static readonly Dictionary<string, string> renameDict = new Dictionary<string, string>{
+        private static readonly Dictionary<string, string> renameDict = new Dictionary<string, string>() {
             {"WindowsTerminal", "Console"},
+            {"Command Prompt", "Console"},
             {"cmd", "Console"},
             {"WINWORD", "Word"},
             {"EXCEL", "Excel"},
         };
         private static List<Activity> activities = new List<Activity>();
         private static Dictionary<string, List<Activity>> activityDictionary = new Dictionary<string, List<Activity>>();
-
         private const int waitSeconds = 60;
 
         static void Main(string[] args)
@@ -58,6 +58,7 @@ namespace ActivityLogger
                 // Waits 60 Seconds
                 System.Threading.Thread.Sleep(1000 * waitSeconds);
 
+                // Main Loop
                 MyMain();
             }
             catch (Exception e)
@@ -65,36 +66,34 @@ namespace ActivityLogger
                 string day = DateTime.Now.Day.ToString();
                 string month = DateTime.Now.Month.ToString();
                 string year = DateTime.Now.Year.ToString();
-                File.WriteAllText($"Error {day}/{month}/{year}.txt", e.Message);
+                File.WriteAllText(@"Error " + day + '.' + month + '.' + year + ".txt", e.ToString());
             }
         }
 
         static void Clear()
         {
-            if (activityDictionary == null)
-                return;
-            else if (activityDictionary.Count == 0)
-                return;
+            if (DateTime.Now.Day != 1) { return; }
+            else if (activityDictionary == null) { return; }
+            else if (activityDictionary.Count == 0) { return; }
 
             foreach (var item in activityDictionary.ToList())
             {
                 for (int i = 0; i < item.Value.Count; i++)
                 {
-                    if (int.Parse(item.Value[i].TimeSpent.Remove(item.Value[i].TimeSpent.Length - 7)) < 5)
+                    if (item.Value[i].MinutesSpent() < 10)
                     {
                         item.Value.RemoveRange(i, item.Value.Count - i);
                         activityDictionary[item.Key] = item.Value;
                         break;
                     }
-                    System.Console.WriteLine(item.Value[i].TimeSpent);
                 }
             }
         }
-
         static void loadJson()
         {
             // Read Json
             string jsonFromFile;
+
             using (var reader = new StreamReader(activityLoggerPath + @"\SavedActivities.json"))
             {
                 jsonFromFile = reader.ReadToEnd();
@@ -110,16 +109,16 @@ namespace ActivityLogger
             List<Activity> tempactivities;
             activityDictionary.TryGetValue(DateFormat(), out tempactivities);
 
-            if (tempactivities == null)
-                return;
+            if (tempactivities == null) { return; }
 
             activities.AddRange(tempactivities);
         }
-
         private static void Load()
         {
+            // Check If required Path Exists
             if (!Directory.Exists(activityLoggerPath))
             {
+                // If not we Create it
                 Directory.CreateDirectory(activityLoggerPath);
             }
 
@@ -160,7 +159,7 @@ namespace ActivityLogger
             {
                 if (activities[i].ActivityName == fileName)
                 {
-                    int TimeSpent = int.Parse(activities[i].TimeSpent.Remove(activities[i].TimeSpent.Length - 7));
+                    int TimeSpent = activities[i].MinutesSpent();
 
                     SaveJson(new Activity(ActivityName: fileName, TimeSpent: (++TimeSpent).ToString() + " Minutes"), i);
                     return;
@@ -172,13 +171,11 @@ namespace ActivityLogger
         public static void SaveJson(Activity activity, int index = -1)
         {
             // Setting up list
-            if (index != -1)
-                activities.RemoveAt(index);
+            if (index != -1) { activities.RemoveAt(index); }
 
             activities.Add(activity);
 
-            activities = activities.OrderBy(o => o.MinutesSpent()).ToList();
-            activities.Reverse();
+            activities = activities.OrderByDescending(o => o.MinutesSpent()).ToList();
 
             // Apply List to Dictionary
             activityDictionary[DateFormat()] = activities;
@@ -195,11 +192,13 @@ namespace ActivityLogger
         }
         static string GetActiveProcessFileName()
         {
+            // Get ForegroundWindowProcess
             IntPtr hwnd = GetForegroundWindow();
             uint pid;
             GetWindowThreadProcessId(hwnd, out pid);
             Process p = Process.GetProcessById((int)pid);
 
+            // Try to get the most meaningful name for the current Item
             if (p.MainWindowTitle.Contains(p.ProcessName))
             {
                 if (!p.MainWindowTitle.Contains('-')) { return p.ProcessName; }
@@ -245,7 +244,6 @@ namespace ActivityLogger
                 return;
             }
         }
-
         private static string renameActivity(string fileName)
         {
             foreach (var item in renameDict)
