@@ -10,16 +10,16 @@ namespace ActivityLogger
 {
     class Program
     {
-        // DllImports
+        // Dll Imports
         [DllImport("user32.dll")]
         public static extern IntPtr GetWindowThreadProcessId(IntPtr hWnd, out uint ProcessId);
 
         [DllImport("user32.dll")]
         private static extern IntPtr GetForegroundWindow();
 
-        // Activity Logger data
-        private static string ActivityLoggerPath = GetDirectory() + @"\TMRosemite\ActivityLogger";
-        private static string[] ignoreList = new string[]
+        // Activity Logger Data
+        private static readonly string activityLoggerPath = GetDirectory() + @"\TMRosemite\ActivityLogger";
+        private static readonly string[] ignoreList = new string[]
         {
             "applicationframehost",
             "discord updater",
@@ -31,6 +31,12 @@ namespace ActivityLogger
             "regedit",
             "Taskmgr",
             "drag"
+        };
+        private static readonly Dictionary<string, string> renameDict = new Dictionary<string, string>{
+            {"WindowsTerminal", "Console"},
+            {"cmd", "Console"},
+            {"WINWORD", "Word"},
+            {"EXCEL", "Excel"},
         };
         private static List<Activity> activities = new List<Activity>();
         private static Dictionary<string, List<Activity>> activityDictionary = new Dictionary<string, List<Activity>>();
@@ -50,7 +56,7 @@ namespace ActivityLogger
                 Clear();
 
                 // Waits 60 Seconds
-                System.Threading.Thread.Sleep(1000 * 15);
+                System.Threading.Thread.Sleep(1000 * waitSeconds);
 
                 MyMain();
             }
@@ -66,13 +72,9 @@ namespace ActivityLogger
         static void Clear()
         {
             if (activityDictionary == null)
-            {
                 return;
-            }
             else if (activityDictionary.Count == 0)
-            {
                 return;
-            }
 
             foreach (var item in activityDictionary.ToList())
             {
@@ -87,14 +89,13 @@ namespace ActivityLogger
                     System.Console.WriteLine(item.Value[i].TimeSpent);
                 }
             }
-
         }
 
         static void loadJson()
         {
             // Read Json
             string jsonFromFile;
-            using (var reader = new StreamReader(ActivityLoggerPath + @"\SavedActivities.json"))
+            using (var reader = new StreamReader(activityLoggerPath + @"\SavedActivities.json"))
             {
                 jsonFromFile = reader.ReadToEnd();
                 if (!jsonFromFile.Contains("{"))
@@ -117,12 +118,12 @@ namespace ActivityLogger
 
         private static void Load()
         {
-            if (!Directory.Exists(ActivityLoggerPath))
+            if (!Directory.Exists(activityLoggerPath))
             {
-                Directory.CreateDirectory(ActivityLoggerPath);
+                Directory.CreateDirectory(activityLoggerPath);
             }
 
-            if (File.Exists(ActivityLoggerPath + @"\SavedActivities.json"))
+            if (File.Exists(activityLoggerPath + @"\SavedActivities.json"))
             {
                 // Loads Json and updates activities list
                 try { loadJson(); } catch { }
@@ -141,21 +142,17 @@ namespace ActivityLogger
 
         static void Save(string fileName)
         {
+            // If new day just started we need to restart
+            checkForRestart();
+
             // If ignoreList contains fileName don't save
             if (Array.Exists(ignoreList, element => element == fileName.ToLower())) { return; }
 
-            // If string is empty don't save
+            // If fileName is empty don't save
             if (fileName.Trim().Length == 0) { return; }
 
-            Console.WriteLine(fileName);
-
-            // If new day just started
-            if (!activityDictionary.ContainsKey(DateFormat()) & activities.Count != 0)
-            {
-                Process.Start(ActivityLoggerPath + @"\ActivityLogger.exe");
-                Environment.Exit(0);
-                return;
-            }
+            // Renames the name of the fileName if found in renameList
+            fileName = renameActivity(fileName);
 
             // Checks if fileName already exists in the activities list
             // If so we edit. Else we add a new entry
@@ -183,17 +180,17 @@ namespace ActivityLogger
             activities = activities.OrderBy(o => o.MinutesSpent()).ToList();
             activities.Reverse();
 
-            // Setting up Dictionary
+            // Apply List to Dictionary
             activityDictionary[DateFormat()] = activities;
 
             // Save
             string json = JsonConvert.SerializeObject(activityDictionary, Formatting.Indented);
 
-            try { File.WriteAllText(ActivityLoggerPath + @"\SavedActivities.json", json); } 
-            catch (Exception e) 
+            try { File.WriteAllText(activityLoggerPath + @"\SavedActivities.json", json); }
+            catch (Exception e)
             {
                 string error = $"The File was probably in use... \n StackTrace Exception:\n{e}";
-                File.WriteAllText(ActivityLoggerPath + @"\Error.txt", error); 
+                File.WriteAllText(activityLoggerPath + @"\Error.txt", error);
             }
         }
         static string GetActiveProcessFileName()
@@ -205,23 +202,19 @@ namespace ActivityLogger
 
             if (p.MainWindowTitle.Contains(p.ProcessName))
             {
-                if (!p.MainWindowTitle.Contains('-'))
-                {
-                    return p.ProcessName;
-                }
+                if (!p.MainWindowTitle.Contains('-')) { return p.ProcessName; }
+
                 return p.MainWindowTitle.Split("-")[p.MainWindowTitle.Split("-").Length - 1].TrimStart();
             }
 
-            if (!p.MainWindowTitle.Contains("-"))
-            {
-                return p.MainWindowTitle;
-            }
+            if (!p.MainWindowTitle.Contains("-")) { return p.MainWindowTitle; }
 
             string FileName = p.MainWindowTitle.Split("-")[p.MainWindowTitle.Split("-").Length - 1].TrimStart();
 
             string[] SplitPath;
 
             try { SplitPath = p.MainModule.FileName.Split("\\"); } catch { return p.ProcessName; }
+
             // Checks by path
             foreach (string item in SplitPath)
             {
@@ -242,6 +235,25 @@ namespace ActivityLogger
             }
             return "";
         }
+
+        private static void checkForRestart()
+        {
+            if (!activityDictionary.ContainsKey(DateFormat()) & activities.Count != 0)
+            {
+                Process.Start(activityLoggerPath + @"\ActivityLogger.exe");
+                Environment.Exit(0);
+                return;
+            }
+        }
+
+        private static string renameActivity(string fileName)
+        {
+            foreach (var item in renameDict)
+                if (item.Key == fileName)
+                    return item.Value;
+
+            return fileName;
+        }
         private static string DateFormat() => DateTime.Now.ToString("dd.MM.yyyy");
     }
 
@@ -256,9 +268,6 @@ namespace ActivityLogger
             this.TimeSpent = TimeSpent;
         }
 
-        public int MinutesSpent()
-        {
-            return Int32.Parse(TimeSpent.Remove(TimeSpent.Length - 7));
-        }
+        public int MinutesSpent() => Int32.Parse(TimeSpent.Remove(TimeSpent.Length - 7));
     }
 }
