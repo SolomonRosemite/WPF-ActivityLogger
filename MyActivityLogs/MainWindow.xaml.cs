@@ -273,6 +273,8 @@ namespace MyActivityLogs
         }
         public static List<Activity> AddToListPerDay(DateTime date, Dictionary<string, List<Activity>> dict, List<Activity> list, bool checkIfEntryAlreadyExists)
         {
+            if (!dict.ContainsKey(DateFormat(date))) { return new List<Activity>(); }
+
             if (checkIfEntryAlreadyExists == false)
             {
                 foreach (Activity item in dict[DateFormat(date)])
