@@ -3,7 +3,15 @@ Keep track of the programs you use
 
 ## Introduction
 
-- WPF-Activity-Logger is a Program split in two.
+- The purpose of this Application is to have a good overview of the you use.
+
+## How it Works
+
+- The WPF-Activity-Logger is a Program split in two (Activity Logger) & (My Activity Logs).
+
+- But in short.
+- The Activity Logger gets the program by getting the Foreground process of the currently used Window.
+- The data then gets saved to a Json where now the My Activity Logs(WPF) reads the Json file and displays the usage of the programs.
 
 ## Activity Logger
 - The Activity Logger logs each minute what program the user has been using.
@@ -14,10 +22,6 @@ Keep track of the programs you use
 -  It's purpose is to view the activities on an desktop application.
 
 ![](https://github.com/SolomonRosemite/WPF-ActivityLogger/blob/master/ActivityLogger/assets/Example.gif?raw=true)
-
-## How it Works
-- The Activity Logger gets the program by getting the Foreground process of the currently used Window.
-- The data then gets saved to a Json where now the My Activity Logs(WPF) reads the Json file and displays the usage of the programs to the user.
 
 Json File:
 ![](https://github.com/SolomonRosemite/WPF-ActivityLogger/blob/master/ActivityLogger/assets/Example.PNG?raw=true)
