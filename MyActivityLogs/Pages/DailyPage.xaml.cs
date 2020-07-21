@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Windows.Controls;
 using System;
+using System.IO.Packaging;
 
 namespace MyActivityLogs.Pages
 {
@@ -17,7 +18,8 @@ namespace MyActivityLogs.Pages
 
         private void LoadDaily(Dictionary<string, List<Activity>> dict)
         {
-            if (!dict.ContainsKey(MainWindow.DateFormat()))
+            string date = MainWindow.DateFormat();
+            if (!dict.ContainsKey(date))
             {
                 return;
             }

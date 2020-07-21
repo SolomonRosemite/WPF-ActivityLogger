@@ -11,6 +11,7 @@ using System;
 
 using MyActivityLogs.Pages;
 using MaterialDesignThemes.Wpf;
+using System.Globalization;
 
 namespace MyActivityLogs
 {
@@ -149,7 +150,7 @@ namespace MyActivityLogs
             try
             {
                 var dates = JsonConvert.DeserializeObject<List<string>>(jsonFromFile);
-                return new DateTime[] { DateTime.Parse(dates[0]), DateTime.Parse(dates[1]) };
+                return new DateTime[] { DateTime.ParseExact(dates[0], "dd.MM.yyyy", null), DateTime.ParseExact(dates[1], "dd.MM.yyyy", null) };
             }
             catch { return null; }
         }
@@ -402,7 +403,7 @@ namespace MyActivityLogs
 
         public static string DateFormat([Optional] DateTime date)
         {
-            if (date.ToString() != "01.01.0001 00:00:00")
+            if (date.Date != DateTime.ParseExact("01.01.0001", "dd.MM.yyyy", null).Date)
             {
                 return date.ToString("dd.MM.yyyy");
             }

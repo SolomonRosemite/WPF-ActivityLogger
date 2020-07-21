@@ -48,9 +48,9 @@
         <Grid Background="White" Margin="220,0,0,0"/>
 
         <StackPanel Margin="0,0,0,0" Grid.ColumnSpan="2">
-            <Button Content="   Daily" HorizontalContentAlignment="Left" FontSize="15" HorizontalAlignment="Left" Margin="0,0,0,0" Width="220" Height="45" VerticalAlignment="Top" Click="DailyButton"/>
-            <Button Content="   Weekly" HorizontalContentAlignment="Left" FontSize="15" HorizontalAlignment="Left" Margin="0,0,0,0" Width="220" Height="45" VerticalAlignment="Top" Click="WeeklyButton"/>
-            <Button Content="   Monthly" HorizontalContentAlignment="Left" FontSize="15" HorizontalAlignment="Left" Margin="0,0,0,0" Width="220" Height="45" VerticalAlignment="Top" Click="MonthlyButton" />
+            <Button Content="   Today" HorizontalContentAlignment="Left" FontSize="15" HorizontalAlignment="Left" Margin="0,0,0,0" Width="220" Height="45" VerticalAlignment="Top" Click="DailyButton"/>
+            <Button Content="   This Week" HorizontalContentAlignment="Left" FontSize="15" HorizontalAlignment="Left" Margin="0,0,0,0" Width="220" Height="45" VerticalAlignment="Top" Click="WeeklyButton"/>
+            <Button Content="   This Month" HorizontalContentAlignment="Left" FontSize="15" HorizontalAlignment="Left" Margin="0,0,0,0" Width="220" Height="45" VerticalAlignment="Top" Click="MonthlyButton" />
             <Button Content="   Total" HorizontalContentAlignment="Left" FontSize="15" HorizontalAlignment="Left" Margin="0,0,0,0" Width="220" Height="45" VerticalAlignment="Top" Click="TotalButton"/>
         </StackPanel>
 

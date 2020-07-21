@@ -172,7 +172,7 @@ namespace ActivityLogger
         {
             // Setting up list
             if (index != -1) { activities.RemoveAt(index); }
-
+            
             activities.Add(activity);
 
             activities = activities.OrderByDescending(o => o.MinutesSpent()).ToList();
