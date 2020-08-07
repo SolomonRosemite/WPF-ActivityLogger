@@ -141,10 +141,7 @@ namespace MyActivityLogs
             using (var reader = new StreamReader(ActivityLoggerPath + @"\MyActivityLogs\Dates.json"))
             {
                 jsonFromFile = reader.ReadToEnd();
-                if (!jsonFromFile.Contains("["))
-                {
-                    return null;
-                }
+                if (!jsonFromFile.Contains("[")) { return null; }
             }
 
             try
