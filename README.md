@@ -23,5 +23,5 @@ Keep track of the programs you use
 
 ![](https://github.com/SolomonRosemite/WPF-ActivityLogger/blob/master/ActivityLogger/assets/Example.gif?raw=true)
 
-Json File:
+## Json File:
 ![](https://github.com/SolomonRosemite/WPF-ActivityLogger/blob/master/ActivityLogger/assets/Example.PNG?raw=true)
