@@ -2,6 +2,7 @@
 using System.Windows.Controls;
 using System.Collections.Generic;
 using System;
+using System.Globalization;
 
 namespace MyActivityLogs.Pages
 {
@@ -44,20 +45,13 @@ namespace MyActivityLogs.Pages
             activities = MainWindow.CalculateSumOfList(activities);
             activities = MainWindow.SetProgressBarColor(activities);
 
+            if (MainWindow.ShowInHours) { MainWindow.ActivitiesToHours(activities); }            
+            
             ActivitiesItemsControl.ItemsSource = activities;
 
             string startingDate = start.Date.ToString();
             string endingDate = end.Date.ToString();
             CustomTitle.Content = $"From {startingDate.Remove(startingDate.Length - 8)} to {endingDate.Remove(endingDate.Length - 8)}";
-        }
-
-        public void UpdateDates(DateTime start, DateTime end)
-        {
-            this.start = start;
-            this.end = end;
-
-            activities = new List<Activity>();
-            LoadCustom(MainWindow.activitiesDict);
         }
     }
 }

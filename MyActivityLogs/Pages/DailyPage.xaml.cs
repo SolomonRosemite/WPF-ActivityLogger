@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Windows.Controls;
 using System;
+using System.ComponentModel;
 using System.IO.Packaging;
 
 namespace MyActivityLogs.Pages
 {
-    public partial class DailyPage : Page
+    public partial class DailyPage
     {
         private List<Activity> activities = new List<Activity>();
 
@@ -35,7 +36,8 @@ namespace MyActivityLogs.Pages
             activities = MainWindow.CalculateSumOfList(activities);
             activities = MainWindow.SetProgressBarColor(activities);
 
-
+            if (MainWindow.ShowInHours) { MainWindow.ActivitiesToHours(activities); }
+            
             ActivitiesItemsControl.ItemsSource = activities;
         }
     }

@@ -41,6 +41,14 @@ namespace MyActivityLogs.Pages
 
             MainWindow.mainWindow.DailyButton();
         }
+        
+        public void ConvertTime(object sender, RoutedEventArgs e)
+        {
+            MainWindow.ShowInHours = !MainWindow.ShowInHours;
+            MainWindow.Load();
+
+            MainWindow.mainWindow.DailyButton();
+        }
 
         public void UpdateDates(object sender, RoutedEventArgs e)
         {

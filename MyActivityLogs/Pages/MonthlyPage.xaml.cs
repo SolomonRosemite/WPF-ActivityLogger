@@ -28,6 +28,8 @@ namespace MyActivityLogs.Pages
             activities = MainWindow.CalculateSumOfList(activities);
             activities = MainWindow.SetProgressBarColor(activities);
 
+            if (MainWindow.ShowInHours) { MainWindow.ActivitiesToHours(activities); }
+            
             ActivitiesItemsControl.ItemsSource = activities;
         }
     }

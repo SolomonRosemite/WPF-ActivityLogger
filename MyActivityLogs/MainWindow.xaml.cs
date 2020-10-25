@@ -25,6 +25,8 @@ namespace MyActivityLogs
         public static dynamic[] pages = new dynamic[7];
         private static DoubleAnimation animation = new DoubleAnimation(1, 0, new Duration(TimeSpan.FromMilliseconds(700)));
 
+        public static bool ShowInHours = false;
+        
         private enum CurrentPage
         {
             Daily,
@@ -102,7 +104,7 @@ namespace MyActivityLogs
         }
         private void timer_elapsed(object y, EventArgs x)
         {
-            Dispatcher.Invoke(() =>
+            Dispatcher?.Invoke(() =>
             {
                 pages[4].RefreshButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
                 SetPage(CurrentPage.Daily);
@@ -147,7 +149,7 @@ namespace MyActivityLogs
             try
             {
                 var dates = JsonConvert.DeserializeObject<List<string>>(jsonFromFile);
-                return new DateTime[] { DateTime.ParseExact(dates[0], "dd.MM.yyyy", null), DateTime.ParseExact(dates[1], "dd.MM.yyyy", null) };
+                return new[] { DateTime.ParseExact(dates[0], "dd.MM.yyyy", null), DateTime.ParseExact(dates[1], "dd.MM.yyyy", null) };
             }
             catch { return null; }
         }
@@ -227,6 +229,14 @@ namespace MyActivityLogs
         }
         private void PlayAnimation() => AnimationRectangle.BeginAnimation(OpacityProperty, animation);
 
+        public static List<Activity> ActivitiesToHours(List<Activity> activities)
+        {
+            foreach (var t in activities)
+                t.TimeSpent = ((float)t.TimeSpentint / 60).ToString("0.0") + " Hours";
+
+            return activities;
+        }
+        
         public static List<Activity> AddToListForWeekly(int daysBehind, Dictionary<string, List<Activity>> dict, List<Activity> list)
         {
             DateTime date = DateTime.Now;
