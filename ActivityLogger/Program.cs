@@ -25,7 +25,7 @@ namespace ActivityLogger
         private static List<Activity> activities = new List<Activity>();
         private static Config config;
 
-        private const int WaitSeconds = 0;
+        private const int WaitSeconds = 60;
 
         private static void Main(string[] args)
         {
@@ -57,18 +57,20 @@ namespace ActivityLogger
 
         private static void Clear()
         {
-            if (DateTime.Now.Day != 1) { return; }
-            else if (activityDictionary == null) { return; }
-            else if (activityDictionary.Count == 0) { return; }
+            DateTime date = DateTime.Now;
+            
+            if (date.Day != 1) { return; }
+            if (activityDictionary == null) { return; }
+            if (activityDictionary.Count == 0) { return; }
 
-            foreach (var item in activityDictionary.ToList())
+            foreach (var (key, value) in activityDictionary.ToList())
             {
-                for (int i = 0; i < item.Value.Count; i++)
+                for (int i = 0; i < value.Count; i++)
                 {
-                    if (item.Value[i].MinutesSpent() < 10)
+                    if (value[i].MinutesSpent() < 10)
                     {
-                        item.Value.RemoveRange(i, item.Value.Count - i);
-                        activityDictionary[item.Key] = item.Value;
+                        value.RemoveRange(i, value.Count - i);
+                        activityDictionary[key] = value;
                         break;
                     }
                 }
@@ -210,7 +212,7 @@ namespace ActivityLogger
                 return value;
             
             // Try to get the most meaningful name for the current Item
-            if (p.MainWindowTitle.Contains(p.ProcessName))
+            if (p.MainWindowTitle.ToLower().Contains(p.ProcessName.ToLower()))
             {
                 if (!p.MainWindowTitle.Contains('-')) { return p.ProcessName; }
 
@@ -219,19 +221,16 @@ namespace ActivityLogger
 
             if (!p.MainWindowTitle.Contains("-")) { return p.MainWindowTitle; }
 
-            string FileName = p.MainWindowTitle.Split("-")[p.MainWindowTitle.Split("-").Length - 1].TrimStart();
+            string fileName = p.MainWindowTitle.Split("-")[p.MainWindowTitle.Split("-").Length - 1].TrimStart();
 
-            string[] SplitPath;
+            string[] splitPath;
 
-            try { SplitPath = p.MainModule.FileName.Split("\\"); } catch { return p.ProcessName; }
+            try { splitPath = p.MainModule.FileName.Split("\\"); } catch { return p.ProcessName; }
 
             // Checks by path
-            foreach (string item in SplitPath)
+            if (splitPath.Any(item => item.ToLower().Contains(fileName.ToLower()) || fileName.ToLower().Contains(item.ToLower())))
             {
-                if (item.ToLower().Contains(FileName.ToLower()) || FileName.ToLower().Contains(item.ToLower()))
-                {
-                    return p.MainWindowTitle.Split("-")[p.MainWindowTitle.Split("-").Length - 1].TrimStart();
-                }
+                return p.MainWindowTitle.Split("-")[p.MainWindowTitle.Split("-").Length - 1].TrimStart();
             }
 
             return p.ProcessName;
