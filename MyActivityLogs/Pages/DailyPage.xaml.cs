@@ -20,10 +20,7 @@ namespace MyActivityLogs.Pages
         private void LoadDaily(Dictionary<string, List<Activity>> dict)
         {
             string date = MainWindow.DateFormat();
-            if (!dict.ContainsKey(date))
-            {
-                return;
-            }
+            if (!dict.ContainsKey(date)) { return; }
 
             activities = MainWindow.AddToListPerDay(DateTime.Now, dict, activities, false);
 

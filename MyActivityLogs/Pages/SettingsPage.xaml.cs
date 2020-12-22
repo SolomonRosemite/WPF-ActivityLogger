@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Windows;
 using System.IO;
+
 using System;
 using Newtonsoft.Json;
 
@@ -9,12 +10,11 @@ namespace MyActivityLogs.Pages
 {
     public partial class SettingsPage : Page
     {
-        DateTime start;
-        DateTime end;
-        public SettingsPage()
-        {
-            InitializeComponent();
-        }
+        private DateTime start;
+        private DateTime end;
+
+        public SettingsPage() => InitializeComponent();
+
         public SettingsPage(DateTime start, DateTime end)
         {
             InitializeComponent();
@@ -25,43 +25,63 @@ namespace MyActivityLogs.Pages
             MyDatePickerStart.SelectedDate = start;
             MyDatePickerEnd.SelectedDate = end;
         }
+
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             if (!File.Exists(MainWindow.ActivityLoggerPath + @"\SavedActivities.json"))
             {
-                Process.Start("explorer.exe", MainWindow.ActivityLoggerPath);
+                OpenWithDefaultProgram(MainWindow.ActivityLoggerPath);
                 return;
             }
-            Process.Start("notepad.exe", MainWindow.ActivityLoggerPath + @"\SavedActivities.json");
+
+            OpenWithDefaultProgram(MainWindow.ActivityLoggerPath + @"\SavedActivities.json");
         }
 
-        public void Refresh(object sender, RoutedEventArgs e)
+        private static void OpenWithDefaultProgram(string path)
+        {
+            Process p = new Process { StartInfo = { FileName = "explorer", Arguments = "\"" + path + "\"" } };
+            p.Start();
+        }
+
+        private void Refresh(object sender, RoutedEventArgs e)
         {
             MainWindow.Load();
 
             MainWindow.mainWindow.DailyButton();
         }
-        
-        public void ConvertTime(object sender, RoutedEventArgs e)
+
+        private void ConvertTime(object sender, RoutedEventArgs e)
         {
             MainWindow.ShowInHours = !MainWindow.ShowInHours;
-            MainWindow.Load();
+
+            if (MainWindow.ShowInHours)
+            {
+                convertTimeButton.Content = "Convert to Minutes";
+            }
+            else
+            {
+                convertTimeButton.Content = "Convert to Hours";
+            }
+
+            MainWindow.Load(true);
 
             MainWindow.mainWindow.DailyButton();
         }
 
-        public void UpdateDates(object sender, RoutedEventArgs e)
+        private void UpdateDates(object sender, RoutedEventArgs e)
         {
             if (start.Date <= end.Date)
             {
-                MainWindow.mainWindow.UpdateCustomDates(start, end);
+                const string dateFormat = "dd.MM.yyyy";
 
-                // Save
-                string json = JsonConvert.SerializeObject(new string[] { start.ToString(), end.ToString() }, Formatting.Indented);
+                // Save Updates dates
+                string json = JsonConvert.SerializeObject(new[] { start.ToString(dateFormat), end.ToString(dateFormat) }, Formatting.Indented);
                 File.WriteAllText(MainWindow.ActivityLoggerPath + @"\MyActivityLogs\Dates.json", json);
 
                 Popup popup = new Popup("Dates have been Updated.");
                 popup.Show();
+
+                MainWindow.Load();
             }
             else
             {

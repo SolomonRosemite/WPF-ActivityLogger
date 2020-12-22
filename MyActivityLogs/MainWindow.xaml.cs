@@ -26,7 +26,10 @@ namespace MyActivityLogs
         private static DoubleAnimation animation = new DoubleAnimation(1, 0, new Duration(TimeSpan.FromMilliseconds(700)));
 
         public static bool ShowInHours = false;
-        
+
+        // private static DateTime[] savedDates = new DateTime[2] {new DateTime(), new DateTime()};
+        private static DateTime[] savedDates = new DateTime[2];
+
         private enum CurrentPage
         {
             Daily,
@@ -55,10 +58,24 @@ namespace MyActivityLogs
             RefreshTimer();
         }
 
-        public static void Load()
+        public static void Load(bool isConvertingTime = false)
         {
+            if (isConvertingTime && savedDates != null)
+            {
+                pages[0] = new DailyPage();
+                pages[1] = new WeeklyPage();
+                pages[2] = new MonthlyPage();
+                pages[3] = new TotalPage();
+
+                pages[5] = new Yesterday();
+                pages[6] = savedDates == null ? new CustomPage() : new CustomPage(savedDates[0], savedDates[1]);
+                return;
+            }
+
             var output = ReadJson();
             DateTime[] dates = GetSavedDates();
+
+            savedDates = dates;
 
             // Checking if json could be read
             if (output is int)
@@ -90,6 +107,7 @@ namespace MyActivityLogs
             pages[1] = new WeeklyPage();
             pages[2] = new MonthlyPage();
             pages[3] = new TotalPage();
+
             pages[4] = dates == null ? new SettingsPage() : new SettingsPage(dates[0], dates[1]);
             pages[5] = new Yesterday();
             pages[6] = dates == null ? new CustomPage() : new CustomPage(dates[0], dates[1]);
@@ -160,70 +178,37 @@ namespace MyActivityLogs
         }
         private void SetPage(CurrentPage currentPage)
         {
+            // Hide Every Rectangle
+            DailySelected.Visibility = Visibility.Hidden;
+            WeeklySelected.Visibility = Visibility.Hidden;
+            MonthlySelected.Visibility = Visibility.Hidden;
+            TotalSelected.Visibility = Visibility.Hidden;
+            YesterdaySelected.Visibility = Visibility.Hidden;
+            SettingsSelected.Visibility = Visibility.Hidden;
+            CustomSelected.Visibility = Visibility.Hidden;
+
             switch (currentPage)
             {
                 case CurrentPage.Daily:
                     DailySelected.Visibility = Visibility.Visible;
-                    WeeklySelected.Visibility = Visibility.Hidden;
-                    MonthlySelected.Visibility = Visibility.Hidden;
-                    TotalSelected.Visibility = Visibility.Hidden;
-                    YesterdaySelected.Visibility = Visibility.Hidden;
-                    SettingsSelected.Visibility = Visibility.Hidden;
-                    CustomSelected.Visibility = Visibility.Hidden;
                     break;
                 case CurrentPage.Weekly:
-                    DailySelected.Visibility = Visibility.Hidden;
                     WeeklySelected.Visibility = Visibility.Visible;
-                    MonthlySelected.Visibility = Visibility.Hidden;
-                    TotalSelected.Visibility = Visibility.Hidden;
-                    YesterdaySelected.Visibility = Visibility.Hidden;
-                    SettingsSelected.Visibility = Visibility.Hidden;
-                    CustomSelected.Visibility = Visibility.Hidden;
                     break;
                 case CurrentPage.Monthly:
-                    DailySelected.Visibility = Visibility.Hidden;
-                    WeeklySelected.Visibility = Visibility.Hidden;
                     MonthlySelected.Visibility = Visibility.Visible;
-                    TotalSelected.Visibility = Visibility.Hidden;
-                    YesterdaySelected.Visibility = Visibility.Hidden;
-                    SettingsSelected.Visibility = Visibility.Hidden;
-                    CustomSelected.Visibility = Visibility.Hidden;
                     break;
                 case CurrentPage.Total:
-                    DailySelected.Visibility = Visibility.Hidden;
-                    WeeklySelected.Visibility = Visibility.Hidden;
-                    MonthlySelected.Visibility = Visibility.Hidden;
                     TotalSelected.Visibility = Visibility.Visible;
-                    YesterdaySelected.Visibility = Visibility.Hidden;
-                    SettingsSelected.Visibility = Visibility.Hidden;
-                    CustomSelected.Visibility = Visibility.Hidden;
                     break;
                 case CurrentPage.Settings:
-                    DailySelected.Visibility = Visibility.Hidden;
-                    WeeklySelected.Visibility = Visibility.Hidden;
-                    MonthlySelected.Visibility = Visibility.Hidden;
-                    TotalSelected.Visibility = Visibility.Hidden;
-                    YesterdaySelected.Visibility = Visibility.Hidden;
                     SettingsSelected.Visibility = Visibility.Visible;
-                    CustomSelected.Visibility = Visibility.Hidden;
                     break;
                 case CurrentPage.Yesterday:
-                    DailySelected.Visibility = Visibility.Hidden;
-                    WeeklySelected.Visibility = Visibility.Hidden;
-                    MonthlySelected.Visibility = Visibility.Hidden;
-                    TotalSelected.Visibility = Visibility.Hidden;
                     YesterdaySelected.Visibility = Visibility.Visible;
-                    SettingsSelected.Visibility = Visibility.Hidden;
-                    CustomSelected.Visibility = Visibility.Hidden;
                     break;
                 case CurrentPage.Custom:
-                    DailySelected.Visibility = Visibility.Hidden;
-                    WeeklySelected.Visibility = Visibility.Hidden;
-                    MonthlySelected.Visibility = Visibility.Hidden;
-                    TotalSelected.Visibility = Visibility.Hidden;
-                    YesterdaySelected.Visibility = Visibility.Hidden;
                     CustomSelected.Visibility = Visibility.Visible;
-                    SettingsSelected.Visibility = Visibility.Hidden;
                     break;
             }
         }
@@ -236,7 +221,7 @@ namespace MyActivityLogs
 
             return activities;
         }
-        
+
         public static List<Activity> AddToListForWeekly(int daysBehind, Dictionary<string, List<Activity>> dict, List<Activity> list)
         {
             DateTime date = DateTime.Now;
@@ -468,8 +453,6 @@ namespace MyActivityLogs
             SetPage(CurrentPage.Custom);
             MyFrame.Content = pages[6];
         }
-
-        public void UpdateCustomDates(DateTime start, DateTime end) => pages[6].UpdateDates(start, end);
     }
 
     public class Activity

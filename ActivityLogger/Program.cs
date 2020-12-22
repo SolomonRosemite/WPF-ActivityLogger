@@ -160,7 +160,7 @@ namespace ActivityLogger
             if (Array.Exists(config.IgnoreProcessName, element => element.ToLower() == fileName.ToLower())) { return; }
 
             // If fileName is empty don't save
-            if (fileName.Trim().Length == 0) { return; }
+            if (fileName.Length == 0) { return; }
 
             // Checks if fileName already exists in the activities list
             // If so we edit. Else we add a new entry
@@ -205,18 +205,19 @@ namespace ActivityLogger
             IntPtr pointer = GetForegroundWindow();
             uint pid;
             GetWindowThreadProcessId(pointer, out pid);
+            Thread.Sleep(10000);
             Process p = Process.GetProcessById((int)pid);
 
             string value = config.RenameActivity(p.MainWindowTitle, p.ProcessName);
             if (value != null)
-                return value;
+                return value.Trim();
             
             // Try to get the most meaningful name for the current Item
             if (p.MainWindowTitle.ToLower().Contains(p.ProcessName.ToLower()))
             {
-                if (!p.MainWindowTitle.Contains('-')) { return p.ProcessName; }
+                if (!p.MainWindowTitle.Contains('-')) { return p.ProcessName.Trim(); }
 
-                return p.MainWindowTitle.Split("-")[p.MainWindowTitle.Split("-").Length - 1].TrimStart();
+                return p.MainWindowTitle.Split("-")[p.MainWindowTitle.Split("-").Length - 1].TrimStart().Trim();
             }
 
             if (!p.MainWindowTitle.Contains("-")) { return p.MainWindowTitle; }
@@ -225,15 +226,15 @@ namespace ActivityLogger
 
             string[] splitPath;
 
-            try { splitPath = p.MainModule.FileName.Split("\\"); } catch { return p.ProcessName; }
+            try { splitPath = p.MainModule.FileName.Split("\\"); } catch { return p.ProcessName.Trim(); }
 
             // Checks by path
             if (splitPath.Any(item => item.ToLower().Contains(fileName.ToLower()) || fileName.ToLower().Contains(item.ToLower())))
             {
-                return p.MainWindowTitle.Split("-")[p.MainWindowTitle.Split("-").Length - 1].TrimStart();
+                return p.MainWindowTitle.Split("-")[p.MainWindowTitle.Split("-").Length - 1].TrimStart().Trim();
             }
 
-            return p.ProcessName;
+            return p.ProcessName.Trim();
         }
         private static string GetDirectory()
         {
