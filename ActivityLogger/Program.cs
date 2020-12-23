@@ -205,7 +205,6 @@ namespace ActivityLogger
             IntPtr pointer = GetForegroundWindow();
             uint pid;
             GetWindowThreadProcessId(pointer, out pid);
-            Thread.Sleep(10000);
             Process p = Process.GetProcessById((int)pid);
 
             string value = config.RenameActivity(p.MainWindowTitle, p.ProcessName);
