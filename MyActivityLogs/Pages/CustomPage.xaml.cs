@@ -49,9 +49,9 @@ namespace MyActivityLogs.Pages
             
             ActivitiesItemsControl.ItemsSource = activities;
 
-            string startingDate = start.Date.ToString();
-            string endingDate = end.Date.ToString();
-            CustomTitle.Content = $"From {startingDate.Remove(startingDate.Length - 8)} to {endingDate.Remove(endingDate.Length - 8)}";
+            string startingDate = start.Date.ToString("dd.MM.yyyy");
+            string endingDate = end.Date.ToString("dd.MM.yyyy");
+            CustomTitle.Content = $"From {startingDate} to {endingDate}";
         }
     }
 }

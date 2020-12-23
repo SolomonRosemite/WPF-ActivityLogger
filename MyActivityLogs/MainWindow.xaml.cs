@@ -266,7 +266,10 @@ namespace MyActivityLogs
         }
         public static List<Activity> AddToListPerDay(DateTime date, Dictionary<string, List<Activity>> dict, List<Activity> list, bool checkIfEntryAlreadyExists)
         {
-            if (!dict.ContainsKey(DateFormat(date))) { return new List<Activity>(); }
+            if (!dict.ContainsKey(DateFormat(date)))
+            {
+                return list ?? new List<Activity>();
+            }
 
             if (checkIfEntryAlreadyExists == false)
             {
@@ -303,7 +306,6 @@ namespace MyActivityLogs
                 {
                     if (list[j].ActivityName == myActivities[i].ActivityName)
                     {
-
                         list[j].TimeSpent = (list[j].TimeSpentint + temp).ToString() + " Minutes";
                         list[j].TimeSpentint += temp;
                         skipped = true;
