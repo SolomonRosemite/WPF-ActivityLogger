@@ -4,12 +4,19 @@ import { createNewUser, IUser, randomString, uuidExists } from './common';
 import * as bodyParser from "body-parser";
 import * as express from "express";
 
-const serviceAccount = require("../serviceAccount.json");
+// const serviceAccount = require("../serviceAccount.json");
+let data: any;
+const v = process.env.test;
+if (v) {
+  data = JSON.parse(v)
+}
+
+console.log(data.type)
 
 import * as admin from 'firebase-admin';
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
+  credential: admin.credential.cert(data),
   storageBucket: "rosemite-activities.appspot.com"
 });
 
