@@ -37,3 +37,4 @@ jspm_packages
 functions
 app
 *.lock
+serviceAccount.json

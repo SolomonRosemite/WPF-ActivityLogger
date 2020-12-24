@@ -4,26 +4,24 @@ import { createNewUser, IUser, randomString, uuidExists } from './common';
 import * as bodyParser from "body-parser";
 import * as express from "express";
 
-import { firebaseConfig } from "./credentials";
-import firebase from "firebase/app";
+const serviceAccount = require("../serviceAccount.json");
 
-// Firebase services
-import "firebase/auth";
-import "firebase/firestore";
-import "firebase/storage";
+import * as admin from 'firebase-admin';
 
-const project = firebase.initializeApp(firebaseConfig);
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  storageBucket: "rosemite-activities.appspot.com"
+});
 
-const auth = project.auth();
-const firestore = project.firestore();
-const storage = project.storage();
+const auth = admin.auth();
+const firestore = admin.firestore();
+const storage = admin.storage();
 
 const appname = "app";
 
 const app = express();
 const router = express.Router();
 
-const users: IUser[] = [];
 
 app.use(bodyParser.json());
 app.use(`/.netlify/functions/${appname}`, router);
@@ -38,16 +36,15 @@ router.post("/auth", async (req, res) => {
   const { secret } = req.body;
 
   if(secret === undefined || secret === null) {
-    const id = createUUID(randomString(20), users);
+    const id = await createUUID(randomString(20));
     const user = createNewUser(id);
-    users.push(user);
 
     const result = await signUpUser(user).catch((err) => {
       console.log(err)
       // TODO: Report Error
     })
 
-    if (!result || !result.user) {
+    if (!result) {
       // The Email either already in use or something else went wrong
       res.status(500).json({
         message: "Something when wrong. Try to regenerate a new secret"
@@ -55,8 +52,15 @@ router.post("/auth", async (req, res) => {
       return;
     }
 
-    await firestore.doc("/users/" + result.user.uid).set({
+    await firestore.doc("/users/" + result.uid).set({
       action: "waiting"
+    })
+
+    await firestore.doc("/secrets/" + result.uid).set({
+      secret: user.uuid,
+      email: user.email,
+      password: user.password,
+      uid: result.uid,
     })
 
     res.json({
@@ -65,7 +69,7 @@ router.post("/auth", async (req, res) => {
     return;
   }
 
-  const user = uuidExists(secret, users)
+  const user = await uuidExists(secret, firestore)
 
   if (!user) {
     res.json({
@@ -74,22 +78,29 @@ router.post("/auth", async (req, res) => {
     return;
   }
 
+
   res.json({
-    user: user
+    user: {
+      email: user.email,
+      password: user.password
+    }
   });
 })
 
-function createUUID(id: string, list: IUser[]): string {
-  const res = uuidExists(id, list)
+async function createUUID(id: string): Promise<string> {
+  const res = await uuidExists(id, firestore)
   if (res) {
-    return createUUID(randomString(20), list);
+    return await createUUID(randomString(20));
   }
 
   return id;
 }
 
 function signUpUser(user: IUser) {
-  return auth.createUserWithEmailAndPassword(user.email, user.password);
+  return auth.createUser({
+    email: user.email,
+    password: user.password
+  })
 }
 
 module.exports.handler = serverless(app);

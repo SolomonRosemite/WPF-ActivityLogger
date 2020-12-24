@@ -4,19 +4,25 @@ interface IUser {
   password: string;
 }
 
-function uuidExists(uuid: string, users: IUser[]): IUser | undefined {
-  const results = users.filter(u => u.uuid == uuid);
+async function uuidExists(uuid: string, firestore: FirebaseFirestore.Firestore): Promise<IUser | undefined> {
+  const results = await firestore.collection("/secrets")
+                    .where("secret", "==", uuid)
+                    .get()
+                    .catch((err) => {
+                      console.log(err)
+                    });
 
-  if (results.length === 0) {
-    return undefined;
+
+  if (results && !results.empty) {
+    return results.docs[0].data() as IUser;
   }
 
-  return results[0];
+  return undefined;
 }
 
 function createNewUser(id: string): IUser {
   const email = `${id}@${randomString(10)}.com`
-  const password = randomString(12);
+  const password = randomString(20);
 
   return {
     email: email,
