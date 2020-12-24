@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+
+    "strict": true,
+
+    "esModuleInterop": false,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+
+    // If changing the Output Directory, make sure to change the "app" also in the
+    // package.json (build script) & (main) & src/app.ts & in the src/app.ts the appname.
+    // Or just keep it as it is.
+
+    // Small Example changing appname to "weather":
+    // package.json:
+    //   "main": - "functions/app.js" -> "functions/weather.js"
+    //   "build": - "... netlify-lambda build app" -> "... netlify-lambda build weather"
+
+    // app.ts
+    // const appname = "app" -> const appname = "weather"
+
+    // "Rename file app.ts": "app.ts" -> "weather.ts"
+    "outDir": "./app"
+  },
+
+  "include": ["src/**/*.ts"]
+}
