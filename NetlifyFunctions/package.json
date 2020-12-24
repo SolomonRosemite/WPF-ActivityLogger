@@ -11,6 +11,7 @@
   "dependencies": {
     "@types/express": "^4.17.9",
     "body-parser": "^1.18.3",
+    "dotenv": "^8.2.0",
     "express": "^4.16.3",
     "firebase-admin": "^9.4.2",
     "netlify-lambda": "^0.4.0",

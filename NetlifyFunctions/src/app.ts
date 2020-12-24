@@ -1,22 +1,15 @@
 const serverless = require("serverless-http");
+require("dotenv").config();
 
 import { createNewUser, IUser, randomString, uuidExists } from './common';
 import * as bodyParser from "body-parser";
 import * as express from "express";
 
-// const serviceAccount = require("../serviceAccount.json");
-let data: any;
-const v = process.env.test;
-if (v) {
-  data = JSON.parse(v)
-}
-
-console.log(data.type)
-
+const serviceAccount = JSON.parse(process.env.serviceAccount as any);
 import * as admin from 'firebase-admin';
 
 admin.initializeApp({
-  credential: admin.credential.cert(data),
+  credential: admin.credential.cert(serviceAccount),
   storageBucket: "rosemite-activities.appspot.com"
 });
 
