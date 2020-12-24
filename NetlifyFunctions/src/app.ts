@@ -5,8 +5,8 @@ require("dotenv").config();
 import * as bodyParser from "body-parser";
 import * as express from "express";
 //
-const json = JSON.parse(process.env.cleanJson as any);
-// const serviceAccount = JSON.parse(process.env.serviceAccount as any);
+// const json = JSON.parse(process.env.cleanJson as any);
+const serviceAccount = JSON.parse(process.env.serviceAccount as any);
 // import * as admin from 'firebase-admin';
 //
 // admin.initializeApp({
@@ -29,7 +29,7 @@ app.use(`/.netlify/functions/${appname}`, router);
 
 router.get("/", (req, res) => {
   res.json({
-     message: json
+     message: serviceAccount
    });
 });
 //
