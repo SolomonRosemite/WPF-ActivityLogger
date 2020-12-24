@@ -29,11 +29,16 @@ async function main() {
 
   console.log(userAuth);
 
-  // const user = signInUser(userAuth);
+  const user = await authenticate(userAuth)
+  .catch((err) => {
+    console.log(err)
+  });
 
+  console.log(user)
   return;
 
   // const docRef = firestore.collection("actions").doc("SavedActivities");
+
   const docRef = firestore
     .collection(Collections.Users)
     .doc("ztP60H1v3xesHO6PMM2j");
@@ -117,10 +122,12 @@ function reportError(err: any) {}
 
 // Acquires User Secret
 function getUserSecret(pathToConfig: string): string | undefined {
-  const config: IConfig = require(pathToConfig);
-  if (config && config.userSecret) {
-    return config.userSecret;
-  }
+  try {
+    const config: IConfig = require(pathToConfig);
+    if (config && config.userSecret) {
+      return config.userSecret;
+    }
+  } catch {}
 
   return undefined;
 }
@@ -135,14 +142,19 @@ async function getUser(
 
     const response = await axios.post(`${url}/auth`, body);
 
-    const res: string = await response.data.user.uuid;
+    const { uuid, email, password } = await response.data.user;
 
-    let config = require(pathToConfig);
-    config.userSecret = res;
+    let config: any = {};
+
+    try {
+      config = require(pathToConfig);
+    } catch {  }
+
+    config.userSecret = uuid;
 
     fs.writeFileSync(pathToConfig, JSON.stringify(config, undefined, 2));
 
-    return getUser(res, pathToConfig);
+    return { email, password };
   }
 
   const body = { secret: secret };
@@ -151,6 +163,9 @@ async function getUser(
 
   if (response.data.error) {
     return await getUser(undefined, pathToConfig);
+  } else if(response.status === 500) {
+    // TODO: Handle...
+    return
   }
 
   const { email, password } = response.data.user;
@@ -158,8 +173,15 @@ async function getUser(
   return { email, password };
 }
 
-// Signs a User Up or if already existent Signs User In
-function signInUser(user: IUserAuth) {}
+
+function signInWithEmail(user: IUserAuth) {
+  console.log(user)
+  return auth.signInWithEmailAndPassword(user.email, user.password);
+}
+
+async function authenticate(user: IUserAuth): Promise<firebase.auth.UserCredential> {
+    return await signInWithEmail(user)
+}
 
 // Start App
 try {
