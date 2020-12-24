@@ -7,13 +7,21 @@ import * as express from "express";
 //
 // const json = JSON.parse(process.env.cleanJson as any);
 const serviceAccount = JSON.parse(process.env.serviceAccount as any);
-// import * as admin from 'firebase-admin';
-//
-// admin.initializeApp({
-//   credential: admin.credential.cert(serviceAccount),
-//   storageBucket: "rosemite-activities.appspot.com"
-// });
-//
+import * as admin from 'firebase-admin';
+
+let val: {err: any, fullError: any} = {} as any;
+
+try {
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    storageBucket: "rosemite-activities.appspot.com"
+  });
+} catch (err) {
+val.err = err,
+val.fullError = JSON.stringify(err, ["message", "arguments", "type", "name"])
+}
+
+
 // const auth = admin.auth();
 // const firestore = admin.firestore();
 // const storage = admin.storage();
@@ -29,7 +37,7 @@ app.use(`/.netlify/functions/${appname}`, router);
 
 router.get("/", (req, res) => {
   res.json({
-     message: serviceAccount
+     message: val
    });
 });
 //
