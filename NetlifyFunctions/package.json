@@ -6,6 +6,8 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc --build tsconfig.json && netlify-lambda build app",
+    "serve": "tsc --build tsconfig.json && netlify-lambda serve app",
+    "serve2": "tsc --build tsconfig.json && netlify-lambda serve --config ./config/webpack.functions.js app",
     "dev": "nodemon"
   },
   "dependencies": {
@@ -16,7 +18,8 @@
     "firebase-admin": "^9.4.2",
     "netlify-lambda": "^0.4.0",
     "serverless-http": "^1.6.0",
-    "typescript": "^4.1.3"
+    "typescript": "^4.1.3",
+    "webpack-node-externals": "^2.5.2"
   },
   "devDependencies": {
     "@types/node": "^14.14.16",
