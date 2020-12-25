@@ -9,7 +9,7 @@
     "serve": "tsc --build tsconfig.json && netlify-lambda serve app",
     "serve2": "tsc --build tsconfig.json && netlify-lambda serve --config ./config/webpack.functions.js app",
     "dev": "nodemon",
-    "build": "tsc --build tsconfig.json && npx netlify-lambda@2.0.1 build src --config webpack.functions.js"
+    "build": "tsc --build tsconfig.json && npx netlify-lambda@2.0.1 build app --config webpack.functions.js"
   },
   "dependencies": {
     "@types/express": "^4.17.9",
