@@ -38,3 +38,4 @@ functions
 app
 *.lock
 serviceAccount.json
+.env
