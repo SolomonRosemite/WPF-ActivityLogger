@@ -1,7 +1,6 @@
-// Todo: Add production url
 const url =
   process.env.NODE_ENV === "production"
-    ? ""
+    ? "https://wpf-activitylogger-functions.netlify.app/.netlify/functions/app"
     : "http://localhost:3000/.netlify/functions/app";
 
 const homedir = require("os").homedir() + "\\TMRosemite\\ActivityLogger\\";
@@ -10,6 +9,11 @@ const pathToConfig = homedir + "Config.json";
 
 enum Collections {
   Users = "users",
+}
+
+interface IUpdateResult {
+  successful: boolean;
+  err: any;
 }
 
 interface IConfig {
@@ -21,4 +25,12 @@ interface IUserAuth {
   password: string;
 }
 
-export { Collections, IUserAuth, IConfig, url, path, pathToConfig };
+export {
+  Collections,
+  IUserAuth,
+  IConfig,
+  url,
+  path,
+  pathToConfig,
+  IUpdateResult,
+};

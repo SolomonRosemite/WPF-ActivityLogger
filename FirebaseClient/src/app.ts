@@ -1,6 +1,7 @@
 import {
   Collections,
   IConfig,
+  IUpdateResult,
   IUserAuth,
   path,
   pathToConfig,
@@ -27,50 +28,60 @@ const storage = project.storage();
 async function main() {
   const userAuth = await getUser(getUserSecret(pathToConfig), pathToConfig);
 
-  console.log(userAuth);
+  if (!userAuth) {
+    // Todo: Guess what... report another Error
+    return;
+  }
 
-  const user = await authenticate(userAuth)
-  .catch((err) => {
-    console.log(err)
+  const result = await authenticate(userAuth).catch((err) => {
+    reportError({
+      message: err,
+    });
   });
 
-  console.log(user)
-  return;
+  if (!result || result.user === null) {
+    // Todo: Report Error: "User Authentication Failed, when it shouldn't"
+    return;
+  }
 
-  // const docRef = firestore.collection("actions").doc("SavedActivities");
+  const user = result.user;
 
-  const docRef = firestore
-    .collection(Collections.Users)
-    .doc("ztP60H1v3xesHO6PMM2j");
+  const docRef = firestore.collection(Collections.Users).doc(user.uid);
 
   let firstRun = true;
 
   docRef.onSnapshot((item) => {
     if (firstRun) {
-      repeat(docRef, path);
+      repeat(docRef, path, user.uid);
       firstRun = false;
       return;
     }
 
-    let value: string = item.data()!.action;
+    let state: string = item.data()!.action;
 
-    switch (value) {
+    switch (state) {
+      // Ignore this states
       case "waiting":
       case "updated":
         break;
+
+      // Upload latest Activities json
       case "updateActivityFile":
-        uploadActivity(new Date(), path).then(() => {
-          docRef.set({
-            action: "updated",
-          });
+        uploadActivity(new Date(), path, user.uid).then((res) => {
+          if (res.successful) {
+            docRef.set({
+              action: "updated",
+            });
+          } else {
+            // TODO:reportError()
+          }
         });
         break;
+
+      // If State is Unexpected
       default:
-        if (value.length === 0) {
-          break;
-        }
         reportError({
-          error: `The action: ${value} is Invalid.`,
+          message: `The action: ${state} is Invalid.`,
         });
         break;
     }
@@ -80,37 +91,45 @@ async function main() {
 // Upload the updated Activity
 async function uploadActivity(
   today: Date,
-  pathToFile: string
-): Promise<boolean> {
-  // Todo: Fix me
-  //   try {
-  //     // var bucket = storage.bucket();
+  pathToFile: string,
+  uid: string
+): Promise<IUpdateResult> {
+  try {
+    var day = String(today.getDate()).padStart(2, "0");
+    var month = String(today.getMonth() + 1).padStart(2, "0");
+    var year = today.getFullYear();
 
-  //     var day = String(today.getDate()).padStart(2, "0");
-  //     var month = String(today.getMonth() + 1).padStart(2, "0");
-  //     var year = today.getFullYear();
+    const destination = `${uid}/${day}.${month}.${year}/SavedActivities.json`;
 
-  //     await bucket.upload(pathToFile, {
-  //       destination: `${day}.${month}.${year}/SavedActivities.json`,
-  //     });
-  //     return true;
-  //   } catch (err) {
-  //     return false;
-  //   }
-  return true;
+    const file = fs.readFileSync(pathToFile);
+
+    await storage.ref(destination).put(file);
+  } catch (err) {
+    return {
+      successful: false,
+      err: err,
+    };
+  }
+
+  return {
+    successful: true,
+    err: undefined,
+  };
 }
 
 // Uploads every 5 Minutes the updated Activities.
-async function repeat(docRef: any, path: string) {
-  const success = await uploadActivity(new Date(), path);
+async function repeat(docRef: any, path: string, uid: string) {
+  const res = await uploadActivity(new Date(), path, uid);
 
-  if (success == true) {
+  if (res.successful == true) {
     docRef.set({
       action: "updated",
     });
+  } else {
+    // Todo: Report Error
   }
 
-  delay(1000 * 300).then(() => repeat(docRef, path));
+  delay(1000 * 300).then(() => repeat(docRef, path, uid));
 }
 
 function delay(ms: number) {
@@ -118,7 +137,10 @@ function delay(ms: number) {
 }
 
 // Todo: On Error report to server. (If client has internet)
-function reportError(err: any) {}
+function reportError(error: { message: string | any }) {
+  // Todo: Save with a date
+  console.log(error);
+}
 
 // Acquires User Secret
 function getUserSecret(pathToConfig: string): string | undefined {
@@ -127,7 +149,9 @@ function getUserSecret(pathToConfig: string): string | undefined {
     if (config && config.userSecret) {
       return config.userSecret;
     }
-  } catch {}
+  } catch (err) {
+    // Todo: Err
+  }
 
   return undefined;
 }
@@ -136,7 +160,7 @@ function getUserSecret(pathToConfig: string): string | undefined {
 async function getUser(
   secret: string | undefined,
   pathToConfig: string
-): Promise<IUserAuth> {
+): Promise<IUserAuth | undefined> {
   if (!secret) {
     const body = { secret: null };
 
@@ -148,7 +172,7 @@ async function getUser(
 
     try {
       config = require(pathToConfig);
-    } catch {  }
+    } catch {}
 
     config.userSecret = uuid;
 
@@ -163,9 +187,9 @@ async function getUser(
 
   if (response.data.error) {
     return await getUser(undefined, pathToConfig);
-  } else if(response.status === 500) {
+  } else if (response.status === 500) {
     // TODO: Handle...
-    return
+    return;
   }
 
   const { email, password } = response.data.user;
@@ -173,19 +197,23 @@ async function getUser(
   return { email, password };
 }
 
-
 function signInWithEmail(user: IUserAuth) {
-  console.log(user)
   return auth.signInWithEmailAndPassword(user.email, user.password);
 }
 
-async function authenticate(user: IUserAuth): Promise<firebase.auth.UserCredential> {
-    return await signInWithEmail(user)
+async function authenticate(
+  user: IUserAuth
+): Promise<firebase.auth.UserCredential> {
+  return await signInWithEmail(user);
 }
 
 // Start App
 try {
   main();
 } catch (err) {
-  reportError(err);
+  reportError({
+    message: err,
+  });
 }
+
+global.XMLHttpRequest = require("xhr2");
