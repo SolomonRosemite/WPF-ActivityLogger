@@ -26,10 +26,13 @@ const firestore = project.firestore();
 const storage = project.storage();
 
 async function main() {
-  const userAuth = await getUser(getUserSecret(pathToConfig), pathToConfig);
+  const secret = getUserSecret(pathToConfig);
+  const userAuth = await getUser(secret, pathToConfig);
 
   if (!userAuth) {
-    // Todo: Guess what... report another Error
+    reportError({
+      message: "Got Response Code: 500. When Trying to get User",
+    });
     return;
   }
 
@@ -40,7 +43,10 @@ async function main() {
   });
 
   if (!result || result.user === null) {
-    // Todo: Report Error: "User Authentication Failed, when it shouldn't"
+    reportError({
+      message: "User Authentication Failed On User",
+      secret: secret,
+    });
     return;
   }
 
@@ -60,7 +66,7 @@ async function main() {
     let state: string = item.data()!.action;
 
     switch (state) {
-      // Ignore this states
+      // Ignore these states
       case "waiting":
       case "updated":
         break;
@@ -73,7 +79,9 @@ async function main() {
               action: "updated",
             });
           } else {
-            // TODO:reportError()
+            reportError({
+              message: res.err,
+            });
           }
         });
         break;
@@ -126,7 +134,10 @@ async function repeat(docRef: any, path: string, uid: string) {
       action: "updated",
     });
   } else {
-    // Todo: Report Error
+    reportError({
+      message: res.err,
+      uid: uid,
+    });
   }
 
   delay(1000 * 300).then(() => repeat(docRef, path, uid));
@@ -136,10 +147,25 @@ function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-// Todo: On Error report to server. (If client has internet)
-function reportError(error: { message: string | any }) {
-  // Todo: Save with a date
-  console.log(error);
+function reportError(error: {
+  message: string | any;
+  secret?: string;
+  uid?: string;
+}) {
+  isOnline().then((val) => {
+    if (val === false) {
+      return;
+    }
+
+    const data = {
+      ...error,
+      date: new Date(),
+    };
+
+    const str = JSON.stringify(data);
+
+    firestore.collection("errors").doc().set({ error: str });
+  });
 }
 
 // Acquires User Secret
@@ -149,9 +175,7 @@ function getUserSecret(pathToConfig: string): string | undefined {
     if (config && config.userSecret) {
       return config.userSecret;
     }
-  } catch (err) {
-    // Todo: Err
-  }
+  } catch {}
 
   return undefined;
 }
@@ -164,7 +188,15 @@ async function getUser(
   if (!secret) {
     const body = { secret: null };
 
-    const response = await axios.post(`${url}/auth`, body);
+    const response = await axios.post(`${url}/auth`, body).catch((err) =>
+      reportError({
+        message: err,
+      })
+    );
+
+    if (!(response instanceof Object)) {
+      return;
+    }
 
     const { uuid, email, password } = await response.data.user;
 
@@ -183,12 +215,19 @@ async function getUser(
 
   const body = { secret: secret };
 
-  const response = await axios.post(`${url}/auth`, body);
+  const response = await axios.post(`${url}/auth`, body).catch((err) =>
+    reportError({
+      message: err,
+    })
+  );
+
+  if (!(response instanceof Object)) {
+    return;
+  }
 
   if (response.data.error) {
     return await getUser(undefined, pathToConfig);
   } else if (response.status === 500) {
-    // TODO: Handle...
     return;
   }
 
@@ -207,13 +246,21 @@ async function authenticate(
   return await signInWithEmail(user);
 }
 
+async function isOnline(): Promise<boolean> {
+  try {
+    await axios.get("http://google.com/generate_204");
+  } catch {
+    return false;
+  }
+
+  return true;
+}
+
 // Start App
-try {
-  main();
-} catch (err) {
+main().catch((err) => {
   reportError({
     message: err,
   });
-}
+});
 
 global.XMLHttpRequest = require("xhr2");

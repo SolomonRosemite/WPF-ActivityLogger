@@ -39,12 +39,17 @@ router.post("/auth", async (req, res) => {
     const user = createNewUser(id);
 
     const result = await signUpUser(user).catch((err) => {
-      console.log(err);
-      // TODO: Report Error
+      const data = {
+        ...err,
+        user: user,
+        date: new Date(),
+      };
+      firestore.collection("/serverErrors").add({
+        error: JSON.stringify(err),
+      });
     });
 
     if (!result) {
-      // The Email either already in use or something else went wrong
       res.status(500).json({
         message: "Something when wrong. Try to regenerate a new secret",
       });
