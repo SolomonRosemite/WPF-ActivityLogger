@@ -4,7 +4,15 @@ using System.Windows;
 using System.IO;
 
 using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
+using QRCoder;
+using System.Drawing;
+using System.Windows.Interop;
+using System.Windows.Media.Imaging;
+using System.Windows.Media;
+using Image = System.Drawing.Image;
+using System.Windows.Navigation;
 
 namespace MyActivityLogs.Pages
 {
@@ -13,17 +21,83 @@ namespace MyActivityLogs.Pages
         private DateTime start;
         private DateTime end;
 
-        public SettingsPage() => InitializeComponent();
+        public SettingsPage() => InitPage();
 
         public SettingsPage(DateTime start, DateTime end)
         {
-            InitializeComponent();
+            InitPage();
 
             this.start = start;
             this.end = end;
 
             MyDatePickerStart.SelectedDate = start;
             MyDatePickerEnd.SelectedDate = end;
+        }
+
+        private void InitPage()
+        {
+            InitializeComponent();
+
+            string userSecret = GetUserSecret();
+
+            if (userSecret == null)
+            {
+                QrCodeDescription.Visibility = Visibility.Hidden;
+                QrCodeTitle.Visibility = Visibility.Hidden;
+                QrCodeTryOutBtn.Visibility = Visibility.Hidden;
+                QrCodeImage.Visibility = Visibility.Hidden;
+                return;
+            }
+
+            var qrGenerator = new QRCodeGenerator();
+            QRCodeData qrCodeData = qrGenerator.CreateQrCode(userSecret, QRCodeGenerator.ECCLevel.Q);
+            QRCode qrCode = new QRCode(qrCodeData);
+            Bitmap bitmap = qrCode.GetGraphic(20);
+
+            QrCodeImage.Source = ConvertMap(bitmap);
+        }
+
+        private static string GetUserSecret()
+        {
+            if (!File.Exists(MainWindow.ActivityLoggerPath + @"\Config.json")) return null;
+
+            string jsonFromFile;
+            using (var reader = new StreamReader(MainWindow.ActivityLoggerPath + @"\Config.json"))
+            {
+                jsonFromFile = reader.ReadToEnd();
+                if (!jsonFromFile.Contains("{")) return null;
+            }
+
+            try
+            {
+                var res = JsonConvert.DeserializeObject<Dictionary<string, object>>(jsonFromFile);
+                res.TryGetValue("userSecret", out var secret);
+
+                if (secret != null) return secret.ToString();
+            }
+            catch { }
+
+            return null;
+        }
+
+        private static BitmapImage ConvertMap(Image src)
+        {
+            MemoryStream ms = new MemoryStream();
+            src.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp);
+            
+            BitmapImage image = new BitmapImage();
+            ms.Seek(0, SeekOrigin.Begin);
+            
+            image.BeginInit();
+            image.StreamSource = ms;
+            image.EndInit();
+            
+            return image;
+        }
+
+        private void GetAppEvent(object sender, RoutedEventArgs e)
+        {
+            Process.Start("explorer.exe", "https://github.com/SolomonRosemite/WPF-ActivityLogger/releases");
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -56,11 +130,11 @@ namespace MyActivityLogs.Pages
 
             if (MainWindow.ShowInHours)
             {
-                convertTimeButton.Content = "Convert to Minutes";
+                ConvertTimeButton.Content = "Convert to Minutes";
             }
             else
             {
-                convertTimeButton.Content = "Convert to Hours";
+                ConvertTimeButton.Content = "Convert to Hours";
             }
 
             MainWindow.Load(true);

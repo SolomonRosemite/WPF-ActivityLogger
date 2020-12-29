@@ -5,12 +5,12 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:MyActivityLogs.Pages"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
+      d:DesignHeight="550" d:DesignWidth="800"
       Title="SettingsPage">
 
     <Grid Margin="10,5,0,0">
         <Label Content="Settings" FontSize="28"/>
-        <Button Name="convertTimeButton" Margin="10,0,0,100" HorizontalAlignment="Left" VerticalAlignment="Bottom" Content="Convert to Hours" Width="150" Height="30" FontSize="12" Click="ConvertTime" Background="White" Foreground="#DD000000" BorderBrush="White"/>
+        <Button Name="ConvertTimeButton" Margin="10,0,0,100" HorizontalAlignment="Left" VerticalAlignment="Bottom" Content="Convert to Hours" Width="150" Height="30" FontSize="12" Click="ConvertTime" Background="White" Foreground="#DD000000" BorderBrush="White"/>
         <Button Name="RefreshButton" Margin="10,0,0,60" HorizontalAlignment="Left" VerticalAlignment="Bottom" Content="Refresh" Width="150" Height="30" FontSize="15" Click="Refresh" Background="White" Foreground="#DD000000" BorderBrush="White"/>
         <Button Margin="10,0,0,20" HorizontalAlignment="Left" VerticalAlignment="Bottom" Content="View Activities [ Json ]" Width="150" Height="30" FontSize="11" Click="Button_Click" Background="White" Foreground="#DD000000" BorderBrush="White"/>
         <Button Margin="0,0,10,20" HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="Save" Width="100" Height="30" Click="UpdateDates" Background="White" Foreground="#DD000000" BorderBrush="White"/>
@@ -34,5 +34,11 @@
                 </Style>
             </DatePicker.Resources>
         </DatePicker>
+
+        <Label Name="QrCodeTitle" Content="View Activities on Moblie" Margin="0,33,10,0" HorizontalAlignment="Right" FontSize="22" Height="37" VerticalAlignment="Top"/>
+        <Label Name="QrCodeDescription" Height="54" Margin="0,75,10,0" Content="Scan the QR Code with the mobile&#10;app to view you Activates anywhere!" VerticalAlignment="Top" HorizontalAlignment="Right" Width="249" FontSize="15"/>
+        <Image Name="QrCodeImage" Height="100" Margin="0,134,83,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="100"/>
+        <Button Name="QrCodeTryOutBtn" Margin="0,268,84,0" HorizontalAlignment="Right" VerticalAlignment="Top" Content="Try it out" Width="100" Height="30" Click="GetAppEvent" Background="White" Foreground="#DD000000" BorderBrush="White"/>
+    
     </Grid>
 </Page>

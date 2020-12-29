@@ -16,7 +16,7 @@
         FontSize="17" 
         Height="600" 
         Width="1080" 
-        MinHeight="450"
+        MinHeight="550"
         MinWidth="1000"
         WindowStyle="None" 
         AllowsTransparency="True" 
