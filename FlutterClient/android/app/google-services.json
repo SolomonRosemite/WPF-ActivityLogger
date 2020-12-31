@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "521389710222",
+    "project_id": "rosemite-activities",
+    "storage_bucket": "rosemite-activities.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:521389710222:android:acd6a9071a87ccc9da62df",
+        "android_client_info": {
+          "package_name": "com.rosemite.Activities"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "521389710222-eri9h16pnpe1sncgdicrrs36ua9k3gba.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.rosemite.Activities",
+            "certificate_hash": "e22b1a63bad3e807a28cbbc7f1c2b3dea7ae85aa"
+          }
+        },
+        {
+          "client_id": "521389710222-1mm8ba9dt0p7dp6v1uvme26g73h44r9u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBELx4nV-PbgJiusdjyO-iJKjo-gXFilXE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "521389710222-1mm8ba9dt0p7dp6v1uvme26g73h44r9u.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
