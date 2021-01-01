@@ -4,16 +4,11 @@ import 'package:Activities/Models/Activity.dart';
 import 'package:Activities/Backend/Backend.dart';
 import 'package:Activities/pages/SignIn.dart';
 import 'package:Activities/services/HelperUtilityClass.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:Activities/pages/Home.dart';
 
-import 'dart:convert';
-import 'dart:async';
-
-import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:async';
 
 void main() => runApp(MyApp());
 
@@ -28,12 +23,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Home',
+      title: 'Activities',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MyHomePage(title: 'Home'),
+      home: MyHomePage(title: 'Activities'),
     );
   }
 }
@@ -88,8 +83,10 @@ class MyHomePageState extends State<MyHomePage> {
       IUser user = await Backend.authenticate(secret);
 
       try {
-        await Backend.auth.signInWithEmailAndPassword(email: user.email, password: user.password);
+        var res = await Backend.auth.signInWithEmailAndPassword(email: user.email, password: user.password);
+        Backend.uid = res.user.uid;
       } catch (e) {
+        print(e);
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => SignIn()),

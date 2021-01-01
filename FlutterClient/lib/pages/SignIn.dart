@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:qrscan/qrscan.dart' as scanner;
 
+import '../Backend/Backend.dart';
+
 class SignIn extends StatefulWidget {
   @override
   _SignInState createState() => _SignInState();
@@ -21,7 +23,7 @@ class _SignInState extends State<SignIn> {
 
       String secret = await scanner.scan();
 
-      // Todo:  Sign In and if successful setup the App. Else Tell the User the Secret is invalid.
+      // Todo: Sign In and if successful setup the App. Else Tell the User the Secret is invalid.
       IUser user = await Backend.authenticate(secret);
 
       if (user == null) {
@@ -37,12 +39,13 @@ class _SignInState extends State<SignIn> {
         return;
       }
 
+      await Backend.prefs.setString("userSecret", secret);
       HelperUtilityClass.setupApp(context);
+    } else {
+      setState(() {
+        access = "Denied";
+      });
     }
-
-    setState(() {
-      access = "Denied";
-    });
   }
 
   @override

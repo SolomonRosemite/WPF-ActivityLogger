@@ -38,7 +38,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     tabController = new TabController(length: 2, initialIndex: 0, vsync: this);
     print(MyApp.activities.length);
 
-    ref = Backend.firestore.collection('actions').doc('SavedActivities');
+    ref = Backend.firestore.collection("users").doc(Backend.uid);
 
     ref.snapshots().listen((info) {
       if (info.data()['action'] == 'updated') {

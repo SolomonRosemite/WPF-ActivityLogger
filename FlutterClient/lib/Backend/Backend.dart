@@ -21,19 +21,17 @@ class Backend {
   static FirebaseAuth auth = FirebaseAuth.instance;
   static SharedPreferences prefs;
   static String uid;
-
   static String _url = "https://wpf-activitylogger-functions.netlify.app/.netlify/functions/app/auth";
-
-  // static core.FirebaseApp _app;
 
   static Future<bool> hasInternet() async {
     return await DataConnectionChecker().hasConnection;
   }
 
   static Future<http.Response> _fetchUser(String secret) {
-    return http.post(_url, body: {
+    return http.post(_url, headers: {'Content-type': 'application/json'},
+    body: jsonEncode(<String, String>{
       'secret': secret
-    });
+    }));
   }
 
   static Future<IUser> authenticate(String secret) async {
@@ -41,31 +39,6 @@ class Backend {
 
     var map = jsonDecode(res.body);
 
-    print(map['uuid']);
-    print(map['uuid']);
-    print(map['uuid']);
-    print(map['uuid']);
-    print(map['uuid']);
-    print(map['uuid']);
-    print(map['uuid']);
-    print(map['uuid']);
-    print(map['uuid']);
-    print(map['uuid']);
-    print(map['uuid']);
-    print(map['uuid']);
-    print(map['uuid']);
-    print(map['uuid']);
-    print(map['uuid']);
-    print(map['uuid']);
-    print(map['uuid']);
-    print(map['uuid']);
-    print(map['uuid']);
-    print(map['uuid']);
-    print(map['uuid']);
-    print(map['uuid']);
-    print(map['uuid']);
-    print(map['uuid']);
-    print(map['uuid']);
     print(map['uuid']);
 
     if (map['error'] != null) {
@@ -81,24 +54,26 @@ class Backend {
   }
 
   static Future<String> getLatestActivityJson(DateTime dateTime, String uid) async {
-    String data;
+    int tries = 0;
+    int activitySize = 0;
 
     try {
       String date = DateFormat('dd.MM.yyyy').format(dateTime);
 
-      // Todo: Fix me
-      // var ref = storage.ref().child(uid).child(date).child('SavedActivities.json');
-      print(uid);
-      var ref = storage.ref().child(uid).child("31.12.2020").child('SavedActivities.json');
+      var ref = storage.ref().child(uid).child(date).child('SavedActivities.json');
 
       final String url = await ref.getDownloadURL();
-      data = (await http.get(url)).body;
+      return (await http.get(url)).body;
     } catch (e) {
-      print(e);
-      // return await getLatestActivityJson(dateTime.subtract(new Duration(days: 1)), uid);
-    }
+      if (tries++ > activitySize) {
+        return null;
+      } else if (activitySize == 0) {
+        // activitySize = getActivitySize Todo: Get the number of folders. /uid/*
+      }
 
-    return data;
+      // If there was nothing for this day. We try to get the previous day.
+      return await getLatestActivityJson(dateTime.subtract(new Duration(days: 1)), uid);
+    }
   }
 
   static Future postReport(String issue, DateTime date) async {
