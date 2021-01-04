@@ -148,7 +148,7 @@ namespace ActivityLogger
 
         private static void LaunchFirebaseClient()
         {
-            if (config.DontUseFirebaseClient)
+            if (config.DontUseFirebaseClient.HasValue && config.DontUseFirebaseClient.Value == true)
                 return;
 
             string path = ActivityLoggerPath + @"\FirebaseClient.exe";
@@ -156,13 +156,21 @@ namespace ActivityLogger
 
             if (File.Exists(path))
             {
-                Process process = new Process();
+                // If the Process is already running. Don't start another one.
+                Process[] processes = Process.GetProcessesByName("FirebaseClient");
+                if (processes.Length != 0)
+                    return;
 
-                process.StartInfo.RedirectStandardOutput = true;
-                process.StartInfo.UseShellExecute = false;
-                process.StartInfo.CreateNoWindow = true;
-
-                process.StartInfo.FileName = path;
+                Process process = new Process()
+                {
+                    StartInfo =
+                    {
+                        RedirectStandardOutput = true,
+                        UseShellExecute = false,
+                        CreateNoWindow = true,
+                        FileName = path,
+                    }
+                };
 
                 process.Start();
                 return;
@@ -331,9 +339,38 @@ namespace ActivityLogger
         public readonly Dictionary<string, string> IncludesWindowName;
         public readonly Dictionary<string, string> IsWindowName;
 
-        public readonly string[] IgnoreProcessName;
+        private string[] ignoreProcessName;
 
-        public readonly bool DontUseFirebaseClient;
+        public string[] IgnoreProcessName
+        {
+            get
+            {
+                return ignoreProcessName;
+            }
+            set
+            {
+                if (ignoreProcessName == null || ignoreProcessName.Length == 0)
+                {
+                    ignoreProcessName = value;
+                }
+            }
+        }
+
+        public Nullable<bool> dontUseFirebaseClient;
+        public Nullable<bool> DontUseFirebaseClient
+        {
+            get
+            {
+                return this.dontUseFirebaseClient;
+            }
+            set
+            {
+                if (this.dontUseFirebaseClient == null)
+                {
+                    this.dontUseFirebaseClient = value;
+                }
+            }
+        }
 
         public string RenameActivity(string windowName, string processName)
         {
@@ -363,13 +400,13 @@ namespace ActivityLogger
 
         public Config()
         {
-            IncludesProcessName = new Dictionary<string, string>();
-            IsProcessName = new Dictionary<string, string>();
-            IncludesWindowName = new Dictionary<string, string>();
-            IsWindowName = new Dictionary<string, string>();
+            this.IncludesProcessName = new Dictionary<string, string>();
+            this.IsProcessName = new Dictionary<string, string>();
+            this.IncludesWindowName = new Dictionary<string, string>();
+            this.IsWindowName = new Dictionary<string, string>();
 
-            IgnoreProcessName = new string[0];
-            DontUseFirebaseClient = false;
+            this.IgnoreProcessName = new string[0];
+            this.DontUseFirebaseClient = null;
         }
 
         public Config(
