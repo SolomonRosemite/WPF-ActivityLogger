@@ -1,11 +1,13 @@
-﻿using System;
+﻿using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading;
 using Newtonsoft.Json;
+using System.Linq;
+using System.Net;
+using System.IO;
+using System;
 
 namespace ActivityLogger
 {
@@ -18,20 +20,21 @@ namespace ActivityLogger
         [DllImport("user32.dll")]
         private static extern IntPtr GetForegroundWindow();
 
-        // Activity Logger Data
-        private static readonly string ActivityLoggerPath = GetDirectory() + @"\TMRosemite\ActivityLogger";
 
+        private static readonly string ActivityLoggerPath = GetDirectory() + @"\TMRosemite\ActivityLogger";
         private static Dictionary<string, List<Activity>> activityDictionary = new Dictionary<string, List<Activity>>();
         private static List<Activity> activities = new List<Activity>();
+
+        private static Task firebaseDownloadTask;
         private static Config config;
 
         private const int WaitSeconds = 60;
 
-        private static void Main(string[] args)
+        private static async Task Main(string[] args)
         {
             try
             {
-                Console.WriteLine("Activity Logger Started\n");
+                Console.WriteLine("Activity Logger Started");
 
                 // Checks if Directory is fine and reads json
                 Load();
@@ -39,11 +42,14 @@ namespace ActivityLogger
                 // Clear not needed items
                 Clear();
 
+                // Start the Firebase Client
+                LaunchFirebaseClient();
+
                 // Waits 60 Seconds
                 Thread.Sleep(1000 * WaitSeconds);
 
                 // Main Loop
-                MyMain();
+                await MyMain();
             }
             catch (Exception e)
             {
@@ -58,7 +64,7 @@ namespace ActivityLogger
         private static void Clear()
         {
             DateTime date = DateTime.Now;
-            
+
             if (date.Day != 1) { return; }
             if (activityDictionary == null) { return; }
             if (activityDictionary.Count == 0) { return; }
@@ -140,18 +146,56 @@ namespace ActivityLogger
             config = new Config();
         }
 
-        private static void MyMain()
+        private static void LaunchFirebaseClient()
+        {
+            if (config.DontUseFirebaseClient)
+                return;
+
+            string path = ActivityLoggerPath + @"\FirebaseClient.exe";
+            string url = "https://www.dropbox.com/s/movu3yjxfqe0vwr/FirebaseClient.exe?dl=1";
+
+            if (File.Exists(path))
+            {
+                Process process = new Process();
+
+                process.StartInfo.RedirectStandardOutput = true;
+                process.StartInfo.UseShellExecute = false;
+                process.StartInfo.CreateNoWindow = true;
+
+                process.StartInfo.FileName = path;
+
+                process.Start();
+                return;
+            }
+            else
+            {
+                try
+                {
+                    if (firebaseDownloadTask != null)
+                        return;
+
+                    WebClient client = new WebClient();
+                    using (client = new WebClient())
+                    {
+                        firebaseDownloadTask = client.DownloadFileTaskAsync(url, path);
+                    }
+                }
+                catch { }
+            }
+        }
+
+        private static async Task MyMain()
         {
             while (true)
             {
-                Save(GetActiveProcessFileName());
+                await Save(GetActiveProcessFileName());
 
                 // Sleep one minute and repeat
                 Thread.Sleep(1000 * WaitSeconds);
             }
         }
 
-        private static void Save(string fileName)
+        private static async Task Save(string fileName)
         {
             // If new day just started we need to restart
             CheckForRestart();
@@ -170,14 +214,15 @@ namespace ActivityLogger
                 {
                     int timeSpent = activities[i].MinutesSpent();
 
-                    SaveJson(new Activity(fileName, (++timeSpent) + " Minutes"), i);
+                    await SaveJson(new Activity(fileName, (++timeSpent) + " Minutes"), i);
                     return;
                 }
             }
-            SaveJson(new Activity(fileName, "1 Minute"));
+
+            await SaveJson(new Activity(fileName, "1 Minute"));
         }
 
-        private static void SaveJson(Activity activity, int index = -1)
+        private static async Task SaveJson(Activity activity, int index = -1)
         {
             // Setting up list
             if (index != -1) { activities.RemoveAt(index); }
@@ -195,8 +240,16 @@ namespace ActivityLogger
             try { File.WriteAllText(ActivityLoggerPath + @"\SavedActivities.json", json); }
             catch (Exception e)
             {
-                string error = $"The File was probably in use... \n StackTrace Exception:\n{e}";
+                string error = $"The File was probably in use...\nStacktrace Exception:\n{e}";
                 File.WriteAllText(ActivityLoggerPath + @"\Error.txt", error);
+            }
+
+            // If there was a Download. Wait and Start the Client
+            if (firebaseDownloadTask != null)
+            {
+                await firebaseDownloadTask;
+                firebaseDownloadTask = null;
+                LaunchFirebaseClient();
             }
         }
         private static string GetActiveProcessFileName()
@@ -210,7 +263,7 @@ namespace ActivityLogger
             string value = config.RenameActivity(p.MainWindowTitle, p.ProcessName);
             if (value != null)
                 return value.Trim();
-            
+
             // Try to get the most meaningful name for the current Item
             if (p.MainWindowTitle.ToLower().Contains(p.ProcessName.ToLower()))
             {
@@ -247,7 +300,7 @@ namespace ActivityLogger
 
         private static void CheckForRestart()
         {
-            if (!activityDictionary.ContainsKey(DateFormat()) & activities.Count != 0)
+            if (!activityDictionary.ContainsKey(DateFormat()) && activities.Count != 0)
             {
                 Process.Start(ActivityLoggerPath + @"\ActivityLogger.exe");
                 Environment.Exit(0);
@@ -256,7 +309,7 @@ namespace ActivityLogger
         private static string DateFormat() => DateTime.Now.ToString("dd.MM.yyyy");
     }
 
-    internal  class Activity
+    internal class Activity
     {
         public string ActivityName { get; set; }
         public string TimeSpent { get; set; }
@@ -274,11 +327,13 @@ namespace ActivityLogger
     {
         public readonly Dictionary<string, string> IncludesProcessName;
         public readonly Dictionary<string, string> IsProcessName;
-        
+
         public readonly Dictionary<string, string> IncludesWindowName;
         public readonly Dictionary<string, string> IsWindowName;
-        
+
         public readonly string[] IgnoreProcessName;
+
+        public readonly bool DontUseFirebaseClient;
 
         public string RenameActivity(string windowName, string processName)
         {
@@ -286,7 +341,7 @@ namespace ActivityLogger
             var processNameMatch = IsProcessName.Where(name => name.Key == processName);
             if (processNameMatch.Any())
                 return processNameMatch.First().Value;
-            
+
             var windowNameMatch = IsWindowName.Where(name => name.Key == windowName);
             if (windowNameMatch.Any())
                 return windowNameMatch.First().Value;
@@ -296,7 +351,7 @@ namespace ActivityLogger
             {
                 return processNameContains.First().Value;
             }
-            
+
             var windowNameContains = IncludesWindowName.Where(name => windowName.Contains(name.Key));
             if (windowNameContains.Any())
             {
@@ -305,23 +360,25 @@ namespace ActivityLogger
 
             return null;
         }
-        
+
         public Config()
         {
             IncludesProcessName = new Dictionary<string, string>();
             IsProcessName = new Dictionary<string, string>();
             IncludesWindowName = new Dictionary<string, string>();
             IsWindowName = new Dictionary<string, string>();
-            
+
             IgnoreProcessName = new string[0];
+            DontUseFirebaseClient = false;
         }
-        
+
         public Config(
             Dictionary<string, string> IncludesProcessName,
             Dictionary<string, string> IsProcessName,
             Dictionary<string, string> IncludesWindowName,
             Dictionary<string, string> IsWindowName,
-            string[] IgnoreProcessName
+            string[] IgnoreProcessName,
+            bool DontUseFirebaseClient
         )
         {
             this.IncludesProcessName = IncludesProcessName;
@@ -330,6 +387,7 @@ namespace ActivityLogger
             this.IncludesWindowName = IncludesWindowName;
             this.IsWindowName = IsWindowName;
             this.IgnoreProcessName = IgnoreProcessName;
+            this.DontUseFirebaseClient = DontUseFirebaseClient;
         }
     }
 }
