@@ -1,20 +1,20 @@
 import 'package:Activities/Models/IUser.dart';
-import 'package:Activities/Models/InternetStatus.dart';
 import 'package:Activities/Models/Activity.dart';
 import 'package:Activities/Backend/Backend.dart';
 import 'package:Activities/pages/SignIn.dart';
 import 'package:Activities/services/HelperUtilityClass.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:Activities/pages/Home.dart';
 
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 
-void main() => runApp(MyApp());
+void main() => runApp(Phoenix(child: MyApp()));
 
 class MyApp extends StatelessWidget {
   static Map<String, List<Activity>> activities;
-  static Map<String, InternetStatus> statuses;
   static bool onPage = false;
 
   static DateTime beginDateOfCustom;
@@ -43,10 +43,11 @@ class MyHomePage extends StatefulWidget {
 class MyHomePageState extends State<MyHomePage> {
   bool _visible = false;
   bool _visibleOffline = false;
+  TextStyle textStyle;
 
   void initState() {
     MyApp.activities = new Map();
-    MyApp.statuses = new Map<String, InternetStatus>();
+    textStyle = new TextStyle(color: Colors.grey[700]);
 
     initApp();
     new Future.delayed(const Duration(seconds: 1), () {
@@ -86,7 +87,6 @@ class MyHomePageState extends State<MyHomePage> {
         var res = await Backend.auth.signInWithEmailAndPassword(email: user.email, password: user.password);
         Backend.uid = res.user.uid;
       } catch (e) {
-        print(e);
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => SignIn()),
@@ -95,42 +95,76 @@ class MyHomePageState extends State<MyHomePage> {
       }
     }
 
-    HelperUtilityClass.setupApp(context);
+    await HelperUtilityClass.setupApp(context);
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => Home()),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        color: Colors.blue,
+        color: Colors.white,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.max,
           children: [
-            Spacer(flex: 3),
+            Spacer(flex: 4),
             Center(
               child: AnimatedOpacity(
                 opacity: _visible ? 1.0 : 0.0,
                 duration: Duration(milliseconds: 800),
-                child: Icon(
-                  Icons.computer, // todo: add another icon here
-                  size: 150,
-                  color: Colors.white, // todo: lerp betweet colors back and forth
+                child: Image.asset(
+                  "assets/icons/checked.gif",
+                  height: 125.0,
+                  width: 125.0,
                 ),
               ),
             ),
-            Spacer(flex: 3),
+            Spacer(flex: 4),
             AnimatedOpacity(
               opacity: _visibleOffline ? 1.0 : 0.0,
               duration: Duration(milliseconds: 800),
-              child: Icon(
-                Icons.note, // todo: add no internet icon here
-                size: 70,
-                color: Colors.red[400],
+              child: Text(
+                'Seems like you\'re offline. Please try again later',
+                style: textStyle,
               ),
             ),
-            Spacer(flex: 2)
+            Spacer(flex: 2),
+            AnimatedOpacity(
+              opacity: _visibleOffline ? 0.0 : 1.0,
+              duration: Duration(milliseconds: 800),
+              // child: Text('Loading...'),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Text(
+                    'Loading...',
+                    style: textStyle,
+                  ),
+                  SizedBox(
+                    width: 220,
+                    child: Container(
+                      child: Divider(
+                        thickness: 2,
+                        color: Colors.black26,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    'My Activities',
+                    style: textStyle,
+                  ),
+                ],
+              ),
+            ),
+            Spacer(flex: 1),
           ],
         ),
       ),

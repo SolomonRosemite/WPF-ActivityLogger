@@ -15,10 +15,13 @@ dependencies:
   intl: ^0.16.1
   http: ^0.12.1
   qrscan: ^0.2.21
+  minimize_app: ^0.1.1
+  url_launcher: ^5.7.10
   cupertino_icons: ^1.0.0
   cloud_firestore: ^0.14.4
   firebase_storage: ^5.2.0
   firebase_auth: ^0.18.4+1
+  flutter_phoenix: "^0.1.0"
   permission_handler: ^5.0.1+1
   shared_preferences: ^0.5.12+4
   data_connection_checker: ^0.3.4
@@ -32,3 +35,4 @@ flutter:
 
   assets:
     - assets/images/
+    - assets/icons/

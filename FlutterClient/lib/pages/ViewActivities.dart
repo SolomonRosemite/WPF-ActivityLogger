@@ -52,7 +52,7 @@ class _ViewActivitiesState extends State<ViewActivities> {
         return HelperUtilityClass.getActivityTotal(DateTime.now());
         break;
     }
-    Backend.postReport('#1 ActivityType not defined.', DateTime.now());
+    Backend.postReport('ActivityType not defined.');
     return HelperUtilityClass.getActivityPerDay(DateTime.now());
   }
 

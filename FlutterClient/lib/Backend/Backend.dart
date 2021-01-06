@@ -28,18 +28,19 @@ class Backend {
   }
 
   static Future<http.Response> _fetchUser(String secret) {
-    return http.post(_url, headers: {'Content-type': 'application/json'},
-    body: jsonEncode(<String, String>{
-      'secret': secret
-    }));
+    return http.post(_url,
+        headers: {
+          'Content-type': 'application/json'
+        },
+        body: jsonEncode(<String, String>{
+          'secret': secret
+        }));
   }
 
   static Future<IUser> authenticate(String secret) async {
     var res = await _fetchUser(secret);
 
     var map = jsonDecode(res.body);
-
-    print(map['uuid']);
 
     if (map['error'] != null) {
       return null;
@@ -48,14 +49,14 @@ class Backend {
     return IUser.fromJson(jsonDecode(res.body));
   }
 
-  // Todo ...
+  // Todo: Do this Client Side
   static Future<fs.DocumentSnapshot> getPersonalizedDates() async {
     return await (firestore.collection('preferences').doc('Activitiesdata').get());
   }
 
   static Future<String> getLatestActivityJson(DateTime dateTime, String uid) async {
     int tries = 0;
-    int activitySize = 0;
+    int threshold = 364;
 
     try {
       String date = DateFormat('dd.MM.yyyy').format(dateTime);
@@ -65,10 +66,8 @@ class Backend {
       final String url = await ref.getDownloadURL();
       return (await http.get(url)).body;
     } catch (e) {
-      if (tries++ > activitySize) {
+      if (++tries > threshold) {
         return null;
-      } else if (activitySize == 0) {
-        // activitySize = getActivitySize Todo: Get the number of folders. /uid/*
       }
 
       // If there was nothing for this day. We try to get the previous day.
@@ -76,10 +75,11 @@ class Backend {
     }
   }
 
-  static Future postReport(String issue, DateTime date) async {
+  static Future postReport(String issue, {dynamic exception}) async {
     firestore.collection('reports').doc().set({
       'Issue': issue,
-      'Date': date
+      "Exception": exception.toString(),
+      'Date': DateTime.now()
     });
   }
 }

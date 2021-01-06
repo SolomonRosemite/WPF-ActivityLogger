@@ -40,11 +40,6 @@ class HelperUtilityClass {
     var lastDate = HelperUtilityClass.stringToActivityDateTime(dates.data()['lastDate']);
 
     HelperUtilityClass.assignCustomDates(beginDate, lastDate, dates.data()['fromToday']);
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => Home()),
-    );
   }
 
   static void activities(String data) {

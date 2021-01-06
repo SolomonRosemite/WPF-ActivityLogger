@@ -13,6 +13,16 @@
     "start": "NODE_ENV=production node dist/app.js",
     "dev": "nodemon"
   },
+  "bin": "dist/app.js",
+  "pkg": {
+    "assets": [
+      "node_modules/**/*",
+      "dist/**/*"
+    ],
+    "targets": [
+      "node10-win-x64"
+    ]
+  },
   "dependencies": {
     "axios": "^0.21.1",
     "firebase": "^8.2.1",

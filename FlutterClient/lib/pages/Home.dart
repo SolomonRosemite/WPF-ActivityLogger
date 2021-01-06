@@ -1,11 +1,14 @@
+import 'dart:math';
+
 import 'package:Activities/Backend/Backend.dart';
-import 'package:Activities/Models/InternetStatus.dart';
 import 'package:Activities/common/ActivityCard.dart';
 import 'package:Activities/pages/ViewActivities.dart';
 import 'package:Activities/services/HelperUtilityClass.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:Activities/main.dart';
+import 'package:minimize_app/minimize_app.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -16,10 +19,13 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   TabController tabController;
   ActivityType activityType;
   DocumentReference ref;
+  Random r;
+  Color color;
 
   BuildContext myContext;
-
   bool update = true;
+
+  bool expectedUpdate = false;
 
   final snackBarFetchingMessage = SnackBar(
     duration: const Duration(seconds: 1),
@@ -34,8 +40,11 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
 
   @override
   void initState() {
+    super.initState();
+    r = new Random();
+
     activityType = ActivityType.today;
-    tabController = new TabController(length: 2, initialIndex: 0, vsync: this);
+    tabController = new TabController(length: 1, initialIndex: 0, vsync: this);
     print(MyApp.activities.length);
 
     ref = Backend.firestore.collection("users").doc(Backend.uid);
@@ -45,7 +54,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         getLatestActivities();
       }
     });
-    super.initState();
+
+    color = Colors.primaries[r.nextInt(Colors.primaries.length)];
   }
 
   void getLatestActivities() {
@@ -55,34 +65,22 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       setState(() {
         activityType = activityType;
       });
-      Scaffold.of(myContext).showSnackBar(snackBarFetchCompleteMessage);
 
-      ref.set({
+      if (expectedUpdate == true) {
+        Scaffold.of(myContext).showSnackBar(snackBarFetchCompleteMessage);
+        expectedUpdate = false;
+      }
+
+      ref.update({
         'action': 'waiting'
       });
     });
   }
 
-  void loadInternetStatus() {
-    fetchInternetStatus().then((statuses) {
-      Map<String, InternetStatus> map = new Map();
-
-      for (var status in statuses) {
-        map[status['date']] = new InternetStatus(
-          date: status['date'],
-          offline: status['offline'],
-          online: status['online'],
-          total: status['total'],
-        );
-      }
-      MyApp.statuses.addAll(map);
-    });
-  }
-
-  Future<List<DocumentSnapshot>> fetchInternetStatus() async => (await Backend.firestore.collection('internetstatuses').get()).docs;
-
   Future<void> updateActivityFile() async {
     Scaffold.of(myContext).showSnackBar(snackBarFetchingMessage);
+
+    expectedUpdate = true;
 
     if ((await ref.get()).data()['action'] == 'updateActivityFile') {
       await ref.set(
@@ -119,13 +117,43 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     );
   }
 
+  String getCurrentView(ActivityType type) {
+    String s = type.toString().split(".")[1];
+
+    return ('${s[0].toUpperCase()}${s.substring(1)}');
+  }
+
+  void showAlertDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Yikes'),
+          content: Text('This functionality is not available yet. Please be patient.'),
+          actions: [
+            FlatButton(
+              textColor: color,
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('Ok'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return new WillPopScope(
-      onWillPop: () async => false,
+      onWillPop: () async {
+        MinimizeApp.minimizeApp();
+        return false;
+      },
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Sweet Home'),
+          title: Text('My Activities'),
           centerTitle: true,
           actions: [
             IconButton(
@@ -144,6 +172,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
               onPressed: () => updateActivityFile(),
             )
           ],
+          backgroundColor: color,
         ),
         drawer: Drawer(
           child: Column(
@@ -154,12 +183,12 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                 child: DrawerHeader(
                   child: Align(
                     child: Text(
-                      'Sweet Home🌹',
+                      'My Activities 📅',
                     ),
                     alignment: Alignment.centerLeft,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.blue[200],
+                    color: color,
                   ),
                 ),
               ),
@@ -168,7 +197,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                   left: 10.0,
                 ),
                 child: Text(
-                  'My Activities',
+                  'Viewing ${getCurrentView(activityType)}',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
               ),
@@ -233,35 +262,49 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                   color: Colors.black26,
                 ),
               ),
-              Container(
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: ListTile(
-                        title: Text('Personalized'),
-                        onTap: () {
-                          if (activityType != ActivityType.personalized) {
-                            setState(() {
-                              activityType = ActivityType.personalized;
-                            });
-                          }
-                          Navigator.pop(context);
-                        },
-                      ),
-                    ),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: IconButton(icon: Icon(Icons.settings), onPressed: () {}), // todo: go to settings
-                    ),
-                  ],
-                ),
-              ),
+              // Container(
+              //   child: Row(
+              //     children: [
+              //       Expanded(
+              //         child: ListTile(
+              //             title: Text('Personalized'),
+              //             onTap: () {
+              //               Navigator.pop(context);
+              //               showAlertDialog();
+
+              //               // if (activityType != ActivityType.personalized) {
+              //               //   setState(() {
+              //               //     activityType = ActivityType.personalized;
+              //               //   });
+              //               // }
+              //             }),
+              //       ),
+              //       Align(
+              //         alignment: Alignment.centerRight,
+              //         child: IconButton(
+              //             icon: Icon(Icons.settings),
+              //             onPressed: () {
+              //               Navigator.pop(context);
+              //               showAlertDialog();
+              //             }), // todo: go to settings
+              //       ),
+              //     ],
+              //   ),
+              // ),
               Expanded(
                 child: Align(
                   alignment: Alignment.bottomCenter,
                   child: ListTile(
-                    title: Text('Settings'),
-                    onTap: () {}, // todo: nav to Settings Page
+                    title: Text(
+                      'Sign Out',
+                      style: TextStyle(color: Colors.red[300]),
+                    ),
+                    onTap: () async {
+                      await Backend.prefs.setString("userSecret", null);
+                      Phoenix.rebirth(context);
+                      // Navigator.pop(context);
+                      // showAlertDialog();
+                    },
                   ),
                 ),
               ),
@@ -274,30 +317,30 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
             controller: tabController,
             children: [
               viewActivities(activityType, update),
-              new Container(
-                child: Center(
-                  child: RaisedButton(onPressed: () {}),
-                ),
-              ),
+              // new Container(
+              //   child: Center(
+              //     child: RaisedButton(onPressed: () {}),
+              //   ),
+              // ),
             ],
           );
         }),
-        bottomNavigationBar: new TabBar(
-          controller: tabController,
-          tabs: [
-            Tab(
-              icon: new Icon(Icons.timelapse),
-            ),
-            Tab(
-              icon: new Icon(Icons.timeline),
-            ),
-          ],
-          labelColor: Colors.red,
-          unselectedLabelColor: Colors.blue,
-          indicatorSize: TabBarIndicatorSize.label,
-          indicatorPadding: EdgeInsets.all(5.0),
-          indicatorColor: Colors.blueGrey[700],
-        ),
+        // bottomNavigationBar: new TabBar(
+        //   controller: tabController,
+        //   tabs: [
+        //     Tab(
+        //       icon: new Icon(Icons.timelapse),
+        //     ),
+        //     // Tab(
+        //     //   icon: new Icon(Icons.timeline),
+        //     // ),
+        //   ],
+        //   labelColor: Colors.red,
+        //   unselectedLabelColor: Colors.blue,
+        //   indicatorSize: TabBarIndicatorSize.label,
+        //   indicatorPadding: EdgeInsets.all(5.0),
+        //   indicatorColor: Colors.blueGrey[700],
+        // ),
       ),
     );
   }

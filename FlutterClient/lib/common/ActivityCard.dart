@@ -25,6 +25,7 @@ class ActivityCardWidgetState extends State<ActivityCardWidget> {
   void initState() {
     activity = widget.activity;
     appearance = new ActivityAppearance(activity.activityName);
+    // print(appearance.imagePath);
     super.initState();
   }
 
