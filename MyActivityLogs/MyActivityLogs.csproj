@@ -4,11 +4,19 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>icon.ico</ApplicationIcon>
+    <AssemblyName>MyActivities</AssemblyName>
+    <RootNamespace>MyActivities</RootNamespace>
+    <Version>2.3.1</Version>
+    <Authors>SolomonRosemite</Authors>
+    <Company>Rosemite</Company>
+    <Product>MyActivities</Product>
+    <PackageId>SolomonRosemite.MyActivities</PackageId>
+    <RepositoryUrl>https://github.com/SolomonRosemite/WPF-ActivityLogger</RepositoryUrl>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="FluentWPF" Version="0.8.0"/>
-    <PackageReference Include="MaterialDesignThemes" Version="3.1.3"/>
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3"/>
-    <PackageReference Include="QRCoder" Version="1.4.1"/>
+    <PackageReference Include="FluentWPF" Version="0.8.0" />
+    <PackageReference Include="MaterialDesignThemes" Version="3.1.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="QRCoder" Version="1.4.1" />
   </ItemGroup>
 </Project>
