@@ -84,20 +84,20 @@ namespace MyActivityLogs.Pages
         {
             MemoryStream ms = new MemoryStream();
             src.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp);
-            
+
             BitmapImage image = new BitmapImage();
             ms.Seek(0, SeekOrigin.Begin);
-            
+
             image.BeginInit();
             image.StreamSource = ms;
             image.EndInit();
-            
+
             return image;
         }
 
         private void GetAppEvent(object sender, RoutedEventArgs e)
         {
-            Process.Start("explorer.exe", "https://github.com/SolomonRosemite/WPF-ActivityLogger/releases");
+            Process.Start("explorer.exe", "https://rosemitedocs.web.app/docs/WPF-ActivityLogger-getting-started/#mobile-app");
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -130,11 +130,11 @@ namespace MyActivityLogs.Pages
 
             if (MainWindow.ShowInHours)
             {
-                ConvertTimeButton.Content = "Convert to Minutes";
+                ConvertTimeButton.Content = "View in Minutes";
             }
             else
             {
-                ConvertTimeButton.Content = "Convert to Hours";
+                ConvertTimeButton.Content = "View in Hours";
             }
 
             MainWindow.Load(true);

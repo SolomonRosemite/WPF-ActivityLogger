@@ -152,9 +152,11 @@ namespace MyActivityLogs
         }
         private static DateTime[] GetSavedDates()
         {
+            DateTime[] defaultDates = new[] { DateTime.ParseExact("01.01.2021", "dd.MM.yyyy", null), DateTime.ParseExact("01.01.2022", "dd.MM.yyyy", null) };
+
             if (!File.Exists(ActivityLoggerPath + @"\MyActivityLogs\Dates.json"))
             {
-                return null;
+                return defaultDates;
             }
 
             string jsonFromFile;
@@ -169,7 +171,7 @@ namespace MyActivityLogs
                 var dates = JsonConvert.DeserializeObject<List<string>>(jsonFromFile);
                 return new[] { DateTime.ParseExact(dates[0], "dd.MM.yyyy", null), DateTime.ParseExact(dates[1], "dd.MM.yyyy", null) };
             }
-            catch { return null; }
+            catch { return defaultDates; }
         }
         private static void ShowPopUp(string message, string path = "")
         {
