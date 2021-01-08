@@ -11,7 +11,8 @@
     "build": "tsc --build tsconfig.json",
     "start:win": "set NODE_ENV=production&&node dist/app.js",
     "start": "NODE_ENV=production node dist/app.js",
-    "dev": "nodemon"
+    "dev": "nodemon",
+    "startWinProd": "npm install && npm run build && npm run start:win"
   },
   "bin": "dist/app.js",
   "pkg": {
