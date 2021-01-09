@@ -262,42 +262,13 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                   color: Colors.black26,
                 ),
               ),
-              // Container(
-              //   child: Row(
-              //     children: [
-              //       Expanded(
-              //         child: ListTile(
-              //             title: Text('Personalized'),
-              //             onTap: () {
-              //               Navigator.pop(context);
-              //               showAlertDialog();
-
-              //               // if (activityType != ActivityType.personalized) {
-              //               //   setState(() {
-              //               //     activityType = ActivityType.personalized;
-              //               //   });
-              //               // }
-              //             }),
-              //       ),
-              //       Align(
-              //         alignment: Alignment.centerRight,
-              //         child: IconButton(
-              //             icon: Icon(Icons.settings),
-              //             onPressed: () {
-              //               Navigator.pop(context);
-              //               showAlertDialog();
-              //             }), // todo: go to settings
-              //       ),
-              //     ],
-              //   ),
-              // ),
               Expanded(
                 child: Align(
                   alignment: Alignment.bottomCenter,
                   child: ListTile(
                     title: Text(
                       'Sign Out',
-                      style: TextStyle(color: Colors.red[300]),
+                      style: TextStyle(color: Colors.red[400]),
                     ),
                     onTap: () async {
                       await Backend.prefs.setString("userSecret", null);
@@ -317,30 +288,9 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
             controller: tabController,
             children: [
               viewActivities(activityType, update),
-              // new Container(
-              //   child: Center(
-              //     child: RaisedButton(onPressed: () {}),
-              //   ),
-              // ),
             ],
           );
         }),
-        // bottomNavigationBar: new TabBar(
-        //   controller: tabController,
-        //   tabs: [
-        //     Tab(
-        //       icon: new Icon(Icons.timelapse),
-        //     ),
-        //     // Tab(
-        //     //   icon: new Icon(Icons.timeline),
-        //     // ),
-        //   ],
-        //   labelColor: Colors.red,
-        //   unselectedLabelColor: Colors.blue,
-        //   indicatorSize: TabBarIndicatorSize.label,
-        //   indicatorPadding: EdgeInsets.all(5.0),
-        //   indicatorColor: Colors.blueGrey[700],
-        // ),
       ),
     );
   }

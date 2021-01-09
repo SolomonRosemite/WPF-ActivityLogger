@@ -49,11 +49,6 @@ class Backend {
     return IUser.fromJson(jsonDecode(res.body));
   }
 
-  // Todo: Do this Client Side
-  static Future<fs.DocumentSnapshot> getPersonalizedDates() async {
-    return await (firestore.collection('preferences').doc('Activitiesdata').get());
-  }
-
   static Future<String> getLatestActivityJson(DateTime dateTime, String uid) async {
     int tries = 0;
     int threshold = 364;

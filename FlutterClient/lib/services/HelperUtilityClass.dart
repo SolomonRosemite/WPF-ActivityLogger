@@ -10,8 +10,8 @@ import 'dart:collection';
 
 class HelperUtilityClass {
   static void assignCustomDates(DateTime begin, DateTime last, bool fromToday) {
-    MyApp.beginDateOfCustom = begin;
-    MyApp.lastDateOfCustom = (!fromToday) ? last : DateTime.now();
+    // MyApp.beginDateOfCustom = begin;
+    // MyApp.lastDateOfCustom = (!fromToday) ? last : DateTime.now();
   }
 
   // For ActivityTypes
@@ -26,7 +26,7 @@ class HelperUtilityClass {
 
   static Future setupApp(BuildContext context) async {
     // Get Dates for Personalized tab
-    var datesAsync = Backend.getPersonalizedDates();
+    // var datesAsync = Backend.getPersonalizedDates();
 
     // Get Latest Activity json
     var data = await Backend.getLatestActivityJson(DateTime.now(), Backend.uid);
@@ -34,12 +34,12 @@ class HelperUtilityClass {
     // Load activities
     activities(data);
 
-    var dates = await datesAsync;
+    // var dates = await datesAsync;
 
-    var beginDate = HelperUtilityClass.stringToActivityDateTime(dates.data()['beginDate']);
-    var lastDate = HelperUtilityClass.stringToActivityDateTime(dates.data()['lastDate']);
+    // var beginDate = HelperUtilityClass.stringToActivityDateTime(dates.data()['beginDate']);
+    // var lastDate = HelperUtilityClass.stringToActivityDateTime(dates.data()['lastDate']);
 
-    HelperUtilityClass.assignCustomDates(beginDate, lastDate, dates.data()['fromToday']);
+    // HelperUtilityClass.assignCustomDates(beginDate, lastDate, dates.data()['fromToday']);
   }
 
   static void activities(String data) {
@@ -70,9 +70,9 @@ class HelperUtilityClass {
     return _getActivityRange(dateTime, dateTime.subtract(new Duration(days: dateTime.day.toInt())));
   }
 
-  static List<Activity> getActivityCustom() {
-    return _getActivityRange(MyApp.lastDateOfCustom, MyApp.beginDateOfCustom);
-  }
+  // static List<Activity> getActivityCustom() {
+  //   return _getActivityRange(MyApp.lastDateOfCustom, MyApp.beginDateOfCustom);
+  // }
 
   static List<Activity> getActivityTotal(DateTime dateTime) {
     var lastDate = _getLatestDate(MyApp.activities.keys.toList());

@@ -17,9 +17,6 @@ class MyApp extends StatelessWidget {
   static Map<String, List<Activity>> activities;
   static bool onPage = false;
 
-  static DateTime beginDateOfCustom;
-  static DateTime lastDateOfCustom;
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
