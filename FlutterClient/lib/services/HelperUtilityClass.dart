@@ -70,10 +70,6 @@ class HelperUtilityClass {
     return _getActivityRange(dateTime, dateTime.subtract(new Duration(days: dateTime.day.toInt())));
   }
 
-  // static List<Activity> getActivityCustom() {
-  //   return _getActivityRange(MyApp.lastDateOfCustom, MyApp.beginDateOfCustom);
-  // }
-
   static List<Activity> getActivityTotal(DateTime dateTime) {
     var lastDate = _getLatestDate(MyApp.activities.keys.toList());
     return _getActivityRange(DateTime.now(), lastDate.subtract(new Duration(days: 1)));

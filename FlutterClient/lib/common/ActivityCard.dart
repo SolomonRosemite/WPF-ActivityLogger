@@ -88,7 +88,8 @@ class ActivityCardWidgetState extends State<ActivityCardWidget> {
                                 ),
                                 Spacer(flex: 98),
                                 ClipRRect(
-                                  borderRadius: BorderRadius.circular(20.0),
+                                  borderRadius: BorderRadius.circular(0),
+                                  // borderRadius: BorderRadius.circular(20.0),
                                   child: Image.asset(
                                     appearance.imagePath,
                                     width: 48.0,

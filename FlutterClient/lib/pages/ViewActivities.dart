@@ -45,9 +45,8 @@ class _ViewActivitiesState extends State<ViewActivities> {
       case ActivityType.month:
         return HelperUtilityClass.getActivityPerMonth(DateTime.now());
         break;
-      case ActivityType.personalized:
-        // return HelperUtilityClass.getActivityCustom();
-        break;
+      // case ActivityType.personalized:
+      //   break;
       case ActivityType.total:
         return HelperUtilityClass.getActivityTotal(DateTime.now());
         break;
