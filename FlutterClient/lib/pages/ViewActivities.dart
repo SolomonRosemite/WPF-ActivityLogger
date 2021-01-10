@@ -68,7 +68,7 @@ class _ViewActivitiesState extends State<ViewActivities> {
     }
     return Container(
       child: ListView.builder(
-        itemCount: activities.length,
+        itemCount: activities.length + 1,
         padding: EdgeInsets.only(top: 15),
         itemBuilder: (context, index) {
           int i = index - 1;
