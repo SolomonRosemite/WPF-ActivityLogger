@@ -43,6 +43,7 @@ class ActivityDetailState extends State<ActivityDetail> {
               color: Colors.white,
               fontWeight: FontWeight.bold,
             ),
+            textAlign: TextAlign.center,
           ),
           Text(
             'For each entry',
