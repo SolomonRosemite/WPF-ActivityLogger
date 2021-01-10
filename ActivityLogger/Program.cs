@@ -10,7 +10,7 @@ using System;
 
 namespace ActivityLogger
 {
-    class Program
+    internal static class Program
     {
         // Imports
         [DllImport("user32.dll")]
@@ -38,8 +38,11 @@ namespace ActivityLogger
                 // Checks if Directory is fine and reads json
                 Load();
 
-                // Clear not needed items
+                // Clears not needed items
                 Clear();
+
+                // Map Activities names to recent Config
+                MapRecentConfigNames();
 
                 // Start the Firebase Client
                 LaunchFirebaseClient();
@@ -52,9 +55,9 @@ namespace ActivityLogger
             }
             catch (Exception e)
             {
-                string day = DateTime.Now.Day.ToString();
-                string month = DateTime.Now.Month.ToString();
-                string year = DateTime.Now.Year.ToString();
+                var day = DateTime.Now.Day.ToString();
+                var month = DateTime.Now.Month.ToString();
+                var year = DateTime.Now.Year.ToString();
 
                 File.WriteAllText(@"Error " + day + '.' + month + '.' + year + ".txt", e.ToString());
             }
@@ -72,12 +75,11 @@ namespace ActivityLogger
             {
                 for (int i = 0; i < value.Count; i++)
                 {
-                    if (value[i].MinutesSpent() < 10)
-                    {
-                        value.RemoveRange(i, value.Count - i);
-                        activityDictionary[key] = value;
-                        break;
-                    }
+                    if (value[i].MinutesSpent() >= 10) continue;
+
+                    value.RemoveRange(i, value.Count - i);
+                    activityDictionary[key] = value;
+                    break;
                 }
             }
         }
@@ -143,6 +145,23 @@ namespace ActivityLogger
             }
 
             config = new Config();
+        }
+
+        private static void MapRecentConfigNames()
+        {
+            foreach (var (key, values) in activityDictionary.ToList())
+            {
+                for (int i = 0; i < values.Count; i++)
+                {
+                    var name = values[i].ActivityName;
+                    var res = config.RenameActivity(name, name);
+
+                    if (res != null)
+                        values[i].ActivityName = res;
+                }
+
+                activityDictionary[key] = values;
+            }
         }
 
         private static void LaunchFirebaseClient()
