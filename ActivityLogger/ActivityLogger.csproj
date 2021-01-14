@@ -3,6 +3,7 @@
     <!-- <OutputType>exe</OutputType> -->
     <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
     <ApplicationIcon />
     <StartupObject />
   </PropertyGroup>
