@@ -19,11 +19,11 @@ namespace MyActivityLogs
     {
         public static MainWindow mainWindow;
 
-        public static Dictionary<string, List<Activity>> activitiesDict = new Dictionary<string, List<Activity>>();
+        public static Dictionary<string, List<Activity>> ActivitiesDict = new Dictionary<string, List<Activity>>();
         public static readonly string ActivityLoggerPath = GetDirectory() + @"\TMRosemite\ActivityLogger";
 
-        public static dynamic[] pages = new dynamic[7];
-        private static DoubleAnimation animation = new DoubleAnimation(1, 0, new Duration(TimeSpan.FromMilliseconds(700)));
+        private static readonly dynamic[] Pages = new dynamic[7];
+        private static readonly DoubleAnimation Animation = new DoubleAnimation(1, 0, new Duration(TimeSpan.FromMilliseconds(700)));
 
         public static bool ShowInHours = false;
 
@@ -51,7 +51,7 @@ namespace MyActivityLogs
             Load();
 
             SetPage(CurrentPage.Daily);
-            MyFrame.Content = pages[0];
+            MyFrame.Content = Pages[0];
 
             AnimationRectangle.BeginAnimation(OpacityProperty, new DoubleAnimation(1, 0, new Duration(TimeSpan.FromMilliseconds(1400))));
 
@@ -62,13 +62,13 @@ namespace MyActivityLogs
         {
             if (isConvertingTime && savedDates != null)
             {
-                pages[0] = new DailyPage();
-                pages[1] = new WeeklyPage();
-                pages[2] = new MonthlyPage();
-                pages[3] = new TotalPage();
+                Pages[0] = new DailyPage();
+                Pages[1] = new WeeklyPage();
+                Pages[2] = new MonthlyPage();
+                Pages[3] = new TotalPage();
 
-                pages[5] = new Yesterday();
-                pages[6] = savedDates == null ? new CustomPage() : new CustomPage(savedDates[0], savedDates[1]);
+                Pages[5] = new Yesterday();
+                Pages[6] = savedDates == null ? new CustomPage() : new CustomPage(savedDates[0], savedDates[1]);
                 return;
             }
 
@@ -82,12 +82,15 @@ namespace MyActivityLogs
             {
                 if (output == 0)
                 {
-                    ShowPopUp("Json could not be found.\nTry Starting the ActivityLogger first.\nTip: Keep in mind the Program" +
-                    "\nwill only show programs\n" +
-                    "with more than 5 min of use.", GetDirectory() + @"\TMRosemite\ActivityLogger");
+                    // ShowPopUp("Json could not be found.\nTry Starting the ActivityLogger first.\nTip: Keep in mind the Program" +
+                    // "\nwill only show programs\n" +
+                    // "with more than 5 min of use.", GetDirectory() + @"\TMRosemite\ActivityLogger");
+
+                    Assign(dates, new Dictionary<string, List<Activity>>());
                     return;
                 }
-                else if (output == 1)
+
+                if (output == 1)
                 {
                     ShowPopUp("The Json seems to be corrupted.\nYou can Remove the current Json the Solve this issue", GetDirectory() + @"\TMRosemite\ActivityLogger");
                     return;
@@ -101,19 +104,25 @@ namespace MyActivityLogs
                 return;
             }
 
-            activitiesDict = output;
 
-            pages[0] = new DailyPage();
-            pages[1] = new WeeklyPage();
-            pages[2] = new MonthlyPage();
-            pages[3] = new TotalPage();
-
-            pages[4] = dates == null ? new SettingsPage() : new SettingsPage(dates[0], dates[1]);
-            pages[5] = new Yesterday();
-            pages[6] = dates == null ? new CustomPage() : new CustomPage(dates[0], dates[1]);
+            Assign(dates, output);
         }
 
-        public void RefreshTimer()
+        private static void Assign(DateTime[] dates, Dictionary<string,List<Activity>> output)
+        {
+            ActivitiesDict = output;
+
+            Pages[0] = new DailyPage();
+            Pages[1] = new WeeklyPage();
+            Pages[2] = new MonthlyPage();
+            Pages[3] = new TotalPage();
+
+            Pages[4] = dates == null ? new SettingsPage() : new SettingsPage(dates[0], dates[1]);
+            Pages[5] = new Yesterday();
+            Pages[6] = dates == null ? new CustomPage() : new CustomPage(dates[0], dates[1]);
+        }
+
+        private void RefreshTimer()
         {
             Timer timer = new Timer(1000 * 300); // 5 Min
             timer.AutoReset = true;
@@ -124,9 +133,9 @@ namespace MyActivityLogs
         {
             Dispatcher?.Invoke(() =>
             {
-                pages[4].RefreshButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+                Pages[4].RefreshButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
                 SetPage(CurrentPage.Daily);
-                MyFrame.Content = pages[0];
+                MyFrame.Content = Pages[0];
             });
         }
 
@@ -214,7 +223,7 @@ namespace MyActivityLogs
                     break;
             }
         }
-        private void PlayAnimation() => AnimationRectangle.BeginAnimation(OpacityProperty, animation);
+        private void PlayAnimation() => AnimationRectangle.BeginAnimation(OpacityProperty, Animation);
 
         public static List<Activity> ActivitiesToHours(List<Activity> activities)
         {
@@ -266,7 +275,7 @@ namespace MyActivityLogs
 
             return AddToListPerDay(end, dict, list, true);
         }
-        public static List<Activity> AddToListPerDay(DateTime date, Dictionary<string, List<Activity>> dict, List<Activity> list, bool checkIfEntryAlreadyExists)
+        public static List<Activity> AddToListPerDay(DateTime date, Dictionary<string, List<Activity>> dict, List<Activity> list, bool checkIfEntryAlreadyExists, bool apply5MinRule = true)
         {
             if (!dict.ContainsKey(DateFormat(date)))
             {
@@ -277,7 +286,7 @@ namespace MyActivityLogs
             {
                 foreach (Activity item in dict[DateFormat(date)])
                 {
-                    if (int.Parse(item.TimeSpent.Remove(item.TimeSpent.Length - 7)) < 5)
+                    if (apply5MinRule && int.Parse(item.TimeSpent.Remove(item.TimeSpent.Length - 7)) < 5)
                     {
                         continue;
                     }
@@ -297,8 +306,8 @@ namespace MyActivityLogs
 
             for (int i = 0; i < myActivities.Count; i++)
             {
-                int temp;
-                if ((temp = int.Parse(myActivities[i].TimeSpent.Remove(myActivities[i].TimeSpent.Length - 7))) < 4)
+                int temp = int.Parse(myActivities[i].TimeSpent.Remove(myActivities[i].TimeSpent.Length - 7));
+                if (apply5MinRule && temp < 4)
                 {
                     continue;
                 }
@@ -315,13 +324,13 @@ namespace MyActivityLogs
                     }
                 }
 
-                if (skipped == true)
+                if (skipped)
                 {
                     skipped = false;
                     continue;
                 }
 
-                list.Add(new Activity()
+                list.Add(new Activity
                 {
                     ActivityName = myActivities[i].ActivityName,
                     TimeSpent = myActivities[i].TimeSpent,
@@ -337,22 +346,22 @@ namespace MyActivityLogs
         public static List<Activity> CalculateSumOfList(List<Activity> list)
         {
             int sum = 0;
-            int biggestnumber = 0;
+            int biggestNumber = 0;
             foreach (Activity item in list)
             {
                 sum += item.TimeSpentint;
 
-                if (item.TimeSpentint > biggestnumber)
+                if (item.TimeSpentint > biggestNumber)
                 {
-                    biggestnumber = item.TimeSpentint;
+                    biggestNumber = item.TimeSpentint;
                 }
             }
 
-            if (biggestnumber > sum / 2)
+            if (biggestNumber > sum / 2)
             {
                 foreach (Activity item in list)
                 {
-                    item.ProgressBarMaxValue = biggestnumber + biggestnumber / 10;
+                    item.ProgressBarMaxValue = biggestNumber + biggestNumber / 10;
                 }
                 return list;
             }
@@ -365,9 +374,9 @@ namespace MyActivityLogs
         }
         public static List<Activity> SetProgressBarColor(List<Activity> list)
         {
-            float baseindex = list.Count * 10;
-            float indexItem = baseindex;
-            float subtractValue = baseindex / 5f;
+            float baseIndex = list.Count * 10;
+            float indexItem = baseIndex;
+            float subtractValue = baseIndex / 5f;
 
             list.Reverse();
             foreach (Activity item in list)
@@ -408,54 +417,50 @@ namespace MyActivityLogs
         private static string GetDirectory()
         {
             string path = Directory.GetParent(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)).FullName;
-            if (Environment.OSVersion.Version.Major >= 6)
-            {
-                return Directory.GetParent(path).ToString();
-            }
-            return "";
+            return Environment.OSVersion.Version.Major >= 6 ? Directory.GetParent(path).ToString() : "";
         }
 
         public void DailyButton([Optional] object sender, [Optional] RoutedEventArgs e)
         {
             PlayAnimation();
             SetPage(CurrentPage.Daily);
-            MyFrame.Content = pages[0];
+            MyFrame.Content = Pages[0];
         }
         private void WeeklyButton(object sender, RoutedEventArgs e)
         {
             PlayAnimation();
             SetPage(CurrentPage.Weekly);
-            MyFrame.Content = pages[1];
+            MyFrame.Content = Pages[1];
         }
         private void MonthlyButton(object sender, RoutedEventArgs e)
         {
             PlayAnimation();
             SetPage(CurrentPage.Monthly);
-            MyFrame.Content = pages[2];
+            MyFrame.Content = Pages[2];
         }
         private void TotalButton(object sender, RoutedEventArgs e)
         {
             PlayAnimation();
             SetPage(CurrentPage.Total);
-            MyFrame.Content = pages[3];
+            MyFrame.Content = Pages[3];
         }
         private void SettingsButton(object sender, RoutedEventArgs e)
         {
             PlayAnimation();
             SetPage(CurrentPage.Settings);
-            MyFrame.Content = pages[4];
+            MyFrame.Content = Pages[4];
         }
         private void YesterdayButton(object sender, RoutedEventArgs e)
         {
             PlayAnimation();
             SetPage(CurrentPage.Yesterday);
-            MyFrame.Content = pages[5];
+            MyFrame.Content = Pages[5];
         }
         private void CustomButton(object sender, RoutedEventArgs e)
         {
             PlayAnimation();
             SetPage(CurrentPage.Custom);
-            MyFrame.Content = pages[6];
+            MyFrame.Content = Pages[6];
         }
     }
 

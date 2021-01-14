@@ -3,6 +3,7 @@ using System.Windows.Controls;
 using System.Collections.Generic;
 using System;
 using System.Globalization;
+using System.Windows;
 
 namespace MyActivityLogs.Pages
 {
@@ -17,7 +18,7 @@ namespace MyActivityLogs.Pages
         {
             InitializeComponent();
 
-            LoadCustom(MainWindow.activitiesDict);
+            LoadCustom(MainWindow.ActivitiesDict);
         }
         public CustomPage(DateTime start, DateTime end)
         {
@@ -26,7 +27,7 @@ namespace MyActivityLogs.Pages
             this.start = start;
             this.end = end;
 
-            LoadCustom(MainWindow.activitiesDict);
+            LoadCustom(MainWindow.ActivitiesDict);
         }
 
         private void LoadCustom(Dictionary<string, List<Activity>> dict)
@@ -41,6 +42,8 @@ namespace MyActivityLogs.Pages
 
         private void LoadFinish()
         {
+            NoActivitiesTextBlock.Visibility = activities.Count == 0 ? Visibility.Visible : Visibility.Hidden;
+
             activities = MainWindow.SortList(activities);
             activities = MainWindow.CalculateSumOfList(activities);
             activities = MainWindow.SetProgressBarColor(activities);

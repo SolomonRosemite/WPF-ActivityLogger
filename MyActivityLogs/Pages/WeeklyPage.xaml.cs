@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Windows.Controls;
 using System;
+using System.Windows;
 
 namespace MyActivityLogs.Pages
 {
@@ -12,7 +13,7 @@ namespace MyActivityLogs.Pages
         {
             InitializeComponent();
 
-            LoadWeekly(MainWindow.activitiesDict);
+            LoadWeekly(MainWindow.ActivitiesDict);
         }
 
         private void LoadWeekly(Dictionary<string, List<Activity>> dict)
@@ -49,6 +50,8 @@ namespace MyActivityLogs.Pages
 
         private void LoadFinish()
         {
+            NoActivitiesTextBlock.Visibility = activities.Count == 0 ? Visibility.Visible : Visibility.Hidden;
+
             activities = MainWindow.SortList(activities);
             activities = MainWindow.CalculateSumOfList(activities);
             activities = MainWindow.SetProgressBarColor(activities);
