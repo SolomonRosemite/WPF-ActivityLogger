@@ -33,7 +33,7 @@ namespace ActivityLogger
         public event EventHandler<InitializedLoggerEventArgs> OnInitializedLogger;
         public event EventHandler<InitializedLoggerFailedEventArgs> OnInitializedLoggerFailed;
 
-        public async Task InitializeLogger()
+        public void InitializeLogger()
         {
             try
             {
@@ -57,7 +57,7 @@ namespace ActivityLogger
                 Thread.Sleep(1000 * WaitSeconds);
 
                 // Repeats Main loop cycle
-                await MainCycle();
+                MainCycle();
             }
             catch (Exception e)
             {
@@ -192,18 +192,18 @@ namespace ActivityLogger
             FirebaseClient.Start();
         }
 
-        private async Task MainCycle()
+        private void MainCycle()
         {
             while (true)
             {
-                await Save(GetActiveProcessFileName());
+                Save(GetActiveProcessFileName());
 
                 // Sleep one minute and repeat
                 Thread.Sleep(1000 * WaitSeconds);
             }
         }
 
-        private async Task Save(string fileName)
+        private void Save(string fileName)
         {
             // If new day just started we need to restart
             CheckForRestart();
@@ -222,15 +222,15 @@ namespace ActivityLogger
                 {
                     int timeSpent = activities[i].MinutesSpent();
 
-                    await SaveJson(new Activity(fileName, (++timeSpent) + " Minutes"), i);
+                    SaveJson(new Activity(fileName, (++timeSpent) + " Minutes"), i);
                     return;
                 }
             }
 
-            await SaveJson(new Activity(fileName, "1 Minute"));
+            SaveJson(new Activity(fileName, "1 Minute"));
         }
 
-        private async Task SaveJson(Activity activity, int index = -1)
+        private void SaveJson(Activity activity, int index = -1)
         {
             // Setting up list
             if (index != -1) { activities.RemoveAt(index); }
@@ -247,7 +247,7 @@ namespace ActivityLogger
 
             try
             {
-                await File.WriteAllTextAsync(activityLoggerPath + @"\SavedActivities.json", json);
+                File.WriteAllText(activityLoggerPath + @"\SavedActivities.json", json);
             }
             catch (Exception e)
             {

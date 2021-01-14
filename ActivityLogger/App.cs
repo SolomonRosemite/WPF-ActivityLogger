@@ -10,8 +10,8 @@
     public class App : Form
     {
         private readonly NotifyIcon notifyIcon;
+        private readonly ToolStrips strips;
         private readonly Logger logger;
-        private ToolStrips strips;
 
         public App()
         {
@@ -40,7 +40,7 @@
 
             notifyIcon.Click += (sender, _) => ReloadNotifyIcon();
 
-            Task.Run(logger.InitializeLogger);
+            logger.InitializeLogger();
         }
 
         private void OnLoggerInitialized(object sender, InitializedLoggerEventArgs args) => ReloadNotifyIcon();
