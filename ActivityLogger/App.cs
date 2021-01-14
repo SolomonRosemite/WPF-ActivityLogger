@@ -10,29 +10,19 @@
     public class App : Form
     {
         private readonly NotifyIcon notifyIcon;
+        private readonly Logger logger;
         private ToolStrips strips;
 
         public App()
         {
             notifyIcon = new NotifyIcon
             {
-                // Todo: Add Icon here
-                Icon = new Icon(@"C:\Users\Jesse\Desktop\dev\icons\Logger.ico"),
+                Icon = new Icon(@".\icon.ico"),
                 Text = "Activities",
                 Visible = true,
                 ContextMenuStrip = new ContextMenuStrip(),
             };
 
-            var logger = new Logger();
-
-            logger.OnInitializedLogger += OnLoggerInitialized;
-            logger.OnInitializedLoggerFailed += OnLoggerInitializedError;
-
-            Task.Run(logger.InitializeLogger);
-        }
-
-        private void OnLoggerInitialized(object sender, InitializedLoggerEventArgs args)
-        {
             strips = new ToolStrips
             {
                 RestartLogger = new ToolStripMenuItem("Restart", null, Restart),
@@ -43,10 +33,26 @@
                 ExitFirebaseClient = new ToolStripMenuItem("Stop Firebase Client", null, ExitFirebaseClient),
             };
 
+            logger = new Logger();
+
+            logger.OnInitializedLogger += OnLoggerInitialized;
+            logger.OnInitializedLoggerFailed += OnLoggerInitializedError;
+
+            notifyIcon.Click += (sender, _) => ReloadNotifyIcon();
+
+            Task.Run(logger.InitializeLogger);
+        }
+
+        private void OnLoggerInitialized(object sender, InitializedLoggerEventArgs args) => ReloadNotifyIcon();
+
+        private void ReloadNotifyIcon()
+        {
+            notifyIcon.ContextMenuStrip.Items.Clear();
+
             notifyIcon.ContextMenuStrip.Items.Add(strips.RestartLogger);
             notifyIcon.ContextMenuStrip.Items.Add(strips.ExitLogger);
 
-            if (args.logger.FirebaseClient == null)
+            if (logger.FirebaseClient == null || logger.FirebaseClient.HasExited)
             {
                 notifyIcon.ContextMenuStrip.Items.Add(strips.StartFirebaseClient);
                 notifyIcon.ContextMenuStrip.Update();
@@ -59,10 +65,7 @@
             notifyIcon.ContextMenuStrip.Update();
         }
 
-        private void OnLoggerInitializedError(object sender, InitializedLoggerFailedEventArgs args)
-        {
-            Console.WriteLine(args.ExceptionMessage);
-        }
+        private static void OnLoggerInitializedError(object sender, InitializedLoggerFailedEventArgs args) => Application.Exit();
 
         protected override void OnLoad(EventArgs e)
         {
@@ -72,31 +75,22 @@
             base.OnLoad(e);
         }
 
-        private void Restart(object sender, EventArgs args)
-        {
-            notifyIcon.ContextMenuStrip.Items.Add(new ToolStripLabel("ahh"));
-            // Todo: Restart App here
+        private void Restart(object sender, EventArgs args) => logger.Restart();
+
+        private void Exit(object sender, EventArgs args) {
+            logger.ExitFirebaseClient();
+            Application.Exit();
         }
 
-        private void Exit(object sender, EventArgs args)
-        {
-            // Todo: End App here
-        }
-
-        private void ExitFirebaseClient(object sender, EventArgs args)
-        {
-            // Todo: Close Firebase Client
-        }
+        private void ExitFirebaseClient(object sender, EventArgs args) => logger.ExitFirebaseClient();
 
         private void RestartFirebaseClient(object sender, EventArgs args)
         {
-            // Todo: Restart Firebase Client
+            logger.ExitFirebaseClient();
+            logger.LaunchFirebaseClient();
         }
 
-        private void StartFirebaseClient(object sender, EventArgs args)
-        {
-            // Todo: Start Firebase Client
-        }
+        private void StartFirebaseClient(object sender, EventArgs args) => logger.LaunchFirebaseClient();
 
         private class ToolStrips
         {
@@ -108,23 +102,6 @@
             public ToolStripMenuItem StartFirebaseClient { get; set; }
             public ToolStripMenuItem RestartFirebaseClient { get; set; }
             public ToolStripMenuItem ExitFirebaseClient { get; set; }
-
-            public ToolStrips(ToolStripMenuItem restartLogger,
-                ToolStripMenuItem exitLogger,
-                ToolStripMenuItem startFirebaseClient,
-                ToolStripMenuItem restartFirebaseClient,
-                ToolStripMenuItem exitFirebaseClient)
-            {
-                RestartLogger = restartLogger;
-                ExitLogger = exitLogger;
-                StartFirebaseClient = startFirebaseClient;
-                RestartFirebaseClient = restartFirebaseClient;
-                ExitFirebaseClient = exitFirebaseClient;
-            }
-
-            public ToolStrips()
-            {
-            }
         }
     }
 }

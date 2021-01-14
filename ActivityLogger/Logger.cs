@@ -45,10 +45,10 @@ namespace ActivityLogger
                 // Clears not needed items
                 Clear();
 
-                // Map Activities names to recent Config
+                // Maps Activities names to recent Config
                 MapRecentConfigNames();
 
-                // Start the Firebase Client
+                // Starts the Firebase Client
                 LaunchFirebaseClient();
 
                 OnInitializedLogger?.Invoke(this, new InitializedLoggerEventArgs { logger = this });
@@ -56,8 +56,8 @@ namespace ActivityLogger
                 // Waits 60 Seconds
                 Thread.Sleep(1000 * WaitSeconds);
 
-                // Main Loop
-                await MyMain();
+                // Repeats Main loop cycle
+                await MainCycle();
             }
             catch (Exception e)
             {
@@ -172,7 +172,7 @@ namespace ActivityLogger
             }
         }
 
-        private void LaunchFirebaseClient()
+        public void LaunchFirebaseClient()
         {
             if (config.DontUseFirebaseClient.HasValue && config.DontUseFirebaseClient.Value)
                 return;
@@ -192,7 +192,7 @@ namespace ActivityLogger
             FirebaseClient.Start();
         }
 
-        private async Task MyMain()
+        private async Task MainCycle()
         {
             while (true)
             {
@@ -307,17 +307,26 @@ namespace ActivityLogger
         {
             if (activityDictionary.ContainsKey(DateFormat()) || activities.Count == 0) return;
 
-            if (FirebaseClient != null)
-            {
-                try
-                {
-                    KillFirebaseClientProcess(FirebaseClient.Id);
-                }
-                catch { }
-            }
+            Restart();
+        }
+
+        public void Restart()
+        {
+            ExitFirebaseClient();
 
             Process.Start(activityLoggerPath + @"\ActivityLogger.exe");
             Environment.Exit(0);
+        }
+
+        public void ExitFirebaseClient()
+        {
+            if (FirebaseClient == null) return;
+
+            try
+            {
+                KillFirebaseClientProcess(FirebaseClient.Id);
+            }
+            catch{ }
         }
 
         private static void KillFirebaseClientProcess(int pid)

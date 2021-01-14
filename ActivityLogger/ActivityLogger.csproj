@@ -4,10 +4,22 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
-    <ApplicationIcon />
+    <ApplicationIcon>icon.ico</ApplicationIcon>
     <StartupObject />
+    <Title>ActivityLogger</Title>
+    <Authors>SolomonRosemite</Authors>
+    <Company>rosemite</Company>
+    <AssemblyVersion>2.3.1</AssemblyVersion>
+    <FileVersion>2.3.1</FileVersion>
+    <NeutralLanguage>en-150</NeutralLanguage>
+    <Version>2.0.1</Version>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="icon.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>
