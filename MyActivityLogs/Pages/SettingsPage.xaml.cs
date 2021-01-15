@@ -71,7 +71,7 @@ namespace MyActivityLogs.Pages
             try
             {
                 var res = JsonConvert.DeserializeObject<Dictionary<string, object>>(jsonFromFile);
-                res.TryGetValue("userSecret", out var secret);
+                res.TryGetValue("UserSecret", out var secret);
 
                 if (secret != null) return secret.ToString();
             }

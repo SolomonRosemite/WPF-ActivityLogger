@@ -17,7 +17,7 @@ interface IUpdateResult {
 }
 
 interface IConfig {
-  userSecret: string;
+  UserSecret: string;
 }
 
 interface IUserAuth {

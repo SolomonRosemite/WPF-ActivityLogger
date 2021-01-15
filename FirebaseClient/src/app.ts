@@ -172,8 +172,8 @@ function reportError(error: {
 function getUserSecret(pathToConfig: string): string | undefined {
   try {
     const config: IConfig = require(pathToConfig);
-    if (config && config.userSecret) {
-      return config.userSecret;
+    if (config && config.UserSecret) {
+      return config.UserSecret;
     }
   } catch {}
 
@@ -206,7 +206,7 @@ async function getUser(
       config = require(pathToConfig);
     } catch {}
 
-    config.userSecret = uuid;
+    config.UserSecret = uuid;
 
     fs.writeFileSync(pathToConfig, JSON.stringify(config, undefined, 2));
 
