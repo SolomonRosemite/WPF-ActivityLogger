@@ -40,7 +40,7 @@
 
             notifyIcon.Click += (sender, _) => ReloadNotifyIcon();
 
-            logger.InitializeLogger();
+            Task.Run(logger.InitializeLogger);
         }
 
         private void OnLoggerInitialized(object sender, InitializedLoggerEventArgs args) => ReloadNotifyIcon();

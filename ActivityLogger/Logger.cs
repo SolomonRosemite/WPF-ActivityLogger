@@ -159,14 +159,28 @@ namespace ActivityLogger
         {
             foreach (var (key, values) in activityDictionary.ToList())
             {
-                foreach (var activity in values)
+                for (int i = 0; i < values.Count; i++)
                 {
-                    var name = activity.ActivityName;
+                    var name = values[i].ActivityName;
                     var res = config.RenameActivity(name, name);
 
-                    if (res != null)
-                        activity.ActivityName = res;
+                    if (res == null)
+                        continue;
+
+                    var value = values.Where((activity, j) => activity.ActivityName == res).FirstOrDefault();
+                    if (value != null)
+                    {
+                        values[i].ActivityName = res;
+                        values[i--].AddMinutesSpent(value.MinutesSpent());
+                        values.Remove(value);
+                        continue;
+                    }
+
+                    values[i].ActivityName = res;
                 }
+
+                if (key == DateFormat())
+                    activities = values;
 
                 activityDictionary[key] = values;
             }
@@ -363,6 +377,11 @@ namespace ActivityLogger
         }
 
         public int MinutesSpent() => int.Parse(TimeSpent.Remove(TimeSpent.Length - 7));
+
+        public void AddMinutesSpent(int value)
+        {
+            TimeSpent = $"{value + int.Parse(TimeSpent.Remove(TimeSpent.Length - 7))} Minutes";
+        }
     }
 
     internal class Config
@@ -377,10 +396,7 @@ namespace ActivityLogger
 
         public string[] IgnoreProcessName
         {
-            get
-            {
-                return ignoreProcessName;
-            }
+            get => ignoreProcessName;
             set
             {
                 if (ignoreProcessName == null || ignoreProcessName.Length == 0)
