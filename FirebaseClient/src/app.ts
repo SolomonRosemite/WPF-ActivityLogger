@@ -26,6 +26,14 @@ const firestore = project.firestore();
 const storage = project.storage();
 
 async function main() {
+  const online = await isOnline();
+
+  if (!online) {
+    await delay(1000 * 60);
+    start();
+    return;
+  }
+
   const secret = getUserSecret(pathToConfig);
   const userAuth = await getUser(secret, pathToConfig);
 
@@ -257,10 +265,14 @@ async function isOnline(): Promise<boolean> {
 }
 
 // Start App
-main().catch((err) => {
-  reportError({
-    message: err,
+async function start() {
+  await main().catch((err) => {
+    reportError({
+      message: err,
+    });
   });
-});
+}
+
+start().catch();
 
 global.XMLHttpRequest = require("xhr2");
