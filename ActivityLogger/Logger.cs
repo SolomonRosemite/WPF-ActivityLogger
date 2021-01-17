@@ -21,7 +21,8 @@ namespace ActivityLogger
         private static extern IntPtr GetForegroundWindow();
 
 
-        private readonly string activityLoggerPath = GetDirectory() + @"\TMRosemite\ActivityLogger";
+        public static readonly string ActivityLoggerPath = GetDirectory() + @"\TMRosemite\ActivityLogger";
+
         private Dictionary<string, List<Activity>> activityDictionary = new Dictionary<string, List<Activity>>();
         private List<Activity> activities = new List<Activity>();
 
@@ -96,7 +97,7 @@ namespace ActivityLogger
             // Read Json
             string jsonFromFile;
 
-            using (var reader = new StreamReader(activityLoggerPath + @"\SavedActivities.json"))
+            using (var reader = new StreamReader(ActivityLoggerPath + @"\SavedActivities.json"))
             {
                 jsonFromFile = reader.ReadToEnd();
                 if (!jsonFromFile.Contains("{"))
@@ -118,7 +119,7 @@ namespace ActivityLogger
         {
             string jsonFromFile;
 
-            using (var reader = new StreamReader(activityLoggerPath + @"\Config.json"))
+            using (var reader = new StreamReader(ActivityLoggerPath + @"\Config.json"))
             {
                 jsonFromFile = reader.ReadToEnd();
                 if (!jsonFromFile.Contains("{"))
@@ -133,19 +134,19 @@ namespace ActivityLogger
         private void Load()
         {
             // Check If required Path Exists
-            if (!Directory.Exists(activityLoggerPath))
+            if (!Directory.Exists(ActivityLoggerPath))
             {
                 // If not we Create it
-                Directory.CreateDirectory(activityLoggerPath);
+                Directory.CreateDirectory(ActivityLoggerPath);
             }
 
-            if (File.Exists(activityLoggerPath + @"\SavedActivities.json"))
+            if (File.Exists(ActivityLoggerPath + @"\SavedActivities.json"))
             {
                 // Loads Json and updates activities list
                 try { LoadActivities(); } catch { }
             }
 
-            if (File.Exists(activityLoggerPath + @"\Config.json"))
+            if (File.Exists(ActivityLoggerPath + @"\Config.json"))
             {
                 // Loads Config file
                 try { LoadConfig(); } catch { config = new Config(); }
@@ -199,7 +200,7 @@ namespace ActivityLogger
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     CreateNoWindow = true,
-                    FileName = @$"{activityLoggerPath}\launch.bat",
+                    FileName = @$"{ActivityLoggerPath}\launch.bat",
                 }
             };
 
@@ -222,8 +223,8 @@ namespace ActivityLogger
             // If new day just started we need to restart
             CheckForRestart();
 
-            // If the Ignore Array contains fileName don't save
-            if (Array.Exists(config.IgnoreProcessName, element => element.ToLower() == fileName.ToLower())) { return; }
+            // If the Ignore Array contains the process name its going to return. So we dont want to save
+            if (fileName == null) { return; }
 
             // If fileName is empty don't save
             if (fileName.Length == 0) { return; }
@@ -261,12 +262,12 @@ namespace ActivityLogger
 
             try
             {
-                File.WriteAllText(activityLoggerPath + @"\SavedActivities.json", json);
+                File.WriteAllText(ActivityLoggerPath + @"\SavedActivities.json", json);
             }
             catch (Exception e)
             {
                 string error = $"The File was probably in use...\nStacktrace Exception:\n{e}";
-                File.WriteAllText(activityLoggerPath + @"\Error.txt", error);
+                File.WriteAllText(ActivityLoggerPath + @"\Error.txt", error);
             }
         }
         private string GetActiveProcessFileName()
@@ -275,6 +276,9 @@ namespace ActivityLogger
             IntPtr pointer = GetForegroundWindow();
             GetWindowThreadProcessId(pointer, out var pid);
             Process p = Process.GetProcessById((int)pid);
+
+            // If the Ignore Array contains fileName don't save
+            if (Array.Exists(config.IgnoreProcessName, element => element.ToLower() == p.ProcessName.ToLower())) { return null; }
 
             string value = config.RenameActivity(p.MainWindowTitle, p.ProcessName);
             if (value != null)
@@ -328,7 +332,7 @@ namespace ActivityLogger
         {
             ExitFirebaseClient();
 
-            Process.Start(activityLoggerPath + @"\ActivityLogger.exe");
+            Process.Start(ActivityLoggerPath + @"\ActivityLogger.exe");
             Environment.Exit(0);
         }
 

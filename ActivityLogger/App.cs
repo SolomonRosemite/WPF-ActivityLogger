@@ -17,7 +17,7 @@
         {
             notifyIcon = new NotifyIcon
             {
-                Icon = new Icon(@".\icon.ico"),
+                Icon = new Icon($@"{Logger.ActivityLoggerPath}\icon.ico"),
                 Text = "Activities",
                 Visible = true,
                 ContextMenuStrip = new ContextMenuStrip(),
