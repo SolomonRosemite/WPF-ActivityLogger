@@ -36,7 +36,7 @@
 
 # Installation ⚙️
 
-- Note there is a more detailed work through which can be in the official
+- Note there is a more detailed work through which can be found in the official
   documentation
   <a href="https://rosemitedocs.web.app/docs/WPF-ActivityLogger-Installation/">here.</a>
 
