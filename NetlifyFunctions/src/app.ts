@@ -1,11 +1,17 @@
 const serverless = require("serverless-http");
-require("dotenv").config();
 
-import { createNewUser, IUser, randomString, uuidExists } from "./common";
+import {
+  createNewUser,
+  IUser,
+  randomString,
+  serviceAccountJson,
+  uuidExists,
+} from "./common";
 import * as bodyParser from "body-parser";
 import * as express from "express";
-//
-const serviceAccount = JSON.parse(process.env.serviceAccount as any);
+import * as cors from "cors";
+
+const serviceAccount = JSON.parse(serviceAccountJson);
 import * as admin from "firebase-admin";
 
 admin.initializeApp({
@@ -22,6 +28,7 @@ const appname = "app";
 const app = express();
 const router = express.Router();
 
+app.use(cors());
 app.use(bodyParser.json());
 app.use(`/.netlify/functions/${appname}`, router);
 

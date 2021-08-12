@@ -1,17 +1,30 @@
+require("dotenv").config();
+
+let serviceAccountJson: Readonly<string>;
+
+if (!process.env.serviceAccount) {
+  throw new Error("No Service Account found.");
+}
+
+serviceAccountJson = process.env.serviceAccount;
+
 interface IUser {
   uuid: string;
   email: string;
   password: string;
 }
 
-async function uuidExists(uuid: string, firestore: FirebaseFirestore.Firestore): Promise<IUser | undefined> {
-  const results = await firestore.collection("/secrets")
-                    .where("secret", "==", uuid)
-                    .get()
-                    .catch((err) => {
-                      console.log(err)
-                    });
-
+async function uuidExists(
+  uuid: string,
+  firestore: FirebaseFirestore.Firestore
+): Promise<IUser | undefined> {
+  const results = await firestore
+    .collection("/secrets")
+    .where("secret", "==", uuid)
+    .get()
+    .catch((err) => {
+      console.log(err);
+    });
 
   if (results && !results.empty) {
     return results.docs[0].data() as IUser;
@@ -21,26 +34,27 @@ async function uuidExists(uuid: string, firestore: FirebaseFirestore.Firestore):
 }
 
 function createNewUser(id: string): IUser {
-  const email = `${id}@${randomString(10)}.com`
+  const email = `${id}@${randomString(10)}.com`;
   const password = randomString(20);
 
   return {
     email: email,
     password: password,
-    uuid: id
-  }
+    uuid: id,
+  };
 }
 
 function randomString(length: number) {
-   let result = '';
-   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-   const charactersLength = characters.length;
+  let result = "";
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const charactersLength = characters.length;
 
-   for ( var i = 0; i < length; i++ ) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
-   }
+  for (var i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
 
-   return result;
+  return result;
 }
 
-export { IUser, createNewUser, uuidExists, randomString }
+export { IUser, createNewUser, uuidExists, randomString, serviceAccountJson };
