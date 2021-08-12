@@ -21,7 +21,7 @@ class HelperUtilityClass {
     if (MyApp.activities[date] != null) {
       return MyApp.activities[date];
     }
-    return new List();
+    return [];
   }
 
   static Future setupApp(BuildContext context) async {

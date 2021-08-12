@@ -10,7 +10,6 @@ enum ActivityType {
   week,
   month,
 
-  personalized,
   total,
 }
 
