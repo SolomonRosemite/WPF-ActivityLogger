@@ -29,6 +29,9 @@ class _SignInState extends State<SignIn> {
       return;
     }
 
+    progressIndicatorActive = true;
+    showLoadingDialog(context, _dialogKey);
+
     signUserIn(userSecret, ctx);
   }
 
