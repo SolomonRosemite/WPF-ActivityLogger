@@ -1,12 +1,10 @@
-import 'dart:math';
-
-import 'package:Activities/Models/ActivityItem.dart';
-import 'package:Activities/Models/ActivityItemStack.dart';
+import 'package:activities/Models/ActivityItem.dart';
+import 'package:activities/Models/ActivityItemStack.dart';
 import 'package:flutter/material.dart';
 
 class ActivityAppearance {
   Color backgroundColor;
-  String imagePath;
+  String imagePath = "";
 
   ActivityAppearance(String activityName) {
     activityName = activityName.trim();
@@ -14,7 +12,7 @@ class ActivityAppearance {
     var item = getActivityItem(ActivityItemStack.activities, activityName);
 
     if (item.name == "UnidentifiedActivity") {
-      this.imagePath = "assets/images/undefined.png";
+      this.imagePath = "images/undefined.png";
       this.backgroundColor = Colors.blue[300];
       return;
     }

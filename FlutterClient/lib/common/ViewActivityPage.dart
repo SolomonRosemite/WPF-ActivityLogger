@@ -1,7 +1,7 @@
-import 'package:Activities/Models/Activity.dart';
-import 'package:Activities/common/ActivityCard.dart';
-import 'package:Activities/services/ActivityAppearance.dart';
-import 'package:Activities/services/HelperUtilityClass.dart';
+import 'package:activities/Models/Activity.dart';
+import 'package:activities/common/ActivityCard.dart';
+import 'package:activities/services/ActivityAppearance.dart';
+import 'package:activities/services/HelperUtilityClass.dart';
 import 'package:flutter/material.dart';
 
 class ActivityDetail extends StatefulWidget {

@@ -1,7 +1,6 @@
 import 'dart:convert';
-import 'dart:developer';
 
-import 'package:Activities/Models/IUser.dart';
+import '../Models/IUser.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:data_connection_checker/data_connection_checker.dart';
 
@@ -17,7 +16,6 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Backend {
-  // static store.FirebaseStorage storage = store.FirebaseStorage.instance(app: _app, storageBucket: 'gs://flutter-homebackend.appspot.com');
   static store.FirebaseStorage storage = store.FirebaseStorage.instance;
   static FirebaseFirestore firestore = FirebaseFirestore.instance;
   static FirebaseAuth auth = FirebaseAuth.instance;

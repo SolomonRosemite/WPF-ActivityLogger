@@ -1,10 +1,11 @@
-import 'package:Activities/services/ActivityAppearance.dart';
-import 'package:Activities/common/ViewActivityPage.dart';
-import 'package:Activities/common/FadePageRoute.dart';
-import 'package:Activities/Models/Activity.dart';
+import 'package:activities/services/ActivityAppearance.dart';
+import 'package:activities/common/FadePageRoute.dart';
+import 'package:activities/Models/Activity.dart';
 import 'package:flutter/material.dart';
-import 'package:Activities/main.dart';
+import 'package:activities/main.dart';
 import 'package:intl/intl.dart';
+
+import 'ViewActivityPage.dart';
 
 bool inHours = false;
 

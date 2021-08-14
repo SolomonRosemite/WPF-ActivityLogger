@@ -1,4 +1,4 @@
-package com.rosemite.Activities
+package com.rosemite.activities
 
 import io.flutter.embedding.android.FlutterActivity
 

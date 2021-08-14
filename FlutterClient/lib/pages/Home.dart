@@ -1,12 +1,12 @@
 import 'dart:math';
 
-import 'package:Activities/Backend/Backend.dart';
-import 'package:Activities/common/ActivityCard.dart';
-import 'package:Activities/pages/ViewActivities.dart';
-import 'package:Activities/services/HelperUtilityClass.dart';
+import 'package:activities/Backend/Backend.dart';
+import 'package:activities/common/ActivityCard.dart';
+import 'package:activities/pages/ViewActivities.dart';
+import 'package:activities/services/HelperUtilityClass.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:Activities/main.dart';
+import 'package:activities/main.dart';
 import 'package:minimize_app/minimize_app.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 
@@ -144,6 +144,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     );
   }
 
+  void handleOnRevealClick() {}
+
   @override
   Widget build(BuildContext context) {
     return new WillPopScope(
@@ -176,7 +178,6 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         ),
         drawer: Drawer(
           child: Column(
-            // mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               Container(
                 height: 100,
@@ -263,22 +264,58 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                 ),
               ),
               Expanded(
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: ListTile(
-                    title: Text(
-                      'Sign Out',
-                      style: TextStyle(color: Colors.red[400]),
+                child: Column(
+                  children: [
+                    SizedBox.shrink(),
+                    Spacer(),
+                    ListTile(
+                      title: Text(
+                        'Reveal secret',
+                        style: TextStyle(color: Colors.red[400]),
+                      ),
+                      onTap: handleOnRevealClick,
                     ),
-                    onTap: () async {
-                      await Backend.prefs.setString("userSecret", null);
-                      Phoenix.rebirth(context);
-                      // Navigator.pop(context);
-                      // showAlertDialog();
-                    },
-                  ),
+                    ListTile(
+                      title: Text(
+                        'Signout',
+                        style: TextStyle(color: Colors.red[400]),
+                      ),
+                      onTap: () async {
+                        await Backend.prefs.setString("userSecret", null);
+                        Phoenix.rebirth(context);
+                      },
+                    ),
+                  ],
                 ),
               ),
+              //       Expanded(
+              //         child: Align(
+              //           alignment: Alignment.bottomCenter,
+              //           child: Container(
+              //             child: Column(
+              //               children: [
+              //                 ListTile(
+              //                   title: Text(
+              //                     'Reveal secret',
+              //                     style: TextStyle(color: Colors.red[400]),
+              //                   ),
+              //                   onTap: handleOnRevealClick,
+              //                 ),
+              //                 ListTile(
+              //                   title: Text(
+              //                     'Sign Out',
+              //                     style: TextStyle(color: Colors.red[400]),
+              //                   ),
+              //                   onTap: () async {
+              //                     await Backend.prefs.setString("userSecret", null);
+              //                     Phoenix.rebirth(context);
+              //                   },
+              //                 ),
+              //               ],
+              //             ),
+              //           ),
+              //         ),
+              //       ),
             ],
           ),
         ),

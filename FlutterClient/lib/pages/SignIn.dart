@@ -1,10 +1,10 @@
-import 'package:Activities/Backend/Backend.dart';
-import 'package:Activities/Models/IUser.dart';
-import 'package:Activities/services/HelperUtilityClass.dart';
+import 'package:activities/Backend/Backend.dart';
+import 'package:activities/Models/IUser.dart';
+import 'package:activities/services/HelperUtilityClass.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:qrscan/qrscan.dart' as scanner;
-import 'package:Activities/pages/Home.dart';
+import 'package:activities/pages/Home.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:flutter/foundation.dart' show kIsWeb;

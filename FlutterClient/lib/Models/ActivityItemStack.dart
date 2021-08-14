@@ -1,4 +1,4 @@
-import 'package:Activities/Models/ActivityItem.dart';
+import 'package:activities/Models/ActivityItem.dart';
 import 'package:flutter/material.dart';
 
 class ActivityItemStack {
