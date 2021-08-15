@@ -1,11 +1,13 @@
-import 'package:Activities/Backend/Backend.dart';
-import 'package:Activities/Models/IUser.dart';
-import 'package:Activities/services/HelperUtilityClass.dart';
+import 'package:activities/Backend/Backend.dart';
+import 'package:activities/Models/IUser.dart';
+import 'package:activities/services/HelperUtilityClass.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:qrscan/qrscan.dart' as scanner;
-import 'package:Activities/pages/Home.dart';
+import 'package:activities/pages/Home.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 import '../Backend/Backend.dart';
 
@@ -19,7 +21,21 @@ class _SignInState extends State<SignIn> {
   bool progressIndicatorActive = false;
   GlobalKey _dialogKey = GlobalKey();
 
-  void scan() async {
+  final double imageSize = 110;
+
+  void scanOrSubmit(BuildContext ctx) {
+    if (!kIsWeb) {
+      scan(ctx);
+      return;
+    }
+
+    progressIndicatorActive = true;
+    showLoadingDialog(context, _dialogKey);
+
+    signUserIn(userSecret, ctx);
+  }
+
+  void scan(BuildContext ctx) async {
     if (await Permission.camera.request().isGranted && await Permission.storage.request().isGranted) {
       String secret = await scanner.scan();
 
@@ -30,59 +46,74 @@ class _SignInState extends State<SignIn> {
       progressIndicatorActive = true;
       showLoadingDialog(context, _dialogKey);
 
-      signUserIn(secret);
+      signUserIn(secret, ctx);
     } else {
-      showAlertDialog("Insufficient Permissions", "Both Permissions are requied to use the app.");
+      showAlertDialog("Insufficient Permissions", "Both Permissions are requied to use the app.", ctx);
     }
   }
 
-  launchURL() async {
+  launchURL(BuildContext ctx) async {
     const url = 'https://rosemitedocs.web.app/docs/WPF-ActivityLogger-Installation#mobile-installation';
     if (await canLaunch(url)) {
       await launch(url);
     } else {
       Backend.postReport("The Installation mobile-installation Url couldn't be launched");
-      showAlertDialog("Somethink went wrong", "Please try again Later...");
+      showAlertDialog("Somethink went wrong", "Please try again Later...", ctx);
     }
   }
 
-  Future<void> signUserIn(String secret) async {
+  Future<void> signUserIn(String secret, BuildContext ctx) async {
     IUser user = await Backend.authenticate(secret);
 
     if (user == null) {
-      showAlertDialog("Invalid Secret", "The Scaned Secret doesn't seem to be valid. Please make sure to scan the correct QR-Code");
+      showAlertDialog(
+        "Invalid Secret",
+        "The Secret doesn't seem to be valid. Please make sure to scan (or on web type) the correct QR-Code or (Secret)",
+        ctx,
+      );
       return;
     }
 
     try {
-      var res = await Backend.auth.signInWithEmailAndPassword(email: user.email, password: user.password);
+      var res = await Backend.auth.signInWithEmailAndPassword(
+        email: user.email,
+        password: user.password,
+      );
       Backend.uid = res.user.uid;
     } catch (e) {
-      showAlertDialog("Authentication Error", "The Authentication process failed. Try to Scan the Secret once again.");
+      showAlertDialog(
+        "Authentication Error",
+        "The Authentication process failed. Try please try again later.",
+        ctx,
+      );
       Backend.postReport("Authentication Error", exception: e);
       return;
     }
 
     await Backend.prefs.setString("userSecret", secret);
-    await HelperUtilityClass.setupApp(context);
+    await HelperUtilityClass.setupApp(ctx);
 
     progressIndicatorActive = false;
     Navigator.of(_dialogKey.currentContext, rootNavigator: true).pop();
 
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => Home()),
+      MaterialPageRoute(builder: (ctx) => Home()),
     );
   }
 
-  void showAlertDialog(String title, String errorMesage) {
+  void handleSecretInputChange(String secret) {
+    this.userSecret = secret;
+  }
+
+  void showAlertDialog(String title, String errorMesage, BuildContext ctx) {
     if (progressIndicatorActive) {
       Navigator.of(_dialogKey.currentContext, rootNavigator: true).pop();
       progressIndicatorActive = false;
     }
     showDialog(
-      context: context,
-      builder: (BuildContext context) {
+      context: ctx,
+      builder: (BuildContext ctx2) {
         return AlertDialog(
           title: Text(title),
           content: Text(errorMesage),
@@ -90,7 +121,7 @@ class _SignInState extends State<SignIn> {
             FlatButton(
               textColor: Colors.blue,
               onPressed: () {
-                Navigator.pop(context);
+                Navigator.pop(ctx2);
               },
               child: Text('Ok'),
             ),
@@ -152,27 +183,36 @@ class _SignInState extends State<SignIn> {
               Spacer(flex: 10),
               Image.asset(
                 "assets/icons/checked.png",
-                height: 110.0,
-                width: 110.0,
+                height: imageSize,
+                width: imageSize,
               ),
               Spacer(flex: 8),
               Text(
                 'Welcome to My Activities',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
               ),
-              Text('View your Activites anywhere you go!'),
+              Text('View your Activites now anywhere you go!'),
               Spacer(flex: 10),
-              Text('To use My Activites on your moible device:\n'),
+              Text('To use My Activites on your moible device or Web:\n'),
               Text('1. Open My Activites on your desktop device'),
               Text('2. Navigate to the Settings tab'),
-              Text('3. Scan the QR-Code'),
+              Text(kIsWeb ? '3. Click on Reveal secret and paste it below' : '3. Scan the QR-Code'),
               Spacer(flex: 10),
+              Container(
+                width: imageSize * 3,
+                child: TextField(
+                  onChanged: handleSecretInputChange,
+                  textAlign: TextAlign.center,
+                  decoration: InputDecoration(border: OutlineInputBorder(), hintText: 'Enter your secret here'),
+                ),
+              ),
+              Spacer(flex: 5),
               Center(
                 child: RaisedButton(
-                  onPressed: scan,
+                  onPressed: () => scanOrSubmit(context),
                   color: Colors.blue,
                   child: Text(
-                    "Scan Secret QR Code",
+                    kIsWeb ? "Sumbit secret" : "Scan Secret QR Code",
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
@@ -181,7 +221,7 @@ class _SignInState extends State<SignIn> {
               Center(
                 child: FlatButton(
                   onPressed: () => {
-                    launchURL()
+                    launchURL(context)
                   },
                   child: Text(
                     "Need a guide?",

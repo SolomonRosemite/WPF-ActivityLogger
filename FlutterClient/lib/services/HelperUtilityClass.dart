@@ -1,9 +1,8 @@
 import 'dart:convert';
 
-import 'package:Activities/Backend/Backend.dart';
-import 'package:Activities/Models/Activity.dart';
-import 'package:Activities/main.dart';
-import 'package:Activities/pages/Home.dart';
+import 'package:activities/Backend/Backend.dart';
+import 'package:activities/Models/Activity.dart';
+import 'package:activities/main.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'dart:collection';
@@ -21,7 +20,7 @@ class HelperUtilityClass {
     if (MyApp.activities[date] != null) {
       return MyApp.activities[date];
     }
-    return new List();
+    return [];
   }
 
   static Future setupApp(BuildContext context) async {
@@ -43,6 +42,9 @@ class HelperUtilityClass {
   }
 
   static void activities(String data) {
+    if (data == null) {
+      return;
+    }
     Map<String, List<Activity>> map = new Map();
     MyApp.activities.clear();
 
@@ -51,11 +53,11 @@ class HelperUtilityClass {
     for (String key in parsed.keys.toList()) {
       for (var item in parsed[key]) {
         if (map[key] == null) {
-          map[key] = new List<Activity>();
+          map[key] = [];
         }
         String timespent = item['TimeSpent'];
 
-        map[key].add(new Activity(activityName: item['ActivityName'], date: DateFormat('dd.MM.yyyy').parse(key), timeSpent: int.parse(timespent.substring(0, timespent.length - 7).trim())));
+        map[key]?.add(new Activity(activityName: item['ActivityName'], date: DateFormat('dd.MM.yyyy').parse(key), timeSpent: int.parse(timespent.substring(0, timespent.length - 7).trim())));
       }
     }
 
@@ -77,7 +79,7 @@ class HelperUtilityClass {
 
   // For a Single Activity
   static List<Activity> getAllActivitiesOf(String activityname) {
-    List<Activity> list = new List();
+    List<Activity> list = [];
 
     DateTime start = DateTime.now();
     DateTime end = _getLatestDate(MyApp.activities.keys.toList()).subtract(new Duration(days: 1));

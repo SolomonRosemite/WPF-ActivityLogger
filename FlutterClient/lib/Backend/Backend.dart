@@ -1,30 +1,30 @@
 import 'dart:convert';
 
-import 'package:Activities/Models/IUser.dart';
+import '../Models/IUser.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:data_connection_checker/data_connection_checker.dart';
 
 import 'package:firebase_storage/firebase_storage.dart' as store;
-import 'package:cloud_firestore/cloud_firestore.dart' as fs;
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'dart:async';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Backend {
-  // static store.FirebaseStorage storage = store.FirebaseStorage.instance(app: _app, storageBucket: 'gs://flutter-homebackend.appspot.com');
   static store.FirebaseStorage storage = store.FirebaseStorage.instance;
   static FirebaseFirestore firestore = FirebaseFirestore.instance;
   static FirebaseAuth auth = FirebaseAuth.instance;
   static SharedPreferences prefs;
   static String uid;
-  static String _url = "https://wpf-activitylogger-functions.netlify.app/.netlify/functions/app/auth";
+  static String _url = kReleaseMode ? "https://wpf-activitylogger-functions.netlify.app/.netlify/functions/app/auth" : "http://localhost:3000/.netlify/functions/app/auth";
 
   static Future<bool> hasInternet() async {
-    return await DataConnectionChecker().hasConnection;
+    return kIsWeb ?? await DataConnectionChecker().hasConnection;
   }
 
   static Future<http.Response> _fetchUser(String secret) {
@@ -56,12 +56,13 @@ class Backend {
     try {
       String date = DateFormat('dd.MM.yyyy').format(dateTime);
 
-      var ref = storage.ref().child(uid).child(date).child('SavedActivities.json');
+      var ref = storage.ref("/$uid/$date/SavedActivities.json");
 
       final String url = await ref.getDownloadURL();
       return (await http.get(url)).body;
     } catch (e) {
       if (++tries > threshold) {
+        // Todo: When returning null, handle for every function that uses this function that might expect null.
         return null;
       }
 

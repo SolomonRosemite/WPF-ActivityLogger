@@ -1,14 +1,15 @@
 import 'dart:math';
 
-import 'package:Activities/Backend/Backend.dart';
-import 'package:Activities/common/ActivityCard.dart';
-import 'package:Activities/pages/ViewActivities.dart';
-import 'package:Activities/services/HelperUtilityClass.dart';
+import 'package:activities/Backend/Backend.dart';
+import 'package:activities/common/ActivityCard.dart';
+import 'package:activities/pages/ViewActivities.dart';
+import 'package:activities/services/HelperUtilityClass.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:Activities/main.dart';
+import 'package:activities/main.dart';
 import 'package:minimize_app/minimize_app.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -123,20 +124,45 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     return ('${s[0].toUpperCase()}${s.substring(1)}');
   }
 
-  void showAlertDialog() {
-    showDialog(
+  // Future<void> handleOnRevealClick(BuildContext context) {
+  Future<void> handleOnRevealClick() {
+    Navigator.pop(context);
+    return showDialog<void>(
       context: context,
-      builder: (BuildContext context) {
+      builder: (BuildContext ctx2) {
         return AlertDialog(
-          title: Text('Yikes'),
-          content: Text('This functionality is not available yet. Please be patient.'),
+          title: Text(
+            "Your Usersecret",
+            textAlign: TextAlign.center,
+          ),
+          content: Container(
+            height: 220,
+            width: 300,
+            child: Align(
+              alignment: Alignment.center,
+              child: Column(
+                children: [
+                  Text(
+                    "Share this secret only between your devices.",
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 20),
+                  QrImage(
+                    data: Backend.prefs.getString("userSecret"),
+                    version: QrVersions.auto,
+                    size: 150.0,
+                  ),
+                ],
+              ),
+            ),
+          ),
           actions: [
             FlatButton(
-              textColor: color,
+              textColor: Colors.blue,
               onPressed: () {
-                Navigator.pop(context);
+                Navigator.pop(ctx2);
               },
-              child: Text('Ok'),
+              child: Text('Close'),
             ),
           ],
         );
@@ -153,7 +179,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text('My Activities'),
+          title: Text('Activities'),
           centerTitle: true,
           actions: [
             IconButton(
@@ -176,14 +202,13 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         ),
         drawer: Drawer(
           child: Column(
-            // mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               Container(
                 height: 100,
                 child: DrawerHeader(
                   child: Align(
                     child: Text(
-                      'My Activities 📅',
+                      'Activities 📅',
                     ),
                     alignment: Alignment.centerLeft,
                   ),
@@ -263,20 +288,28 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                 ),
               ),
               Expanded(
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: ListTile(
-                    title: Text(
-                      'Sign Out',
-                      style: TextStyle(color: Colors.red[400]),
+                child: Column(
+                  children: [
+                    SizedBox.shrink(),
+                    Spacer(),
+                    ListTile(
+                      title: Text(
+                        'Reveal secret',
+                        style: TextStyle(color: Colors.red[400]),
+                      ),
+                      onTap: handleOnRevealClick,
                     ),
-                    onTap: () async {
-                      await Backend.prefs.setString("userSecret", null);
-                      Phoenix.rebirth(context);
-                      // Navigator.pop(context);
-                      // showAlertDialog();
-                    },
-                  ),
+                    ListTile(
+                      title: Text(
+                        'Signout',
+                        style: TextStyle(color: Colors.red[400]),
+                      ),
+                      onTap: () async {
+                        await Backend.prefs.setString("userSecret", null);
+                        Phoenix.rebirth(context);
+                      },
+                    ),
+                  ],
                 ),
               ),
             ],

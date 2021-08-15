@@ -1,17 +1,21 @@
-import 'package:Activities/Models/IUser.dart';
-import 'package:Activities/Models/Activity.dart';
-import 'package:Activities/Backend/Backend.dart';
-import 'package:Activities/pages/SignIn.dart';
-import 'package:Activities/services/HelperUtilityClass.dart';
+import 'dart:developer';
+
+import 'package:activities/Models/IUser.dart';
+import 'package:activities/Models/Activity.dart';
+import 'package:activities/Backend/Backend.dart';
+import 'package:activities/pages/SignIn.dart';
+import 'package:activities/services/HelperUtilityClass.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:Activities/pages/Home.dart';
+import 'package:activities/pages/Home.dart';
 
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 
-void main() => runApp(Phoenix(child: MyApp()));
+void main() async {
+  runApp(Phoenix(child: MyApp()));
+}
 
 class MyApp extends StatelessWidget {
   static Map<String, List<Activity>> activities;
@@ -47,7 +51,7 @@ class MyHomePageState extends State<MyHomePage> {
     textStyle = new TextStyle(color: Colors.grey[700]);
 
     initApp();
-    new Future.delayed(const Duration(seconds: 1), () {
+    new Future.delayed(const Duration(milliseconds: 100), () {
       setState(() {
         _visible = !_visible;
       });
@@ -67,6 +71,7 @@ class MyHomePageState extends State<MyHomePage> {
     }
 
     await Firebase.initializeApp();
+
     Backend.prefs = await SharedPreferences.getInstance();
 
     String secret = Backend.prefs.getString("userSecret");
