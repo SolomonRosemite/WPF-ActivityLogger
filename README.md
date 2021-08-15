@@ -2,7 +2,7 @@
   <img src="https://raw.githubusercontent.com/SolomonRosemite/WPF-ActivityLogger/master/FlutterClient/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" width="80">
   <h1 align="center">ActivityLogger</h1>
   <h4 align="center"><a href="https://github.com/SolomonRosemite/WPF-ActivityLogger/releases"><code>Try it Now</code></a></h4>
-  <p align="center">📖A program that keeps track the apps you use</p>
+  <p align="center">📖A program that keeps track of the apps you use</p>
   <p align="center">
   <img src="https://img.shields.io/badge/type-Project-orange?style=flat-square" alt="Repo Type" />
     <img src="https://img.shields.io/badge/framework-.NET-blueviolet?style=flat-square" alt="Repo Main Language" />
@@ -36,23 +36,21 @@
 
 # Installation ⚙️
 
-- Note there is a more detailed work through which can be found in the official
-  documentation
-  <a href="https://rosemitedocs.web.app/docs/WPF-ActivityLogger-Installation/">here.</a>
-
 ## Desktop Installation🖥️
 
-- First make sure the modules are installed by running
+### Prerequisites
 
-```
-pip install -r requirements.txt
-```
+Make sure you have the following programs installed:
 
-- Run the main.py
+- .Net Core 3.1 Desktop Runtime. [Get it here](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-3.1.32-windows-x64-installer)
+- Node v16 or higher. [Get it here](https://nodejs.org/en)
 
-```
-python main.py
-```
+### Installation Steps
+
+- Go to the latest release [here](https://github.com/SolomonRosemite/WPF-ActivityLogger/releases)
+- Download the `ActivityLogger.zip` file.
+- Extract the zip file.
+- Run the install.vbs by double clicking the file or right clicking the file and selecting `Open`.
 
 Thats it! In the next 10 minutes you should see a few Activities showing up.
 
@@ -88,7 +86,6 @@ Thats it! In the next 10 minutes you should see a few Activities showing up.
 - Used Frameworks:
   <code><img height="20" align="top" src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/flutter/flutter.png">Flutter</code>,
   <code><img height="20" align="top" src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/dotnet/dotnet.png">.NET</code>,
-  <code><img height="20" align="top" src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/nodejs/nodejs.png">.Nodejs(Express.js)</code>
 
 - Used Database:
 <code><img height="20" align="top" src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/firebase/firebase.png">Firebase(Firestore)</code>
