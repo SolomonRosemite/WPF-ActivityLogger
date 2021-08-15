@@ -136,7 +136,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
             textAlign: TextAlign.center,
           ),
           content: Container(
-            height: 220,
+            height: 270,
             width: 300,
             child: Align(
               alignment: Alignment.center,
@@ -151,6 +151,11 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                     data: Backend.prefs.getString("userSecret"),
                     version: QrVersions.auto,
                     size: 150.0,
+                  ),
+                  SizedBox(height: 20),
+                  Text(
+                    "Secret: " + Backend.prefs.getString("userSecret"),
+                    textAlign: TextAlign.center,
                   ),
                 ],
               ),

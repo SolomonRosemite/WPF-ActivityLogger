@@ -36,7 +36,8 @@ class _SignInState extends State<SignIn> {
   }
 
   void scan(BuildContext ctx) async {
-    if (await Permission.camera.request().isGranted && await Permission.storage.request().isGranted) {
+    if (await Permission.camera.request().isGranted &&
+        await Permission.storage.request().isGranted) {
       String secret = await scanner.scan();
 
       if (secret == null) {
@@ -53,11 +54,13 @@ class _SignInState extends State<SignIn> {
   }
 
   launchURL(BuildContext ctx) async {
-    const url = 'https://rosemitedocs.web.app/docs/WPF-ActivityLogger-Installation#mobile-installation';
+    const url =
+        'https://rosemitedocs.web.app/docs/WPF-ActivityLogger-Installation#mobile-installation';
     if (await canLaunch(url)) {
       await launch(url);
     } else {
-      Backend.postReport("The Installation mobile-installation Url couldn't be launched");
+      Backend.postReport(
+          "The Installation mobile-installation Url couldn't be launched");
       showAlertDialog("Somethink went wrong", "Please try again Later...", ctx);
     }
   }
@@ -164,6 +167,22 @@ class _SignInState extends State<SignIn> {
     );
   }
 
+  inputWiget() {
+    if (kIsWeb) {
+      return Container(
+        width: imageSize * 3,
+        child: TextField(
+          onChanged: handleSecretInputChange,
+          textAlign: TextAlign.center,
+          decoration: InputDecoration(
+              border: OutlineInputBorder(), hintText: 'Enter your secret here'),
+        ),
+      );
+    }
+
+    return SizedBox.shrink();
+  }
+
   @override
   Widget build(BuildContext context) {
     return new WillPopScope(
@@ -196,16 +215,11 @@ class _SignInState extends State<SignIn> {
               Text('To use My Activites on your moible device or Web:\n'),
               Text('1. Open My Activites on your desktop device'),
               Text('2. Navigate to the Settings tab'),
-              Text(kIsWeb ? '3. Click on Reveal secret and paste it below' : '3. Scan the QR-Code'),
+              Text(kIsWeb
+                  ? '3. Click on Reveal secret and paste it below'
+                  : '3. Scan the QR-Code'),
               Spacer(flex: 10),
-              Container(
-                width: imageSize * 3,
-                child: TextField(
-                  onChanged: handleSecretInputChange,
-                  textAlign: TextAlign.center,
-                  decoration: InputDecoration(border: OutlineInputBorder(), hintText: 'Enter your secret here'),
-                ),
-              ),
+              inputWiget(),
               Spacer(flex: 5),
               Center(
                 child: RaisedButton(
@@ -220,9 +234,7 @@ class _SignInState extends State<SignIn> {
               Spacer(flex: 8),
               Center(
                 child: FlatButton(
-                  onPressed: () => {
-                    launchURL(context)
-                  },
+                  onPressed: () => {launchURL(context)},
                   child: Text(
                     "Need a guide?",
                     style: TextStyle(color: Colors.green),

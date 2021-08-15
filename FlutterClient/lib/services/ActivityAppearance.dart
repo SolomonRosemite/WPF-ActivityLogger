@@ -12,7 +12,7 @@ class ActivityAppearance {
     var item = getActivityItem(ActivityItemStack.activities, activityName);
 
     if (item.name == "UnidentifiedActivity") {
-      this.imagePath = "images/undefined.png";
+      this.imagePath = "assets/images/Undefined.png";
       this.backgroundColor = Colors.blue[300];
       return;
     }
