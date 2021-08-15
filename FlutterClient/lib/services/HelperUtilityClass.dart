@@ -42,6 +42,9 @@ class HelperUtilityClass {
   }
 
   static void activities(String data) {
+    if (data == null) {
+      return;
+    }
     Map<String, List<Activity>> map = new Map();
     MyApp.activities.clear();
 

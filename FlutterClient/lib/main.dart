@@ -29,16 +29,6 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      // home: FutureBuilder(
-      //   future: Firebase.initializeApp(),
-      //   builder: (context, snap) {
-      //     if (snap.connectionState == ConnectionState.done) {
-      //       return MyHomePage(title: 'Activities');
-      //     }
-
-      //     return Container();
-      //   },
-      // ),
       home: MyHomePage(title: 'Activities'),
     );
   }
@@ -61,7 +51,7 @@ class MyHomePageState extends State<MyHomePage> {
     textStyle = new TextStyle(color: Colors.grey[700]);
 
     initApp();
-    new Future.delayed(const Duration(seconds: 1), () {
+    new Future.delayed(const Duration(milliseconds: 100), () {
       setState(() {
         _visible = !_visible;
       });
