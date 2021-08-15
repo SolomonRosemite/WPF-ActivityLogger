@@ -49,8 +49,7 @@ class _SignInState extends State<SignIn> {
 
       signUserIn(secret, ctx);
     } else {
-      showAlertDialog("Insufficient Permissions",
-          "Both Permissions are requied to use the app.", ctx);
+      showAlertDialog("Insufficient Permissions", "Both Permissions are requied to use the app.", ctx);
     }
   }
 
