@@ -41,6 +41,35 @@
           ]
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:521389710222:android:286c050954b58c51da62df",
+        "android_client_info": {
+          "package_name": "com.rosemite.activities"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "521389710222-1mm8ba9dt0p7dp6v1uvme26g73h44r9u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBELx4nV-PbgJiusdjyO-iJKjo-gXFilXE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "521389710222-1mm8ba9dt0p7dp6v1uvme26g73h44r9u.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
     }
   ],
   "configuration_version": "1"

@@ -21,10 +21,13 @@ class Backend {
   static FirebaseAuth auth = FirebaseAuth.instance;
   static SharedPreferences prefs;
   static String uid;
-  static String _url = kReleaseMode ? "https://wpf-activitylogger-functions.netlify.app/.netlify/functions/app/auth" : "http://localhost:3000/.netlify/functions/app/auth";
+  static String _url = kReleaseMode || !kIsWeb ? "https://wpf-activitylogger-functions.netlify.app/.netlify/functions/app/auth" : "http://localhost:3000/.netlify/functions/app/auth";
 
   static Future<bool> hasInternet() async {
-    return kIsWeb ?? await DataConnectionChecker().hasConnection;
+    if (kIsWeb) {
+      return true;
+    }
+    return await DataConnectionChecker().hasConnection;
   }
 
   static Future<http.Response> _fetchUser(String secret) {
