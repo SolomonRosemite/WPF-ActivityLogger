@@ -15,6 +15,9 @@
 
         public App()
         {
+            this.WindowState = FormWindowState.Minimized;
+            ShowInTaskbar = false;
+            
             notifyIcon = new NotifyIcon
             {
                 Icon = new Icon($@"{Logger.ActivityLoggerPath}\icon.ico"),
@@ -66,14 +69,6 @@
         }
 
         private static void OnLoggerInitializedError(object sender, InitializedLoggerFailedEventArgs args) => Application.Exit();
-
-        protected override void OnLoad(EventArgs e)
-        {
-            ShowInTaskbar = false;
-            Visible = false;
-            Opacity = 0;
-            base.OnLoad(e);
-        }
 
         private void Restart(object sender, EventArgs args) => logger.Restart();
 
