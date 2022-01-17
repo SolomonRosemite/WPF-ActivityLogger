@@ -1,24 +1,22 @@
-﻿﻿using System;
- using System.Drawing;
- using System.Threading;
- using System.Threading.Tasks;
- using System.Windows.Forms;
- using ActivityLogger.events;
+﻿using System;
+using System.Drawing;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using ActivityLogger.events;
 
  namespace ActivityLogger
 {
     public class App : Form
     {
-        private readonly NotifyIcon notifyIcon;
-        private readonly ToolStrips strips;
-        private readonly Logger logger;
+        private readonly NotifyIcon _notifyIcon;
+        private readonly ToolStrips _strips;
+        private readonly Logger _logger;
 
         public App()
         {
             this.WindowState = FormWindowState.Minimized;
-            ShowInTaskbar = false;
             
-            notifyIcon = new NotifyIcon
+            _notifyIcon = new NotifyIcon
             {
                 Icon = new Icon($@"{Logger.ActivityLoggerPath}\icon.ico"),
                 Text = "Activities",
@@ -26,7 +24,7 @@
                 ContextMenuStrip = new ContextMenuStrip(),
             };
 
-            strips = new ToolStrips
+            _strips = new ToolStrips
             {
                 RestartLogger = new ToolStripMenuItem("Restart", null, Restart),
                 ExitLogger = new ToolStripMenuItem("Exit", null, Exit),
@@ -36,56 +34,64 @@
                 ExitFirebaseClient = new ToolStripMenuItem("Stop Firebase Client", null, ExitFirebaseClient),
             };
 
-            logger = new Logger();
+            _logger = new Logger();
 
-            logger.OnInitializedLogger += OnLoggerInitialized;
-            logger.OnInitializedLoggerFailed += OnLoggerInitializedError;
+            _logger.OnInitializedLogger += OnLoggerInitialized;
+            _logger.OnInitializedLoggerFailed += OnLoggerInitializedError;
 
-            notifyIcon.Click += (sender, _) => ReloadNotifyIcon();
+            _notifyIcon.Click += (sender, _) => ReloadNotifyIcon();
 
-            Task.Run(logger.InitializeLogger);
+            Task.Run(_logger.InitializeLogger);
         }
 
+        protected override void OnLoad(EventArgs e)
+        {
+            ShowInTaskbar = false;
+            Visible = false;
+            Opacity = 0;
+            base.OnLoad(e);
+        }
+        
         private void OnLoggerInitialized(object sender, InitializedLoggerEventArgs args) => ReloadNotifyIcon();
 
         private void ReloadNotifyIcon()
         {
-            notifyIcon.ContextMenuStrip.Items.Clear();
+            _notifyIcon.ContextMenuStrip.Items.Clear();
 
-            notifyIcon.ContextMenuStrip.Items.Add(strips.RestartLogger);
-            notifyIcon.ContextMenuStrip.Items.Add(strips.ExitLogger);
+            _notifyIcon.ContextMenuStrip.Items.Add(_strips.RestartLogger);
+            _notifyIcon.ContextMenuStrip.Items.Add(_strips.ExitLogger);
 
-            if (logger.FirebaseClient == null || logger.FirebaseClient.HasExited)
+            if (_logger.FirebaseClient == null || _logger.FirebaseClient.HasExited)
             {
-                notifyIcon.ContextMenuStrip.Items.Add(strips.StartFirebaseClient);
-                notifyIcon.ContextMenuStrip.Update();
+                _notifyIcon.ContextMenuStrip.Items.Add(_strips.StartFirebaseClient);
+                _notifyIcon.ContextMenuStrip.Update();
                 return;
             }
 
-            notifyIcon.ContextMenuStrip.Items.Add(strips.RestartFirebaseClient);
-            notifyIcon.ContextMenuStrip.Items.Add(strips.ExitFirebaseClient);
+            _notifyIcon.ContextMenuStrip.Items.Add(_strips.RestartFirebaseClient);
+            _notifyIcon.ContextMenuStrip.Items.Add(_strips.ExitFirebaseClient);
 
-            notifyIcon.ContextMenuStrip.Update();
+            _notifyIcon.ContextMenuStrip.Update();
         }
 
         private static void OnLoggerInitializedError(object sender, InitializedLoggerFailedEventArgs args) => Application.Exit();
 
-        private void Restart(object sender, EventArgs args) => logger.Restart();
+        private void Restart(object sender, EventArgs args) => _logger.Restart();
 
         private void Exit(object sender, EventArgs args) {
-            logger.ExitFirebaseClient();
+            _logger.ExitFirebaseClient();
             Application.Exit();
         }
 
-        private void ExitFirebaseClient(object sender, EventArgs args) => logger.ExitFirebaseClient();
+        private void ExitFirebaseClient(object sender, EventArgs args) => _logger.ExitFirebaseClient();
 
         private void RestartFirebaseClient(object sender, EventArgs args)
         {
-            logger.ExitFirebaseClient();
-            logger.LaunchFirebaseClient();
+            _logger.ExitFirebaseClient();
+            _logger.LaunchFirebaseClient();
         }
 
-        private void StartFirebaseClient(object sender, EventArgs args) => logger.LaunchFirebaseClient();
+        private void StartFirebaseClient(object sender, EventArgs args) => _logger.LaunchFirebaseClient();
 
         private class ToolStrips
         {

@@ -4,6 +4,6 @@ namespace ActivityLogger
 {
     internal static class Program
     {
-        private static void Main(string[] args) => Application.Run(new App());
+        private static void Main() => Application.Run(new App());
     }
 }
